@@ -9,14 +9,12 @@
 
 ## 📚 Sommaire
 
-- [📝 Contexte des données choisis](#-contexte-des-données-choisis)
-- [📥 Téléchargement des données](#-téléchargement-des-données)
+- [📝 Contexte et objectifs](#-contexte-et-objectifs)
 - [📁 Présentation des données](#-présentation-des-données)
-- [📊 Plan d'analyse](#-plan-danalyse)
+- [📊 Plan d’analyse](#-plan-danalyse)
 
-## Introduction
 
-### Contexte et objectifs
+### 📝 Contexte et objectifs
 Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (https://api.croustillant.menu/) et , qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
 
 Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et des restaurants afin de :
@@ -26,11 +24,11 @@ Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et
 - Comparer les menus entre restaurants et observer des régularités ou anomalies  
 - Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents)  
 
-### Structure des données
+## 📁 Présentation des données
 
 Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data/` :
 
-1. **`liste_restaurants.csv`** : liste des restaurants distincts
+### 1. **`liste_restaurants.csv`** : liste des restaurants distincts
 - **Nombre d’observations :942 (correspond au nombre de restaurants présents dans le fichier CSV)  
 - **Nombre de variables :** 21  
 
@@ -58,11 +56,27 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 | `type.libelle` | texte | Libellé du type de restaurant (ex. Brasserie, Fast-food) |
    - Chaque observation correspond à un restaurant unique dans une région.
 
-2. TODO 
+### 2. **`liste_menus_restaurants.csv`** : liste des  menus pour chaque restaurant
+
+### Description
+Cette table contient les menus des restaurants. Chaque ligne correspond à un plat spécifique servi à un restaurant à une date donnée, dans un repas et une catégorie précis.
+
+- **Nombre d’observations :** 82 551  
+- **Nombre de variables :** 5 
+
+### Colonnes
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `restaurant_id` | entier | Identifiant unique du restaurant (correspond au champ `code` dans `liste_restaurants`) |
+| `date` | date | Date du menu |
+| `repas` | texte | Type de repas (`matin`, `midi`, `soir`) |
+| `categorie` | texte | Catégorie du plat (`Entrées`, `Plats`, `Desserts`, etc.) |
+| `plat` | texte | Nom du plat |
 
 **Organisation et sous-groupes :**  
 
-- Les données sont hiérarchisées : **restaurants → dates → types de repas → catégories → plats**  
+- Les données sont hiérarchisées : **restaurants → menus → types de repas → catégories → plats**  
 - Chaque restaurant peut avoir plusieurs menus par jour et plusieurs plats par catégorie  
 
 **Format :** CSV, séparateur `,`  
@@ -72,9 +86,8 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 - Ces données permettent d’étudier les menus sur différentes périodes et restaurants.  
 - Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.  
 
----
 
-## Plan d’analyse
+## 📊 Plan d’analyse
 
 L’analyse sera exploratoire et se concentrera sur plusieurs axes :  
 
