@@ -1,22 +1,22 @@
 ![Image du Dataset](data/banner_croustillant.png)
-# 📊 Projet IF36 Analyse exploratoire des menus de restaurants – Croustillant Menu
+# Projet IF36 Analyse exploratoire des menus de restaurants – Croustillant Menu
 
-## 👥 Membres
+## Membres
 
 Équipe Ex-Machina :
 
 - Ange KAMGUE
 - Jules TIMADJI
 
-## 📚 Sommaire
+## Sommaire
 
 - [📝 Contexte et objectifs](#-contexte-et-objectifs)
 - [📁 Présentation des données](#-présentation-des-données)
 - [📊 Plan d’analyse](#-plan-danalyse)
 
 
-### 📝 Contexte et objectifs
-Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (https://api.croustillant.menu/) et , qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
+### Contexte et objectifs
+Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (https://api.croustillant.menu/) qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
 
 Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et des restaurants afin de :
 
@@ -25,7 +25,7 @@ Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et
 - Comparer les menus entre restaurants et observer des régularités ou anomalies  
 - Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents)  
 
-## 📁 Présentation des données
+## Présentation des données
 
 Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data/` :
 
@@ -88,12 +88,12 @@ Cette table contient les menus des restaurants. Chaque ligne correspond à un pl
 - Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.  
 
 
-## 📊 Plan d’analyse
+## Plan d’analyse
 
 L’analyse sera exploratoire et se concentrera sur plusieurs axes :  
 
 1. **Distribution des menus dans le temps**  
-   - Quels jour sur le mois a le plus de menus ?  
+   - Quel jour sur le mois a le plus de menus ?  
    - Existe-t-il une saisonnalité dans l’offre des plats ?  
 
 2. **Analyse par type de repas et catégorie**  
