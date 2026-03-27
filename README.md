@@ -1,3 +1,103 @@
-# Fichier à remplacer
+![Image du Dataset](https://i.imgur.com/tPHIgmR.png)
+# 📊 Projet IF36 Analyse exploratoire des menus de restaurants – Croustillant Menu
 
-Ce README est à remplacer par votre proposition de dataset.
+## 👥 Membres
+
+Équipe Ex-Machina :
+
+- Ange KAMGUE
+
+## 📚 Sommaire
+
+- [📝 Contexte des données choisis](#-contexte-des-données-choisis)
+- [📥 Téléchargement des données](#-téléchargement-des-données)
+- [📁 Présentation des données](#-présentation-des-données)
+- [📊 Plan d'analyse](#-plan-danalyse)
+
+## Introduction
+
+### Contexte et objectifs
+Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (https://api.croustillant.menu/) et , qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
+
+Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et des restaurants afin de :
+
+- Identifier les tendances dans l’offre culinaire selon les restaurants et les périodes (ex. février 2026)  
+- Analyser la diversité des plats et des catégories (Entrées, Plats, Desserts)  
+- Comparer les menus entre restaurants et observer des régularités ou anomalies  
+- Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents)  
+
+### Structure des données
+
+Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data/` :
+
+1. **`liste_restaurants.csv`** : liste des restaurants distincts
+- **Nombre d’observations :942 (correspond au nombre de restaurants présents dans le fichier CSV)  
+- **Nombre de variables :** 21  
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `code` | entier | Identifiant unique du restaurant |
+| `nom` | texte | Nom du restaurant |
+| `adresse` | texte | Adresse complète |
+| `latitude` | numérique | Latitude GPS |
+| `longitude` | numérique | Longitude GPS |
+| `horaires` | texte | Horaires d’ouverture (ex. 11:00-22:00) |
+| `jours_ouvert` | texte | Jours de la semaine où le restaurant est ouvert |
+| `image_url` | texte | Lien vers une image représentative du restaurant |
+| `email` | texte | Adresse email du restaurant |
+| `telephone` | texte | Numéro de téléphone |
+| `ispmr` | booléen | Accessibilité PMR (personnes à mobilité réduite) |
+| `zone` | texte | Zone géographique ou quartier |
+| `paiement` | texte | Modes de paiement acceptés |
+| `acces` | texte | Informations sur l’accès (parking, transports…) |
+| `ouvert` | booléen | Indique si le restaurant est actuellement ouvert |
+| `actif` | booléen | Indique si le restaurant est actif dans la base |
+| `region.code` | entier | Code de la région |
+| `region.libelle` | texte | Nom de la région |
+| `type.code` | entier | Code du type de restaurant |
+| `type.libelle` | texte | Libellé du type de restaurant (ex. Brasserie, Fast-food) |
+   - Chaque observation correspond à un restaurant unique dans une région.
+
+2. TODO 
+
+**Organisation et sous-groupes :**  
+
+- Les données sont hiérarchisées : **restaurants → dates → types de repas → catégories → plats**  
+- Chaque restaurant peut avoir plusieurs menus par jour et plusieurs plats par catégorie  
+
+**Format :** CSV, séparateur `,`  
+
+**Contexte et choix des données :**  
+
+- Ces données permettent d’étudier les menus sur différentes périodes et restaurants.  
+- Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.  
+
+---
+
+## Plan d’analyse
+
+L’analyse sera exploratoire et se concentrera sur plusieurs axes :  
+
+1. **Distribution des menus dans le temps**  
+   - Quelsjour sur le mois a le plus de menus ?  
+   - Existe-t-il une saisonnalité dans l’offre des plats ?  
+
+2. **Analyse par type de repas et catégorie**  
+   - Quels types de repas sont les plus fréquents (matin, midi, soir) ?  
+   - Comment les catégories de plats (Entrées, Plats, Desserts) varient-elles selon les restaurants ou les périodes ?  
+
+3. **Comparaison entre restaurants**  
+   - Les restaurants proposent-ils une diversité similaire de plats ?  
+   - Quels restaurants ont le plus de menus ou de plats uniques pour une période donnée ?  
+
+4. **Qualité et complétude des données**  
+   - Y a-t-il des dates manquantes ou des restaurants sans menus pour certaines périodes ?  
+   - Certains plats sont-ils mal catégorisés ou incomplets ?  
+   - Existe-t-il des doublons dans les menus ou les restaurants ?  
+
+**Approche générale :**  
+
+- Nettoyer les données pour éliminer les doublons et les valeurs manquantes  
+- Filtrer les menus selon la période d’intérêt (ex. février 2026)  
+- Comparer les distributions des types de repas et des catégories par restaurant et dans le temps  
+- Identifier des tendances, anomalies ou lacunes dans l’offre des restaurants  
