@@ -1,4 +1,4 @@
-![Image du Dataset](https://i.imgur.com/tPHIgmR.png)
+![Image du Dataset](data/banner_croustillant.png)
 # 📊 Projet IF36 Analyse exploratoire des menus de restaurants – Croustillant Menu
 
 ## 👥 Membres
