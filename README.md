@@ -30,7 +30,7 @@ Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et
 Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data/` :
 
 ### 1. **`liste_restaurants.csv`** : liste des restaurants distincts
-- **Nombre d’observations :942 (correspond au nombre de restaurants présents dans le fichier CSV)  
+- **Nombre d’observations :** 942 (correspond au nombre de restaurants présents dans le fichier CSV)  
 - **Nombre de variables :** 21  
 
 | Champ | Type | Description |
@@ -93,7 +93,7 @@ Cette table contient les menus des restaurants. Chaque ligne correspond à un pl
 L’analyse sera exploratoire et se concentrera sur plusieurs axes :  
 
 1. **Distribution des menus dans le temps**  
-   - Quelsjour sur le mois a le plus de menus ?  
+   - Quels jour sur le mois a le plus de menus ?  
    - Existe-t-il une saisonnalité dans l’offre des plats ?  
 
 2. **Analyse par type de repas et catégorie**  
