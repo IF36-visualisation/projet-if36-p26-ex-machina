@@ -10,9 +10,9 @@
 
 ## Sommaire
 
-- [📝 Contexte et objectifs](#-contexte-et-objectifs)
-- [📁 Présentation des données](#-présentation-des-données)
-- [📊 Plan d’analyse](#-plan-danalyse)
+- [Contexte et objectifs](#-contexte-et-objectifs)
+- [Présentation des données](#-présentation-des-données)
+- [Plan d’analyse](#-plan-danalyse)
 
 
 ### Contexte et objectifs
