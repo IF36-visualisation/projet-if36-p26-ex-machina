@@ -6,6 +6,7 @@
 Équipe Ex-Machina :
 
 - Ange KAMGUE
+- Jules TIMADJI
 
 ## 📚 Sommaire
 
