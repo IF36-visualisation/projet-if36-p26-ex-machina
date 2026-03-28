@@ -7,6 +7,7 @@
 
 - Ange KAMGUE
 - Jules TIMADJI
+- Housséni YABRE
 
 ## Sommaire
 
@@ -94,20 +95,32 @@ L’analyse sera exploratoire et se concentrera sur plusieurs axes :
 
 1. **Distribution des menus dans le temps**  
    - Quel jour sur le mois a le plus de menus ?  
-   - Existe-t-il une saisonnalité dans l’offre des plats ?  
+   - Existe-t-il une saisonnalité dans l’offre des plats ?
+   - Les restaurants publient-ils des menus de façon régulière sur la période étudiée ?  
 
 2. **Analyse par type de repas et catégorie**  
    - Quels types de repas sont les plus fréquents (matin, midi, soir) ?  
-   - Comment les catégories de plats (Entrées, Plats, Desserts) varient-elles selon les restaurants ou les périodes ?  
+   - Comment les catégories de plats (Entrées, Plats, Desserts) varient-elles selon les restaurants ou les périodes ?
+   - Certaines catégories de plats (entrées, plats, desserts) sont-elles systématiquement absentes pour certains types de repas (matin, midi, soir) dans certains restaurants ?
+   - Certains restaurants proposent-ils des menus déséquilibrés (surreprésentation d’une catégorie) ?  
 
 3. **Comparaison entre restaurants**  
    - Les restaurants proposent-ils une diversité similaire de plats ?  
-   - Quels restaurants ont le plus de menus ou de plats uniques pour une période donnée ?  
+   - Quels restaurants ont le plus de menus ou de plats uniques pour une période donnée ?
+   - Peut-on identifier des groupes de restaurants aux menus similaires ?
+   - Quels restaurants présentent la plus forte répétition des mêmes plats ?
 
 4. **Qualité et complétude des données**  
    - Y a-t-il des dates manquantes ou des restaurants sans menus pour certaines périodes ?  
    - Certains plats sont-ils mal catégorisés ou incomplets ?  
-   - Existe-t-il des doublons dans les menus ou les restaurants ?  
+   - Existe-t-il des doublons dans les menus ou les restaurants ?
+   - Certains plats apparaissent-ils avec des catégories différentes ?
+   - Existe-t-il une variabilité excessive dans les noms des plats ?
+
+5. **Analyse spatiale et territoriale des restaurants CROUS**
+   - La diversité des plats varie-t-elle selon la zone géographique ?
+   - Existe-t-il des zones à faible diversité culinaire ?
+   - Les restaurants proches géographiquement proposent-ils des menus similaires ?
 
 **Approche générale :**  
 
