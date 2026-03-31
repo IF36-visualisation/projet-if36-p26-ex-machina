@@ -8,13 +8,13 @@
 - Ange KAMGUE
 - Jules TIMADJI
 - Housséni YABRE
+- Rayan LEGRAND
 
 ## Sommaire
 
 - [Contexte et objectifs](#contexte-et-objectifs)
 - [Présentation des données](#présentation-des-données)
 - [Plan d’analyse](#plan-danalyse)
-
 
 ## Contexte et objectifs
 Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (https://api.croustillant.menu/) qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
