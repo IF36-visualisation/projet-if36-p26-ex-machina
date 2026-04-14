@@ -93,34 +93,49 @@ Cette table contient les menus des restaurants. Chaque ligne correspond à un pl
 
 L’analyse sera exploratoire et se concentrera sur plusieurs axes :  
 
-1. **Distribution des menus dans le temps**  
-   - Quel jour sur le mois a le plus de menus ?  
-   - Existe-t-il une saisonnalité dans l’offre des plats ?
-   - Les restaurants publient-ils des menus de façon régulière sur la période étudiée ?  
+### 1. Distribution des menus dans le temps
 
-2. **Analyse par type de repas et catégorie**  
-   - Quels types de repas sont les plus fréquents (matin, midi, soir) ?  
-   - Comment les catégories de plats (Entrées, Plats, Desserts) varient-elles selon les restaurants ou les périodes ?
-   - Certaines catégories de plats (entrées, plats, desserts) sont-elles systématiquement absentes pour certains types de repas (matin, midi, soir) dans certains restaurants ?
-   - Certains restaurants proposent-ils des menus déséquilibrés (surreprésentation d’une catégorie) ?  
+| # | Question | Variables | Visualisation | Objectif |
+|---|----------|-----------|---------------|----------|
+| 1 | Quel jour du mois concentre le plus de menus ? | `date` | Bar chart | Identifier les pics d'activité |
+| 2 | Existe-t-il une saisonnalité dans l'offre des plats ? | `date`, `plat` | Line chart | Détecter des tendances temporelles |
+| 3 | Les restaurants publient-ils des menus régulièrement ? | `date`, `restaurant_id` | Heatmap | Mesurer la régularité des publications |
 
-3. **Comparaison entre restaurants**  
-   - Les restaurants proposent-ils une diversité similaire de plats ?  
-   - Quels restaurants ont le plus de menus ou de plats uniques pour une période donnée ?
-   - Peut-on identifier des groupes de restaurants aux menus similaires ?
-   - Quels restaurants présentent la plus forte répétition des mêmes plats ?
+### 2. Analyse par type de repas et catégorie
 
-4. **Qualité et complétude des données**  
-   - Y a-t-il des dates manquantes ou des restaurants sans menus pour certaines périodes ?  
-   - Certains plats sont-ils mal catégorisés ou incomplets ?  
-   - Existe-t-il des doublons dans les menus ou les restaurants ?
-   - Certains plats apparaissent-ils avec des catégories différentes ?
-   - Existe-t-il une variabilité excessive dans les noms des plats ?
+| # | Question | Variables | Visualisation | Objectif |
+|---|----------|-----------|---------------|----------|
+| 4 | Quels types de repas sont les plus fréquents ? | `repas` | Bar chart | Comprendre la répartition matin/midi/soir |
+| 5 | Comment les catégories varient-elles selon le repas et le restaurant ? | `repas`, `categorie`, `restaurant_id` | Stacked bar, Heatmap | Analyser la diversité par repas |
+| 6 | Certaines catégories sont-elles systématiquement absentes selon le repas ? | `repas`, `categorie`, `restaurant_id` | Heatmap | Détecter les absences structurelles |
+| 7 | Certains restaurants ont-ils des menus déséquilibrés ? | `restaurant_id`, `categorie`, `NbPlats (COUNT plat)` | Boxplot, Bar chart | Repérer les surreprésentations de catégorie |
 
-5. **Analyse spatiale et territoriale des restaurants CROUS**
-   - La diversité des plats varie-t-elle selon la zone géographique ?
-   - Existe-t-il des zones à faible diversité culinaire ?
-   - Les restaurants proches géographiquement proposent-ils des menus similaires ?
+### 3. Comparaison entre restaurants
+
+| # | Question | Variables | Visualisation | Objectif |
+|---|----------|-----------|---------------|----------|
+| 8 | Les restaurants proposent-ils une diversité similaire ? | `restaurant_id`, `NbPlatsUniques (COUNT DISTINCT plat)` | Bar chart, Boxplot | Comparer la richesse des menus |
+| 9 | Quels restaurants ont le plus de plats uniques sur la période ? | `restaurant_id`, `date`, `NbPlatsUniques` | Bar chart | Identifier les restaurants les plus variés |
+| 10 | Peut-on regrouper des restaurants aux menus similaires ? | `restaurant_id`, `plat`, `categorie` | Heatmap, Dendrogramme | Former des clusters de restaurants |
+| 11 | Quels restaurants répètent le plus les mêmes plats ? | `restaurant_id`, `plat`, `TauxRepetition (COUNT plat / NbPlatsUniques)` | Bar chart | Mesurer la monotonie de l'offre |
+
+### 4. Qualité et complétude des données
+
+| # | Question | Variables | Visualisation | Objectif |
+|---|----------|-----------|---------------|----------|
+| 12 | Y a-t-il des dates manquantes pour certains restaurants ? | `date`, `restaurant_id` | Heatmap | Évaluer la complétude temporelle |
+| 13 | Certains plats sont-ils mal catégorisés ou incomplets ? | `plat`, `categorie` | Table, Bar chart | Repérer les anomalies de catégorisation |
+| 14 | Existe-t-il des doublons dans les menus ? | `restaurant_id`, `plat`, `date`, `repas`, `categorie` | Table | Quantifier les doublons exacts |
+| 15 | Certains plats apparaissent-ils avec des catégories différentes ? | `plat`, `categorie`, `NbCategories (COUNT DISTINCT categorie)` | Bar chart, Table | Détecter les incohérences de classification |
+| 16 | Existe-t-il une variabilité excessive dans les noms de plats ? | `plat` | Nuage de mots, Bar chart | Identifier les problèmes de normalisation |
+
+### 5. Analyse spatiale et territoriale
+
+| # | Question | Variables | Visualisation | Objectif |
+|---|----------|-----------|---------------|----------|
+| 17 | La diversité des plats varie-t-elle selon la zone géographique ? | `latitude`, `longitude`, `region.libelle`, `NbPlatsUniques` | Carte choroplèthe, Bar chart | Visualiser les inégalités territoriales |
+| 18 | Existe-t-il des zones à faible diversité culinaire ? | `region.libelle`, `zone`, `NbPlatsUniques` | Carte choroplèthe | Identifier les déserts culinaires |
+| 19 | Les restaurants proches géographiquement ont-ils des menus similaires ? | `latitude`, `longitude`, `restaurant_id`, `plat` | Scatter map, Heatmap | Tester la corrélation géographique des menus |
 
 **Approche générale :**  
 
