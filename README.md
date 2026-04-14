@@ -84,10 +84,10 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
 | `categorie` | texte | Catégorie du plat |
 | `plat` | texte | Nom du plat |
 | `nutriscore` | texte | Score nutritionnel (A–E) |
-| `regime` | texte | Type alimentaire |
-| `impact_carbone` | texte | Empreinte carbone |
-| `style_culinaire` | texte | Style du plat |
-| `calories_estimees` | entier | Calories estimées |
+| `regime` | texte | Type alimentaire (carné, végétarien, ect) |
+| `impact_carbone` | texte | Empreinte carbone (bas, moyen, élevé) |
+| `style_culinaire` | texte | Style du plat (soupe, cuisine traditionnelle, etc) |
+| `calories_estimees` | entier | Nombre de calories estimées en kcal |
 
 **Organisation et sous-groupes :**  
 
