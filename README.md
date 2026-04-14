@@ -58,23 +58,36 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 | `type.libelle` | texte | Libellé du type de restaurant (ex. Brasserie, Fast-food) |
    - Chaque observation correspond à un restaurant unique dans une région.
 
-### 2. **`liste_menus_restaurants.csv`** : liste des  menus pour chaque restaurant
+### 2. **`menus_complets_enrichis.csv`** : liste des  menus pour chaque restaurant
 
 ### Description
-Cette table contient les menus des restaurants. Chaque ligne correspond à un plat spécifique servi à un restaurant à une date donnée, dans un repas et une catégorie précis.
+Cette table contient l’ensemble des menus proposés dans les restaurants universitaires.  
+Chaque ligne correspond à un plat spécifique servi dans un restaurant donné, à une date, pour un type de repas et une catégorie précis.
 
-- **Nombre d’observations :** 82 551  
-- **Nombre de variables :** 5 
+Les données ont été enrichies manuellement à partir d’informations issues du site **OpenFoodFacts** (https://world-fr.openfoodfacts.org/), puis combinées avec les données récupérées via l’API **CROUStillant Menu**.
+
+Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
+- le volume très important des données OpenFoodFacts (~9 Go),
+- la complexité de leur structure,
+- la forte sensibilité aux variations d’écriture des noms de plats.
+
+- **Nombre d’observations :** 80 307 
+- **Nombre de variables :** 11
 
 ### Colonnes
 
 | Champ | Type | Description |
-|-------|------|-------------|
-| `restaurant_id` | entier | Identifiant unique du restaurant (correspond au champ `code` dans `liste_restaurants`) |
+|----------|------|------------|
+| `restaurant_id` | entier | Identifiant du restaurant |
 | `date` | date | Date du menu |
-| `repas` | texte | Type de repas (`matin`, `midi`, `soir`) |
-| `categorie` | texte | Catégorie du plat (`Entrées`, `Plats`, `Desserts`, etc.) |
+| `repas` | texte | Type de repas |
+| `categorie` | texte | Catégorie du plat |
 | `plat` | texte | Nom du plat |
+| `nutriscore` | texte | Score nutritionnel (A–E) |
+| `regime` | texte | Type alimentaire |
+| `impact_carbone` | texte | Empreinte carbone |
+| `style_culinaire` | texte | Style du plat |
+| `calories_estimees` | entier | Calories estimées |
 
 **Organisation et sous-groupes :**  
 
