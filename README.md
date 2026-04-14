@@ -104,51 +104,71 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
 
 ## Plan d’analyse
 
-L’analyse sera exploratoire et se concentrera sur plusieurs axes :  
+Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `menus_complets_enrichis.csv`, nous avons sélectionné un ensemble de questions que nous avons structurées autour de plusieurs axes d’analyse.
 
-### 1. Distribution des menus dans le temps
+
+### 1. Dynamique temporelle
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
 | 1 | Quel jour du mois concentre le plus de menus ? | `date` | Bar chart | Identifier les pics d'activité |
-| 2 | Existe-t-il une saisonnalité dans l'offre des plats ? | `date`, `plat` | Line chart | Détecter des tendances temporelles |
-| 3 | Les restaurants publient-ils des menus régulièrement ? | `date`, `restaurant_id` | Heatmap | Mesurer la régularité des publications |
+| 2 | Existe-t-il une saisonnalité dans l’offre des plats ? | `date`, `categorie` | Line chart | Détecter des tendances temporelles |
+| 3 | Quelle est la fréquence d'ouverture réelle des restaurants sur l'année ? | `jours_ouvert`, `restaurant_id` | Heatmap calendaire | Mesurer la régularité du service et identifier les fermetures prolongées |
+| 4 | L’offre nutritionnelle évolue-t-elle dans le temps ? | `date`, `nutriscore` | Line chart | Observer l’évolution de la qualité nutritionnelle |
 
-### 2. Analyse par type de repas et catégorie
+
+### 2. Structure des menus
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 4 | Quels types de repas sont les plus fréquents ? | `repas` | Bar chart | Comprendre la répartition matin/midi/soir |
-| 5 | Comment les catégories varient-elles selon le repas et le restaurant ? | `repas`, `categorie`, `restaurant_id` | Stacked bar, Heatmap | Analyser la diversité par repas |
-| 6 | Certaines catégories sont-elles systématiquement absentes selon le repas ? | `repas`, `categorie`, `restaurant_id` | Heatmap | Détecter les absences structurelles |
-| 7 | Certains restaurants ont-ils des menus déséquilibrés ? | `restaurant_id`, `categorie`, `NbPlats (COUNT plat)` | Boxplot, Bar chart | Repérer les surreprésentations de catégorie |
+| 5 | Quel est le Nutri-Score moyen des 100 plats les plus fréquents ? | `plat`, `nutriscore` | lollipop chart | Déterminer si les plats les plus populaires du CROUS sont équilibrés ou non |
+| 6 | Comment les catégories varient-elles selon les repas ? | `repas`, `categorie` | Stacked bar | Analyser la structure des menus |
+| 7 | Les restaurants proposent-ils des menus équilibrés en catégories ? | `restaurant_id`, `categorie` | Boxplot | Évaluer la diversité des menus |
+
 
 ### 3. Comparaison entre restaurants
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 8 | Les restaurants proposent-ils une diversité similaire ? | `restaurant_id`, `NbPlatsUniques (COUNT DISTINCT plat)` | Bar chart, Boxplot | Comparer la richesse des menus |
-| 9 | Quels restaurants ont le plus de plats uniques sur la période ? | `restaurant_id`, `date`, `NbPlatsUniques` | Bar chart | Identifier les restaurants les plus variés |
-| 10 | Peut-on regrouper des restaurants aux menus similaires ? | `restaurant_id`, `plat`, `categorie` | Heatmap, Dendrogramme | Former des clusters de restaurants |
-| 11 | Quels restaurants répètent le plus les mêmes plats ? | `restaurant_id`, `plat`, `TauxRepetition (COUNT plat / NbPlatsUniques)` | Bar chart | Mesurer la monotonie de l'offre |
+| 8 | Les restaurants proposent-ils une diversité similaire ? | `restaurant_id`, `plat` | Boxplot | Comparer la richesse des menus |
+| 9 | Les restaurants accessibles PMR offrent-ils des menus plus sains ? | `restaurant_id`, `ispmr`, `nutriscore` | Group ar chart | Vérifier si les bâtiments modernes (accessibles pmr) servent une meilleure qualité nutritionnelle |
 
-### 4. Qualité et complétude des données
+### 4. Qualité nutritionnelle et environnementale
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 12 | Y a-t-il des dates manquantes pour certains restaurants ? | `date`, `restaurant_id` | Heatmap | Évaluer la complétude temporelle |
-| 13 | Certains plats sont-ils mal catégorisés ou incomplets ? | `plat`, `categorie` | Table, Bar chart | Repérer les anomalies de catégorisation |
-| 14 | Existe-t-il des doublons dans les menus ? | `restaurant_id`, `plat`, `date`, `repas`, `categorie` | Table | Quantifier les doublons exacts |
-| 15 | Certains plats apparaissent-ils avec des catégories différentes ? | `plat`, `categorie`, `NbCategories (COUNT DISTINCT categorie)` | Bar chart, Table | Détecter les incohérences de classification |
-| 16 | Existe-t-il une variabilité excessive dans les noms de plats ? | `plat` | Nuage de mots, Bar chart | Identifier les problèmes de normalisation |
+| 10 | Quelle est la distribution des Nutri-Scores ? | `nutriscore` | Bar chart | Évaluer la qualité nutritionnelle globale |
+| 11 | Les restaurants diffèrent-ils en qualité nutritionnelle ? | `restaurant_id`, `nutriscore` | Stacked bar | Comparer les profils |
+| 12 | Existe-t-il un lien entre calories et Nutri-Score ? | `calories_estimees`, `nutriscore` | Boxplot | Tester la cohérence nutritionnelle |
+| 13 | Peut-on identifier des restaurants “écoresponsables” ? | `restaurant_id`, `impact_carbone` | Bar chart | Identifier les meilleures pratiques |
 
-### 5. Analyse spatiale et territoriale
+
+### 5. Analyse territoriale
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 17 | La diversité des plats varie-t-elle selon la zone géographique ? | `latitude`, `longitude`, `region.libelle`, `NbPlatsUniques` | Carte choroplèthe, Bar chart | Visualiser les inégalités territoriales |
-| 18 | Existe-t-il des zones à faible diversité culinaire ? | `region.libelle`, `zone`, `NbPlatsUniques` | Carte choroplèthe | Identifier les déserts culinaires |
-| 19 | Les restaurants proches géographiquement ont-ils des menus similaires ? | `latitude`, `longitude`, `restaurant_id`, `plat` | Scatter map, Heatmap | Tester la corrélation géographique des menus |
+| 14 | Existe-t-il une fracture nutritionnelle entre les régions ou les villes ? | `region`, `ville`, `nutriscore`, `regime` | Carte, Boxplot | Identifier des inégalités territoriales |
+| 15 | La diversité des plats varie-t-elle selon la région ? | `region`, `restaurant_id`, `plat` | Bar chart | Comparer l’offre culinaire |
+| 16 | Les restaurants proches géographiquement ont-ils des menus similaires ? | `latitude`, `longitude`, `plat` | Carte / clustering | Tester la corrélation géographique |
+| 17 | Existe-t-il une fracture géographique de l'accessibilité PMR ? | `ville`, `ispmr` | Bar chart | Identifier les villes en retard sur la mise aux normes PMR |
+
+
+### 6. Qualité des données
+
+| # | Question | Variables | Visualisation | Objectif |
+|---|----------|-----------|---------------|----------|
+| 18 | Existe-t-il une variabilité excessive dans les noms de plats ? | `plat` | Nuage de motes | Identifier les problèmes de normalisation |
+| 19 | Certains plats apparaissent-ils avec plusieurs catégories ? | `plat`, `categorie` | Bar chart | Détecter des incohérences |
+
+### 7. Analyse énergétique et style culinaire
+
+| # | Question | Variables | Visualisation | Objectif |
+|---|----------|-----------|---------------|----------|
+
+| 20 | Quelle est la distribution des calories des plats ? | `calories_estimees` | Histogramme, line chart | Comprendre l’apport énergétique global des menus |
+| 21 | Les calories varient-elles selon les catégories de plats ? | `categorie`, `calories_estimees` | Boxplot | Identifier les catégories les plus caloriques |
+| 22 | Le style culinaire influence-t-il les caractéristiques nutritionnelles des plats ? | `style_culinaire`, `calories_estimees`, `nutriscore` | Boxplot, Stacked bar | Étudier l’impact du style culinaire sur la qualité nutritionnelle |
+
 
 **Approche générale :**  
 
