@@ -139,39 +139,43 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 |---|----------|-----------|---------------|----------|
 | 8 | Les restaurants proposent-ils une diversité similaire ? | `restaurant_id`, `plat` | Boxplot | Comparer la richesse des menus |
 | 9 | Les restaurants accessibles PMR offrent-ils des menus plus sains ? | `restaurant_id`, `ispmr`, `nutriscore` | Grouped bar chart | Vérifier si les bâtiments modernes (accessibles pmr) servent une meilleure qualité nutritionnelle |
+| 10 |Quels restaurants proposent le plus de nouveautés ? | `restaurant_id`, `plat`, `date` | Line chart | Mesurer le renouvellement des menus |
 
 ### 4. Qualité nutritionnelle et environnementale
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 10 | Quelle est la distribution des Nutri-Scores ? | `nutriscore` | Bar chart | Évaluer la qualité nutritionnelle globale |
-| 11 | Les restaurants diffèrent-ils en qualité nutritionnelle ? | `restaurant_id`, `nutriscore` | Stacked bar | Comparer les profils |
-| 12 | Existe-t-il un lien entre calories et Nutri-Score ? | `calories_estimees`, `nutriscore` | Boxplot | Tester la cohérence nutritionnelle |
-| 13 | Peut-on identifier des restaurants “écoresponsables” ? | `restaurant_id`, `impact_carbone` | Bar chart | Identifier les meilleures pratiques |
+| 11 | Quelle est la distribution des Nutri-Scores ? | `nutriscore` | Bar chart | Évaluer la qualité nutritionnelle globale |
+| 12 | Les restaurants diffèrent-ils en qualité nutritionnelle ? | `restaurant_id`, `nutriscore` | Stacked bar | Comparer les profils |
+| 13 | Existe-t-il un lien entre calories et Nutri-Score ? | `calories_estimees`, `nutriscore` | Boxplot | Tester la cohérence nutritionnelle |
+| 14 | Peut-on identifier des restaurants “écoresponsables” ? | `restaurant_id`, `impact_carbone` | Bar chart | Identifier les meilleures pratiques |
 
 
 ### 5. Analyse territoriale
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 14 | Existe-t-il une fracture nutritionnelle entre les régions ou les villes ? | `region`, `ville`, `nutriscore`, `regime` | Carte, Boxplot | Identifier des inégalités territoriales |
-| 15 | La diversité des plats varie-t-elle selon la région ? | `region`, `restaurant_id`, `plat` | Bar chart | Comparer l’offre culinaire |
-| 16 | Les restaurants proches géographiquement ont-ils des menus similaires ? | `latitude`, `longitude`, `plat` | Carte / clustering | Tester la corrélation géographique |
-| 17 | Existe-t-il une fracture géographique de l'accessibilité PMR ? | `ville`, `ispmr` | Bar chart | Identifier les villes en retard sur la mise aux normes PMR |
+| 15 | Existe-t-il une fracture nutritionnelle entre les régions ou les villes ? | `region`, `ville`, `nutriscore`, `regime` | Carte, Boxplot | Identifier des inégalités territoriales |
+| 16 | La diversité des plats varie-t-elle selon la région ? | `region`, `restaurant_id`, `plat` | Bar chart | Comparer l’offre culinaire |
+| 17 | Les restaurants proches géographiquement ont-ils des menus similaires ? | `latitude`, `longitude`, `plat` | Carte / clustering | Tester la corrélation géographique |
+| 18 | Existe-t-il une fracture géographique de l'accessibilité PMR ? | `ville`, `ispmr` | Bar chart | Identifier les villes en retard sur la mise aux normes PMR |
 
 
 ### 6. Qualité des données
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 18 | Existe-t-il une variabilité excessive dans les noms de plats ? | `plat` | Nuage de mots | Identifier les problèmes de normalisation |
-| 19 | Certains plats apparaissent-ils avec plusieurs catégories ? | `plat`, `categorie` | Bar chart | Détecter des incohérences |
+| 19 | Existe-t-il une variabilité excessive dans les noms de plats ? | `plat` | Nuage de mots | Identifier les problèmes de normalisation |
+| 20 | Certains plats apparaissent-ils avec plusieurs catégories ? | `plat`, `categorie` | Bar chart | Détecter des incohérences |
+| 21 | Quelle proportion de plats a des informations nutritionnelles manquantes ? | `plat`, `nutriscore`, `calories_estimees` | Bar chart | Évaluer la complétude |
+| 22 | Certains restaurants ont-ils des données moins fiables ? | `restaurant_id`, `nutriscore`, `calories_estimees` | Bar chart | Identifier des sources problématiques |
+
 
 ### 7. Analyse énergétique et style culinaire
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 20 | Quelle est la distribution des calories des plats ? | `calories_estimees` | Histogramme, line chart | Comprendre l’apport énergétique global des menus |
-| 21 | Les calories varient-elles selon les catégories de plats ? | `categorie`, `calories_estimees` | Boxplot | Identifier les catégories les plus caloriques |
-| 22 | Le style culinaire influence-t-il les caractéristiques nutritionnelles des plats ? | `style_culinaire`, `calories_estimees`, `nutriscore` | Boxplot, Stacked bar | Étudier l’impact du style culinaire sur la qualité nutritionnelle |
+| 23 | Quelle est la distribution des calories des plats ? | `calories_estimees` | Histogramme, line chart | Comprendre l’apport énergétique global des menus |
+| 24 | Les calories varient-elles selon les catégories de plats ? | `categorie`, `calories_estimees` | Boxplot | Identifier les catégories les plus caloriques |
+| 25 | Le style culinaire influence-t-il les caractéristiques nutritionnelles des plats ? | `style_culinaire`, `calories_estimees`, `nutriscore` | Boxplot, Stacked bar | Étudier l’impact du style culinaire sur la qualité nutritionnelle |
 
