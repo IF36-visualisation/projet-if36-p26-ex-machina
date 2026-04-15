@@ -84,7 +84,7 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
 | `categorie` | texte | Catégorie du plat |
 | `plat` | texte | Nom du plat |
 | `nutriscore` | texte | Score nutritionnel (A–E) |
-| `regime` | texte | Type alimentaire (carné, végétarien, ect) |
+| `regime` | texte | Type alimentaire (carné, végétarien, etc) |
 | `impact_carbone` | texte | Empreinte carbone (bas, moyen, élevé) |
 | `style_culinaire` | texte | Style du plat (soupe, cuisine traditionnelle, etc) |
 | `calories_estimees` | entier | Nombre de calories estimées en kcal |
@@ -138,7 +138,7 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
 | 8 | Les restaurants proposent-ils une diversité similaire ? | `restaurant_id`, `plat` | Boxplot | Comparer la richesse des menus |
-| 9 | Les restaurants accessibles PMR offrent-ils des menus plus sains ? | `restaurant_id`, `ispmr`, `nutriscore` | Group ar chart | Vérifier si les bâtiments modernes (accessibles pmr) servent une meilleure qualité nutritionnelle |
+| 9 | Les restaurants accessibles PMR offrent-ils des menus plus sains ? | `restaurant_id`, `ispmr`, `nutriscore` | Grouped bar chart | Vérifier si les bâtiments modernes (accessibles pmr) servent une meilleure qualité nutritionnelle |
 
 ### 4. Qualité nutritionnelle et environnementale
 
@@ -164,7 +164,7 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 18 | Existe-t-il une variabilité excessive dans les noms de plats ? | `plat` | Nuage de motes | Identifier les problèmes de normalisation |
+| 18 | Existe-t-il une variabilité excessive dans les noms de plats ? | `plat` | Nuage de mots | Identifier les problèmes de normalisation |
 | 19 | Certains plats apparaissent-ils avec plusieurs catégories ? | `plat`, `categorie` | Bar chart | Détecter des incohérences |
 
 ### 7. Analyse énergétique et style culinaire
