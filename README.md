@@ -170,7 +170,8 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 ### 7. Analyse énergétique et style culinaire
 
 | # | Question | Variables | Visualisation | Objectif |
-|---|----------|-----------|---------------|----------|| 20 | Quelle est la distribution des calories des plats ? | `calories_estimees` | Histogramme, line chart | Comprendre l’apport énergétique global des menus |
+|---|----------|-----------|---------------|----------|
+| 20 | Quelle est la distribution des calories des plats ? | `calories_estimees` | Histogramme, line chart | Comprendre l’apport énergétique global des menus |
 | 21 | Les calories varient-elles selon les catégories de plats ? | `categorie`, `calories_estimees` | Boxplot | Identifier les catégories les plus caloriques |
 | 22 | Le style culinaire influence-t-il les caractéristiques nutritionnelles des plats ? | `style_culinaire`, `calories_estimees`, `nutriscore` | Boxplot, Stacked bar | Étudier l’impact du style culinaire sur la qualité nutritionnelle |
 
