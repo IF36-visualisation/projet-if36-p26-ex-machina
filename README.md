@@ -179,3 +179,10 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 | 24 | Les calories varient-elles selon les catégories de plats ? | `categorie`, `calories_estimees` | Boxplot | Identifier les catégories les plus caloriques |
 | 25 | Le style culinaire influence-t-il les caractéristiques nutritionnelles des plats ? | `style_culinaire`, `calories_estimees`, `nutriscore` | Boxplot, Stacked bar | Étudier l’impact du style culinaire sur la qualité nutritionnelle |
 
+
+**Approche générale :**
+
+- Nettoyer les données pour éliminer les doublons et les valeurs manquantes  
+- Filtrer les menus selon la période d’intérêt (ex. février 2026)  
+- Comparer les distributions des types de repas et des catégories par restaurant et dans le temps  
+- Identifier des tendances, anomalies ou lacunes dans l’offre des restaurants  
