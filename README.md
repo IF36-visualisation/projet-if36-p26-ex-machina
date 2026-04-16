@@ -32,7 +32,7 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 
 ### 1. **`liste_restaurants.csv`** : liste des restaurants distincts
 - **Nombre d’observations :** 942 (correspond au nombre de restaurants présents dans le fichier CSV)  
-- **Nombre de variables :** 21  
+- **Nombre de variables :** 20  
 
 | Champ | Type | Description |
 |-------|------|-------------|
@@ -72,7 +72,7 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
 - la forte sensibilité aux variations d’écriture des noms de plats.
 
 - **Nombre d’observations :** 80 307 
-- **Nombre de variables :** 11
+- **Nombre de variables :** 10
 
 ### Colonnes
 
