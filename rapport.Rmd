@@ -10,6 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tibble)
 library(ggplot2)
+library(tidyr)
+library(readr)
+library(forcats)
+library(scales)
 ```
 
 # Introduction
@@ -201,6 +205,59 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 - Identifier des tendances, anomalies ou lacunes dans l’offre des restaurants  
 
 # Exploration
+
+## Question 16 : La diversité des plats varie-t-elle selon la région ?
+
+```{r}
+# ── 0. Chargement ────────────────────────────────────────────
+restaurants <- read_csv("data/liste_restaurants.csv",
+                        show_col_types = FALSE)
+
+menus <- read_csv("data/menus_complets_enrichis.csv",
+                  show_col_types = FALSE)
+
+# ── 1. Jointure : on rattache la région à chaque ligne de menu ─
+df <- menus %>%
+  left_join(
+    restaurants %>% select(code, region = `region.libelle`),
+    by = c("restaurant_id" = "code")
+  ) %>%
+  filter(!is.na(region))
+
+# ── 2. Métrique : Définir la diversité comme le nombre de plats distincts dans les menus pour chaque région
+diversite <- df %>%
+  group_by(region) %>%
+  summarise(
+    n_menus        = n(),
+    n_plats_uniq   = n_distinct(plat),
+    n_categories   = n_distinct(categorie),
+    n_restaurants  = n_distinct(restaurant_id),
+    plats_par_rest = n_plats_uniq / n_restaurants,
+    .groups = "drop"
+  ) %>%
+  arrange(desc(n_plats_uniq))
+
+# ── 3. Bar plot : on affiche un bar plot représentant la diversité pour chaque région par ordre croissant
+diversite %>%
+  mutate(region = fct_reorder(region, n_plats_uniq)) %>%
+  ggplot(aes(x = n_plats_uniq, y = region, fill = n_plats_uniq)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = n_plats_uniq),
+            hjust = -0.15, size = 3, color = "grey30") +
+  scale_fill_gradient(low = "#b7dde8", high = "#1a6fa8") +
+  scale_x_continuous(expand = expansion(mult = c(0, .12))) +
+  labs(
+    title    = "Richesse des plats par région",
+    subtitle = "Nombre de plats distincts présents dans les menus",
+    x        = "Nombre de plats distincts",
+    y        = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(face = "bold", size = 14),
+    panel.grid.major.y = element_blank()
+  )
+```
 
 # Conclusion
 
