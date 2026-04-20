@@ -208,6 +208,12 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 
 ## Question 16 : La diversité des plats varie-t-elle selon la région ?
 
+Pour répondre à cette question, nous procédons en trois grandes étapes :
+
+- **Préparation des données** : Les deux sources disponibles — la liste des restaurants et les menus — sont chargées puis combinées, de façon à associer à chaque plat la région du restaurant qui le propose. Les entrées sans région identifiée sont exclues de l'analyse.
+- **Mesure de la diversité** : Pour chaque région, nous calculons le nombre de plats distincts présents dans l'ensemble des menus. C'est cette métrique qui sert d'indicateur de diversité : une région proposant une grande variété de plats différents sera considérée comme plus diverse qu'une région dont les menus se répètent.
+- **Visualisation** : Les régions sont ensuite classées par ordre croissant de diversité et représentées sous forme d'un graphique en barres horizontales, ce qui permet de comparer d'un coup d'œil les écarts entre territoires.
+
 ```{r}
 # ── 0. Chargement ────────────────────────────────────────────
 restaurants <- read_csv("data/liste_restaurants.csv",
@@ -247,7 +253,7 @@ diversite %>%
   scale_fill_gradient(low = "#b7dde8", high = "#1a6fa8") +
   scale_x_continuous(expand = expansion(mult = c(0, .12))) +
   labs(
-    title    = "Richesse des plats par région",
+    title    = "Diversité des plats par région",
     subtitle = "Nombre de plats distincts présents dans les menus",
     x        = "Nombre de plats distincts",
     y        = NULL
@@ -258,6 +264,9 @@ diversite %>%
     panel.grid.major.y = element_blank()
   )
 ```
+
+On remarque donc que la région avec la plus grande diversité de plats et le Nord (Lille) avec 450 plats distincts. On se rend également compte que la différence entre le premier (Lille) et le deuxième (Normandie) est de plus de 100 ce qui nous montrent une vraie disparité dans la diversité des plats en fonction des régions.
+
 
 # Conclusion
 
