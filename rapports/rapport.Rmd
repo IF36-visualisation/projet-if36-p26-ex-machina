@@ -19,6 +19,22 @@ library(forcats)
 library(scales)
 ``` 
 
+# Introduction
+
+Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (https://api.croustillant.menu/) qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
+
+Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et des restaurants afin de :
+
+- Identifier les tendances dans l’offre culinaire selon les restaurants et les périodes (ex. février 2026)  
+- Analyser la diversité des plats et des catégories (Entrées, Plats, Desserts)  
+- Comparer les menus entre restaurants et observer des régularités ou anomalies  
+- Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents) 
+
+
+<br>
+<hr>
+<br>
+
 # Rendu 1
 
 <br>
