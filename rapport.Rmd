@@ -1,5 +1,5 @@
 ---
-title: "rapport"
+title: "Rapport d’analyse exploratoire — Croustillant Menu"
 author: "Jules TIMADJI, Ange Ariane KAMGUE MAGNE, Housséni YABRE, Rayan LEGRAND"
 date: "2026-04-20"
 output: html_document
