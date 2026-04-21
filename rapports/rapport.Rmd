@@ -320,6 +320,229 @@ En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories 
 <hr>
 <br>
 
+## Question 14 : Peut-on identifier des restaurants « écoresponsables » ?
+
+###  Formulation de la question
+
+L’objectif de cette analyse est d’identifier si certains restaurants universitaires peuvent être considérés comme **plus écoresponsables que d’autres**, en se basant sur la composition de leurs menus.
+
+Plus précisément, on cherche à répondre à la question suivante :
+
+*Certains restaurants proposent-ils une proportion significativement plus élevée de plats à faible impact carbone, et peut-on les identifier clairement ?*
+
+
+
+### Choix méthodologique et indicateur retenu
+
+#### Indicateur utilisé
+
+Chaque plat est associé à une variable qualitative `impact_carbone` (bas, moyen, élevé).
+Nous construisons donc, pour chaque restaurant, l’indicateur suivant :
+
+\[
+\text{Part de plats à faible impact carbone}
+=
+\frac{\text{Nombre de plats à impact carbone bas}}
+{\text{Nombre total de plats}}
+\]
+
+Cet indicateur permet :
+
+* une **comparaison équitable entre restaurants**, indépendamment de leur taille,
+* une **lecture simple et interprétable**,
+* une approche cohérente avec les enjeux environnementaux de la restauration collective.
+
+#### Visualisations retenues
+
+Pour répondre à la question, plusieurs visualisations complémentaires sont utilisées :
+
+* **Bar chart** : comparer les restaurants entre eux
+* **Classement (top / bottom)** : identifier les extrêmes
+* **Histogramme avec seuil** : analyser la distribution globale
+* **Indicateurs agrégés** : quantifier les restaurants au-dessus / en dessous d’un objectif
+
+Cette approche multi-niveaux permet d’éviter une conclusion basée sur un seul graphique.
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Préparation des données
+
+library(tidyverse)
+
+menus <- read_csv("menus_complets_enrichis.csv")
+
+menus_clean <- menus %>%
+  filter(!is.na(impact_carbone)) %>%
+  mutate(impact_carbone = str_to_lower(impact_carbone))
+
+eco_score <- menus_clean %>%
+  group_by(restaurant_id) %>%
+  summarise(
+    total_plats = n(),
+    plats_bas_carbone = sum(impact_carbone == "bas"),
+    part_bas_carbone = plats_bas_carbone / total_plats
+  )
+
+# Chargement des restaurants
+restaurants <- read_csv("liste_restaurants.csv")
+
+# Jointure des scores environnementaux avec les informations des restaurants
+eco_score_named <- eco_score %>%
+  left_join(restaurants, by = c("restaurant_id" = "code")) %>%
+  select(restaurant_id, nom, region.libelle, part_bas_carbone)
+
+# Analyse globale : comparaison entre restaurants
+
+ggplot(eco_score_named,
+       aes(x = reorder(nom, part_bas_carbone),
+           y = part_bas_carbone)) +
+  geom_col(fill = "darkgreen") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Part de plats à faible impact carbone par restaurant",
+    x = "Restaurant",
+    y = "Part de plats à faible impact carbone"
+  ) +
+  theme_minimal()
+```
+
+### Commentaire
+
+Le graphique présentant la part de plats à faible impact carbone pour l’ensemble des restaurants met en évidence une forte dispersion des valeurs.
+Bien que certains restaurants atteignent une proportion très élevée de plats bas carbone, d’autres présentent une offre beaucoup plus limitée.
+La lisibilité du graphique est toutefois réduite par le grand nombre d’établissements, ce qui justifie l’introduction d’analyses ciblées sur des sous-ensembles de restaurants (classements et seuils).
+
+### Critique
+* Trop de restaurants -> surcharge visuelle
+* Graphique utile pour constater l’hétérogénéité, mais pas pour identifier précisément les établissements
+* Nécessité de résumer l’information
+
+
+###  Focus sur les extrêmes : meilleurs et moins bons restaurants
+
+
+```{r}
+# a) Restaurants les plus écoresponsables (Top 20)
+
+top_eco_restaurants <- eco_score_named %>%
+  arrange(desc(part_bas_carbone)) %>%
+  slice_head(n = 20)
+
+ggplot(top_eco_restaurants,
+       aes(x = reorder(nom, part_bas_carbone),
+           y = part_bas_carbone)) +
+  geom_col(fill = "darkgreen") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Restaurants les plus écoresponsables",
+    x = "Restaurant",
+    y = "Part de plats à faible impact carbone"
+  ) +
+  theme_minimal()
+```
+
+### Commentaire 
+
+Les restaurants les plus écoresponsables se distinguent par une proportion très élevée de plats à faible impact carbone, de 100 %.
+
+Ces établissements proposent une offre fortement orientée vers des plats peu carbonés, ce qui peut refléter une spécialisation (cafétérias, points de vente légers) ou des choix alimentaires plus végétariens.
+
+### Critique
+* Ces résultats ne signifient pas nécessairement une démarche environnementale volontaire
+* La structure de l’offre (type de restaurant) influence fortement le score
+* Les restaurants très spécialisés peuvent être favorisés
+
+
+```{r}
+# b) Restaurants les moins écoresponsables (Bottom 20)
+
+bottom_eco_restaurants <- eco_score_named %>%
+  arrange(part_bas_carbone) %>%
+  slice_head(n = 20)
+
+ggplot(bottom_eco_restaurants,
+       aes(x = reorder(nom, part_bas_carbone),
+           y = part_bas_carbone)) +
+  geom_col(fill = "firebrick") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Restaurants les moins écoresponsables",
+    subtitle = "Plus faible proportion de plats à faible impact carbone",
+    x = "Restaurant",
+    y = "Part de plats à impact carbone bas"
+  ) +
+  theme_minimal()
+
+
+### Commentaire
+
+Les restaurants les moins écoresponsables présentent une proportion nettement plus faible de plats à faible impact carbone.
+Toutefois, même parmi ces établissements, la part de plats bas carbone reste rarement nulle, ce qui suggère une présence minimale d’alternatives plus durables dans l’offre globale.
+
+Point important (à souligner)
+
+`Être dans le bas du classement ne signifie pas absence totale d’efforts, mais plutôt une offre dominée par des plats plus carbonés` , souvent liée à :
+
+* une offre majoritairement carnée,
+* des menus traditionnels,
+* ou des contraintes de restauration collective.
+
+
+### Analyse par seuil environnemental
+
+Plutôt qu’un classement arbitraire, on introduit un **seuil** permettant d’évaluer si un restaurant atteint un objectif environnemental donné.
+
+```{r}
+seuil <- 0.90  # 80 %
+
+#  Distribution globale avec seuil
+
+ggplot(eco_score_named, aes(x = part_bas_carbone)) +
+  geom_histogram(bins = 20, fill = "grey70", color = "white") +
+  geom_vline(xintercept = seuil, color = "red", linetype = "dashed") +
+  scale_x_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Distribution des restaurants selon leur part de plats bas carbone",
+    subtitle = paste("Seuil fixé à", seuil * 100, "%"),
+    x = "Part de plats à faible impact carbone",
+    y = "Nombre de restaurants"
+  ) +
+  theme_minimal()
+
+# Nombre de restaurants au-dessus / en dessous du seuil
+
+repartition_seuil <- eco_score_named %>%
+  summarise(
+    total_restaurants = n(),
+    nb_en_dessous = sum(part_bas_carbone < seuil),
+    nb_au_dela = sum(part_bas_carbone >= seuil),
+    part_au_dela = nb_au_dela / total_restaurants
+  )
+
+repartition_seuil
+```
+### Commentaire
+
+L’histogramme montre une distribution fortement concentrée vers les valeurs élevées de part de plats bas carbone.
+Le seuil de 90 % se situe à l’intérieur de la masse principale de la distribution, ce qui explique pourquoi une majorité de restaurants le dépasse malgré le caractère a priori exigeant de ce seuil.
+
+ `Point important :`
+Le seuil de 90 %, bien que élevé en apparence, reste atteint par une majorité de restaurants, ce qui montre que :
+
+* l’indicateur utilisé est fortement influencé par la nature des plats proposés,
+* certains types de restaurants (cafétérias, points de vente rapides) sont structurellement favorisés.
+
+### Conclusion et limites
+
+Cette analyse montre qu’il est possible d’évaluer l’écoresponsabilité des restaurants universitaires à partir de leurs menus et met en évidence des écarts entre établissements. Toutefois, la forte proportion de plats à faible impact carbone limite la capacité de l’indicateur à réellement les différencier.
+Les résultats restent à interpréter avec prudence en raison d’une catégorisation simplifiée, de l’absence de pondération par la fréquence de service et de la non-prise en compte d’autres enjeux environnementaux. 
+
+
 ## Question 16 : La diversité des plats varie-t-elle selon la région ?
 
 Pour répondre à cette question, nous procédons en trois grandes étapes :
