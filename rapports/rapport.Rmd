@@ -3,6 +3,9 @@ title: "Rapport d’analyse exploratoire — Croustillant Menu"
 author: "Jules TIMADJI, Ange Ariane KAMGUE MAGNE, Housséni YABRE, Rayan LEGRAND"
 date: "2026-04-20"
 output:
+  html_document:
+    toc: true
+    df_print: paged
   pdf_document:
     toc: true
     number_sections: true
@@ -365,8 +368,7 @@ Cette approche multi-niveaux permet d’éviter une conclusion basée sur un seu
 
 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Préparation des données
 
 library(tidyverse)
@@ -413,10 +415,10 @@ ggplot(eco_score_named,
 
 Le graphique présentant la part de plats à faible impact carbone pour l’ensemble des restaurants met en évidence une forte dispersion des valeurs.
 Bien que certains restaurants atteignent une proportion très élevée de plats bas carbone, d’autres présentent une offre beaucoup plus limitée.
-La lisibilité du graphique est toutefois réduite par le grand nombre d’établissements, ce qui justifie l’introduction d’analyses ciblées sur des sous-ensembles de restaurants (classements et seuils).
+**La lisibilité du graphique est toutefois réduite par le grand nombre d’établissements**, ce qui justifie l’introduction d’analyses ciblées sur des sous-ensembles de restaurants (classements et seuils).
 
 ### Critique
-* Trop de restaurants -> surcharge visuelle
+* Trop de restaurants -> **surcharge visuelle**
 * Graphique utile pour constater l’hétérogénéité, mais pas pour identifier précisément les établissements
 * Nécessité de résumer l’information
 
@@ -424,7 +426,7 @@ La lisibilité du graphique est toutefois réduite par le grand nombre d’étab
 ###  Focus sur les extrêmes : meilleurs et moins bons restaurants
 
 
-```{r}
+```{r,echo=FALSE}
 # a) Restaurants les plus écoresponsables (Top 20)
 
 top_eco_restaurants <- eco_score_named %>%
@@ -457,7 +459,7 @@ Ces établissements proposent une offre fortement orientée vers des plats peu c
 * Les restaurants très spécialisés peuvent être favorisés
 
 
-```{r}
+```{r,echo=FALSE}
 # b) Restaurants les moins écoresponsables (Bottom 20)
 
 bottom_eco_restaurants <- eco_score_named %>%
@@ -477,7 +479,7 @@ ggplot(bottom_eco_restaurants,
     y = "Part de plats à impact carbone bas"
   ) +
   theme_minimal()
-
+```
 
 ### Commentaire
 
@@ -497,7 +499,7 @@ Point important (à souligner)
 
 Plutôt qu’un classement arbitraire, on introduit un **seuil** permettant d’évaluer si un restaurant atteint un objectif environnemental donné.
 
-```{r}
+```{r,echo=FALSE}
 seuil <- 0.90  # 80 %
 
 #  Distribution globale avec seuil
@@ -543,7 +545,11 @@ Cette analyse montre qu’il est possible d’évaluer l’écoresponsabilité d
 Les résultats restent à interpréter avec prudence en raison d’une catégorisation simplifiée, de l’absence de pondération par la fréquence de service et de la non-prise en compte d’autres enjeux environnementaux. 
 
 
-## Question 16 : La diversité des plats varie-t-elle selon la région ?
+<br>
+<hr>
+<br>
+
+## Question 16 : La diversité des plats varie-t-elle selon la région ?        
 
 Pour répondre à cette question, nous procédons en trois grandes étapes :
 
@@ -603,5 +609,4 @@ diversite %>%
 ```
 
 On remarque donc que la région avec la plus grande diversité de plats et le Nord (Lille) avec 450 plats distincts. On se rend également compte que la différence entre le premier (Lille) et le deuxième (Normandie) est de plus de 100 ce qui nous montrent une vraie disparité dans la diversité des plats en fonction des régions.
-
 
