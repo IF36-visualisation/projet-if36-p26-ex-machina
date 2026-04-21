@@ -72,7 +72,7 @@ Par souci de lisibilité, nous avons également choisi de placer les plats en ab
 
 
 
-### 1. Comment les catégories varient-elles selon les repas ?
+### 7. Comment les catégories varient-elles selon les repas ?
 
 Les restaurants CROUS proposent différents types de repas (matin, midi, soir). On se demande si la structure des catégories de plats (Entrées, Plats, Desserts…) est la même pour chaque repas, ou si elle varie. On s'attend à ce que le midi soit le repas le plus complet, avec toutes les catégories représentées, et le matin le plus limité.
 
@@ -133,7 +133,7 @@ La catégorie "Autre" reste présente dans les trois repas, ce qui confirme le p
 
 > **Nouvelle question :** La forte présence des Formules/Menus au matin et au midi cache-t-elle une vraie diversité de plats, ou s'agit-il toujours des mêmes plats regroupés différemment selon les restaurants ?
 
-### 2. Les restaurants proposent-ils des menus équilibrés en catégories ?
+### 8. Les restaurants proposent-ils des menus équilibrés en catégories ?
 
 Les restaurants CROUS proposent-ils un nombre similaire de plats dans chaque catégorie, ou certains établissements sont-ils structurellement déséquilibrés ? On s'attend à une forte hétérogénéité : selon leur format (cafétéria, snack, brasserie), certains restaurants pourraient surreprésenter une catégorie — par exemple beaucoup de Snacking et peu de Plats chauds — tandis que d'autres proposeraient une offre plus équilibrée entre toutes les catégories.
 
