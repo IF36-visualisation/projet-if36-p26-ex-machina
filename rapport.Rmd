@@ -2,7 +2,10 @@
 title: "Rapport d’analyse exploratoire — Croustillant Menu"
 author: "Jules TIMADJI, Ange Ariane KAMGUE MAGNE, Housséni YABRE, Rayan LEGRAND"
 date: "2026-04-20"
-output: html_document
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +21,11 @@ library(scales)
 
 # Rendu 1
 
-## 5. Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
+<br>
+<hr>
+<br>
+
+## Question 5 : Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
 
 Nous nous intéressons à la qualité nutritionnelle de l'offre de restauration collective CROUS. Le CROUS constitue la principale solution de restauration pour la population étudiante, offrant des repas à tarif social.
 
@@ -27,7 +34,7 @@ L'objectif de cette section est de déterminer si les plats les plus fréquemmen
 Le Nutri-Score est un label qui facilite l’identification des aliments de bonne qualité nutritionnelle en les notant de A à E. Le meilleur Nutri-Score pour un aliment est le Score A. C'est le graal nutritionnel car il indique que l'aliment présente la meilleure qualité nutritionnelle de sa catégorie. Attention toutefois, cela ne signifie pas qu'il faut manger uniquement des produits classés A, mais qu'ils devraient constituer la base de l'équilibre alimentaire.
 
 
-### Méthodologie et Nettoyage
+#### **Méthodologie et Nettoyage**
 
 Pour répondre à cette question, nous avons choisi une visualisation sous la forme d'un **Lollipop chart**. Ce type de graphique permet de comparer efficacement les moyennes de Nutri-scores pour chaque plat tout en conservant une grande clarté visuelle. Les données utilisées proviennent de notre dataset `liste_menus_enrichis.csv`.
 
@@ -40,12 +47,10 @@ Le jeu de données initial contient de nombreuses entrées textuelles qui ne son
 
 - **Numériser le Nutri-Score :** Nous avons converti le Nutri-Score alphabétique (A-E) en échelle numérique (1-5) pour permettre le calcul d'une moyenne en fonction des regroupements effectués.
 
-Les données utilisées sont :
-- `plat` : ce sont des données nominales
-- `nutriscore`: Ce sont des données nominales mais une fois converties, elles devient des données quantitatives / numériques ordinales et discrètes (de 1 à 5).
+Les données utilisées sont : `plat` (ce sont des données nominales), `nutriscore` (ce sont des données nominales mais une fois converties, elles devient des données quantitatives / numériques ordinales et discrètes de 1 à 5).
 
 
-### Visualisation et analyse
+#### **Visualisation et analyse**
 
 Le graphique ci-dessous utilise un format **"Lollipop" divergent**. 
 
@@ -57,11 +62,128 @@ Les plats s'étendant vers la gauche (vert) ont un score moyen plus sain, tandis
 
 Par souci de lisibilité, nous avons également choisi de placer les plats en abcisses et les valeurs numériques de nutri-score en ordonnées
 
-![Image de la visualisation de la question 5](images/question_5.png)
+```{r q5-lollipop_chart, fig.cap="le Nutri-Score moyen des 100 plats les plus fréquents", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
+#Question 5 : Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
+
+library(tidyverse)
+library(ggplot2)
+
+menus <- read_csv("menus_complets_enrichis.csv")
+
+data_nutri <- menus %>%
+  mutate(
+    plat_test = iconv(str_to_lower(plat), to = "ASCII//TRANSLIT"),
+    plat_test = str_squish(plat_test),
+    # Conversion du Nutri-Score
+    nutri_num = case_when(
+      nutriscore == "A" ~ 1,
+      nutriscore == "B" ~ 2,
+      nutriscore == "C" ~ 3,
+      nutriscore == "D" ~ 4,
+      nutriscore == "E" ~ 5,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  # --- BLOC DE NETTOYAGE RADICAL ---
+  filter(
+    !str_detect(plat_test, "montreal|a emporter|telechargez|note douce|carte detaillee|inspiration du jour|simple & gourmand|manque plus que vous"),
+    !str_detect(plat_test, "bon appetit|allergenes|consultez la carte|plat du jour|le dandy|les ameliores|hors d'oeuvre varies"),
+    !str_detect(plat_test, "pain est compris|origine france|selon fabrication")
+  ) %>%
+  # Bloc de regroupement
+  mutate(plat_general = case_when(
+    str_detect(plat_test, "sandwich|baguette|complet|viennois|ciabatta|bagnat|jambon beurre|rosette|thon mayo|pain speciaux|pain suedois") ~ "Sandwichs & Baguettes",
+    str_detect(plat_test, "burger|hamburger|tenders|box tenders|tacos|bacon butternut|chicken hawai") ~ "Burgers, Tenders & Tacos",
+    str_detect(plat_test, "panini") ~ "Paninis",
+    str_detect(plat_test, "wrap|nordiques") ~ "Wraps & Spécialités froides",
+    str_detect(plat_test, "salade|cesar|santorin|bowl|crudites|nicoise|taboule|surimi|coleslaw|oeufs mayo") ~ "Salades & Entrées",
+    str_detect(plat_test, "pasta|pate|bolognaise|carbonara|napolitaine|pesto|sodebo|fusilli|penne|coquillette|macaroni|torsade") ~ "Pâtes & Pasta Box",
+    str_detect(plat_test, "pizza|margherita|bruchetta") ~ "Pizzas & Bruschettas",
+    str_detect(plat_test, "croque[- ]monsieur|croques monsieur") ~ "Croque-monsieur",
+    str_detect(plat_test, "quiche|tarte salee|lorraine|chevre|courgette") ~ "Quiches & Tartes salées",
+    str_detect(plat_test, "poulet|tikka|curry|cajun|teriyaki|nuggets|escalope|cordon bleu|dinde|carbonade|viande|boeuf|chili con carne") ~ "Plats de Viandes (Rouge & Volaille)",
+    str_detect(plat_test, "poisson|saumon|bordelaise|colin|macha ko tharkari") ~ "Plats de Poisson & Exotiques",
+    str_detect(plat_test, "yaourt|laitage|fromage blanc|entremets|verre de lait") ~ "Yaourts & Produits Laitiers",
+    str_detect(plat_test, "cookie|muffin|beignet|donut|brownie|patisserie|viennoiserie|croissant|pain au chocolat|choco suisse|palmier|gateau|crepe|nutella|biscuit|tartelette") ~ "Viennoiseries & Pâtisseries",
+    str_detect(plat_test, "fruit|compote|pomme|banane|orange|confiture") ~ "Fruits & Compotes",
+    str_detect(plat_test, "eau |fontaine|cristaline|vittel|volvic|perrier|gazeuse|plate") ~ "Eaux & Fontaines",
+    str_detect(plat_test, "coca|soda|red bull|monster|oasis|fuzz|minute maid|jus de|the aromatise|the nature|canette") ~ "Boissons Sucrées (Sodas/Jus/Thés)",
+    str_detect(plat_test, "cafe|expresso|latte|macchiato|capuccino|moccaccino|chocolat chaud") ~ "Boissons Chaudes",
+    TRUE ~ plat 
+  ))
+
+# 2. Calcul du Top 100 et de leur Nutri-Score moyen
+top_100_nutri <- data_nutri %>%
+  group_by(plat_general) %>%
+  summarise(
+    n = n(),
+    nutri_moyen = mean(nutri_num, na.rm = TRUE)
+  ) %>%
+  filter(!is.na(nutri_moyen)) %>%
+  # Suppression manuelle des dernières miettes si nécessaire
+  filter(!plat_general %in% c("Frites", "Chips, pringles", "Chips natures ou aromatisées")) %>%
+  arrange(desc(n)) %>%
+  head(100)
+
+# 3. Préparation pour le graphique
+top_100_nutri_div <- top_100_nutri %>%
+  mutate(nutri_label = round(nutri_moyen, 1)) %>%
+  arrange(nutri_moyen)
+
+
+# Visualisation
+# Création du graphique "Divergent Lollipop"
+# Visualisation
+p_vertical <- ggplot(top_100_nutri_div, aes(x = reorder(plat_general, nutri_moyen), y = nutri_moyen)) +
+  geom_hline(yintercept = 3, linetype = "dashed", color = "grey80") +
+  
+  geom_segment(aes(xend = plat_general, y = 3, yend = nutri_moyen), 
+               color = "grey85", size = 1) + # Tige légèrement plus épaisse
+  
+  geom_point(aes(color = nutri_moyen), size = 8) + # Bulles plus grandes (de 5 à 8)
+  
+  # 1. Augmentation du texte DANS les bulles (size de 1.5 à 3.5)
+  geom_text(aes(label = nutri_label), color = "white", size = 3.5, fontface = "bold") +
+  
+  scale_color_gradientn(
+    colors = c("#1a9850", "#91cf60", "#fee08b", "#fc8d59", "#d73027"),
+    limits = c(1, 5), 
+    breaks = c(1, 2, 3, 4, 5),             
+    labels = c("1-A", "2-B", "3-C", "4-D", "5-E"), 
+    name = "Qualité Nutritionnelle"
+  ) +
+  
+  theme_minimal() +
+  labs(
+    title = "5. Nutri-Score moyen des 100 plats les plus fréquents",
+    x = "Plats distribués", 
+    y = "Moyenne Nutri-Score",
+    caption = "Visualisation par : Ange Kamgue | Groupe Ex-Machina"
+  ) +
+  theme(
+    # 2. Augmentation des noms des plats en bas (size de 6 à 10 + gras)
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 10, face = "bold"),
+    
+    # 3. Augmentation des titres des axes et du graphique
+    axis.title = element_text(size = 14, face = "bold"),
+    plot.title = element_text(size = 18, face = "bold"),
+    
+    panel.grid.major.x = element_blank(),
+    legend.position = "bottom",
+    
+    # 4. Augmentation de la taille du texte de la légende
+    legend.key.width = unit(3, "cm"),
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 11)
+  )
+
+# Affichage (Assure-toi que ton chunk a fig.width=20 ou plus)
+print(p_vertical)
+
+```
  
 
-
-### Interprétation des résultats
+#### **Interprétation des résultats**
 À la lecture de ce graphique, nous observons que :
 
 - Les plats équilibrés : Les soupes, salades composées et plats à base de légumineuses se concentrent sous la barre des 3, affichant des scores A et B.
@@ -70,13 +192,15 @@ Par souci de lisibilité, nous avons également choisi de placer les plats en ab
 
 - Les options "plaisir" : Les burgers, pizzas et surtout les viennoiseries s'élèvent vers les scores 4 (D) et 5 (E), ce qui confirme notre hypothèse initiale sur la densité calorique de l'offre snacking.
 
+<br>
+<hr>
+<br>
 
-
-### 7. Comment les catégories varient-elles selon les repas ?
+## Question 7 : Comment les catégories varient-elles selon les repas ?
 
 Les restaurants CROUS proposent différents types de repas (matin, midi, soir). On se demande si la structure des catégories de plats (Entrées, Plats, Desserts…) est la même pour chaque repas, ou si elle varie. On s'attend à ce que le midi soit le repas le plus complet, avec toutes les catégories représentées, et le matin le plus limité.
 
-```{r q6-stacked-bar, fig.cap="Répartition des catégories de plats par type de repas"}
+```{r q6-stacked-bar, fig.cap="Répartition des catégories de plats par type de repas", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
 # Dictionnaire de regroupement des catégories
 groupes <- c(
   "Entrées"        = "entr",
@@ -131,13 +255,17 @@ Le graphique révèle des structures très différentes selon le type de repas, 
 
 La catégorie "Autre" reste présente dans les trois repas, ce qui confirme le problème de normalisation des catégories observé précédemment. Ainsi une partie significative des données reste inclassable avec notre regroupement actuel.
 
-> **Nouvelle question :** La forte présence des Formules/Menus au matin et au midi cache-t-elle une vraie diversité de plats, ou s'agit-il toujours des mêmes plats regroupés différemment selon les restaurants ?
+**Nouvelle question :** La forte présence des Formules/Menus au matin et au midi cache-t-elle une vraie diversité de plats, ou s'agit-il toujours des mêmes plats regroupés différemment selon les restaurants ?
 
-### 8. Les restaurants proposent-ils des menus équilibrés en catégories ?
+<br>
+<hr>
+<br>
+
+## Question 8 : Les restaurants proposent-ils des menus équilibrés en catégories ?
 
 Les restaurants CROUS proposent-ils un nombre similaire de plats dans chaque catégorie, ou certains établissements sont-ils structurellement déséquilibrés ? On s'attend à une forte hétérogénéité : selon leur format (cafétéria, snack, brasserie), certains restaurants pourraient surreprésenter une catégorie — par exemple beaucoup de Snacking et peu de Plats chauds — tandis que d'autres proposeraient une offre plus équilibrée entre toutes les catégories.
 
-```{r q7-boxplot, fig.cap="Distribution du nombre de plats par catégorie et par restaurant"}
+```{r q7-boxplot, fig.cap="Distribution du nombre de plats par catégorie et par restaurant", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
 nb_plats_cat <- menus %>%
   mutate(categorie_groupe = map_chr(categorie, classer)) %>%
   filter(categorie_groupe != "Autre") %>%
@@ -169,10 +297,12 @@ Le graphique confirme une forte hétérogénéité entre les catégories et entr
 
 En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories : l'offre est dominée par les Boissons et le Snacking, au détriment des Entrées et Plats traditionnels.
 
-> **Nouvelle question :** Ces restaurants très spécialisés en Snacking ou Boissons correspondent-ils à un type particulier dans `type.libelle` ? On pourrait croiser ces outliers avec les métadonnées de `liste_restaurants.csv` pour identifier leur profil.
+**Nouvelle question :** Ces restaurants très spécialisés en Snacking ou Boissons correspondent-ils à un type particulier dans `type.libelle` ? On pourrait croiser ces outliers avec les métadonnées de `liste_restaurants.csv` pour identifier leur profil.
 
 
-
+<br>
+<hr>
+<br>
 
 ## Question 16 : La diversité des plats varie-t-elle selon la région ?
 
@@ -182,18 +312,18 @@ Pour répondre à cette question, nous procédons en trois grandes étapes :
 - **Mesure de la diversité** : Pour chaque région, nous calculons le nombre de plats distincts présents dans l'ensemble des menus. C'est cette métrique qui sert d'indicateur de diversité : une région proposant une grande variété de plats différents sera considérée comme plus diverse qu'une région dont les menus se répètent.
 - **Visualisation** : Les régions sont ensuite classées par ordre croissant de diversité et représentées sous forme d'un graphique en barres horizontales, ce qui permet de comparer d'un coup d'œil les écarts entre territoires.
 
-```{r}
+```{r,fig.cap="Diversité des plats par région",  echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
 # ── 0. Chargement ────────────────────────────────────────────
-restaurants <- read_csv("data/liste_restaurants.csv",
+restaurants <- read_csv("liste_restaurants.csv",
                         show_col_types = FALSE)
 
-menus <- read_csv("data/menus_complets_enrichis.csv",
+menus <- read_csv("menus_complets_enrichis.csv",
                   show_col_types = FALSE)
 
 # ── 1. Jointure : on rattache la région à chaque ligne de menu ─
 df <- menus %>%
   left_join(
-    restaurants %>% select(code, region = `region.libelle`),
+    restaurants %>% select(code, region = "region.libelle"),
     by = c("restaurant_id" = "code")
   ) %>%
   filter(!is.na(region))
@@ -236,6 +366,3 @@ diversite %>%
 On remarque donc que la région avec la plus grande diversité de plats et le Nord (Lille) avec 450 plats distincts. On se rend également compte que la différence entre le premier (Lille) et le deuxième (Normandie) est de plus de 100 ce qui nous montrent une vraie disparité dans la diversité des plats en fonction des régions.
 
 
-# Conclusion
-
-# Annexe
