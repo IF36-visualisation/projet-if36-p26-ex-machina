@@ -702,23 +702,31 @@ Les résultats restent à interpréter avec prudence en raison d’une catégori
 <hr>
 <br>
 
-## Question 16 : La diversité des plats varie-t-elle selon la région ?        
+## Question 16 : La diversité des plats varie-t-elle selon la région ?
 
-Pour répondre à cette question, nous procédons en trois grandes étapes :
+L'offre culinaire des restaurants universitaires est-elle homogène sur tout le territoire, ou certaines régions proposent-elles des menus nettement plus variés ? Cette question est importante pour évaluer les inégalités d'accès à une alimentation diversifiée selon le lieu d'études.
 
-- **Préparation des données** : Les deux sources disponibles — la liste des restaurants et les menus — sont chargées puis combinées, de façon à associer à chaque plat la région du restaurant qui le propose. Les entrées sans région identifiée sont exclues de l'analyse.
-- **Mesure de la diversité** : Pour chaque région, nous calculons le nombre de plats distincts présents dans l'ensemble des menus. C'est cette métrique qui sert d'indicateur de diversité : une région proposant une grande variété de plats différents sera considérée comme plus diverse qu'une région dont les menus se répètent.
-- **Visualisation** : Les régions sont ensuite classées par ordre croissant de diversité et représentées sous forme d'un graphique en barres horizontales, ce qui permet de comparer d'un coup d'œil les écarts entre territoires.
+Mesurer la « diversité » n'est pas trivial : un simple comptage de plats distincts favorise mécaniquement les grandes régions qui comptent plus de restaurants. Nous mobilisons donc **trois indicateurs complémentaires**, qui éclairent chacun un aspect différent de la diversité :
 
-```{r,fig.cap="Diversité des plats par région",  echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
-# ── 0. Chargement ────────────────────────────────────────────
-restaurants <- read_csv("../data/liste_restaurants.csv",
-                        show_col_types = FALSE)
+1. **Plats distincts par restaurant** — diversité normalisée par la taille de la région.
+2. **Entropie de Shannon** — mesure l'équilibre de la distribution des plats au sein de chaque restaurant : une entropie haute signifie que les plats sont variés *et* équilibrés (aucun ne domine massivement).
+3. **Composition par style culinaire** — répartition des grandes familles culinaires (Cuisine Traditionnelle, Street Food, Fraîcheur, Plats Sucrés, Soupes) pour aller au-delà du simple comptage et décrire *ce que* les régions proposent.
 
-menus <- read_csv("../data/menus_complets_enrichis.csv",
-                  show_col_types = FALSE)
+Les régions avec un seul restaurant (Créteil, Rennes) sont exclues de l'analyse car elles ne permettent pas de généralisation régionale.
 
-# ── 1. Jointure : on rattache la région à chaque ligne de menu ─
+```{r q16-setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(forcats)
+library(tidyr)
+library(scales)
+
+# ── Chargement ──────────────────────────────────────────────────────────────
+restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
+menus       <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE)
+
+# ── Jointure et filtrage ────────────────────────────────────────────────────
 df <- menus %>%
   left_join(
     restaurants %>% select(code, region = "region.libelle"),
@@ -726,42 +734,224 @@ df <- menus %>%
   ) %>%
   filter(!is.na(region))
 
-# ── 2. Métrique : Définir la diversité comme le nombre de plats distincts dans les menus pour chaque région
-diversite <- df %>%
+# Exclure les régions avec un seul restaurant (non représentatives)
+regions_valides <- df %>%
+  group_by(region) %>%
+  summarise(n_rest = n_distinct(restaurant_id), .groups = "drop") %>%
+  filter(n_rest >= 2) %>%          # ≥ 2 restaurants pour être conservée
+  pull(region)
+
+df <- df %>% filter(region %in% regions_valides)
+
+# ── Palette commune ─────────────────────────────────────────────────────────
+palette_regions <- colorRampPalette(c("#b7dde8", "#1a6fa8"))(length(regions_valides))
+```
+
+### Graphique 1 — Nombre de plats distincts par restaurant (diversité normalisée)
+
+Le premier biais à corriger est la taille : Lille avec 22 restaurants aura mécaniquement plus de plats distincts que Corse avec 5. Nous divisons donc le nombre de plats uniques par le nombre de restaurants de la région, pour obtenir un indicateur **indépendant de la taille**.
+
+```{r q16-graph1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=13, fig.height=7, out.width="100%"}
+# Métrique : plats distincts par restaurant
+diversite_norm <- df %>%
   group_by(region) %>%
   summarise(
-    n_menus        = n(),
-    n_plats_uniq   = n_distinct(plat),
-    n_categories   = n_distinct(categorie),
-    n_restaurants  = n_distinct(restaurant_id),
-    plats_par_rest = n_plats_uniq / n_restaurants,
+    n_plats_distincts = n_distinct(plat),
+    n_restaurants     = n_distinct(restaurant_id),
+    plats_par_resto   = n_plats_distincts / n_restaurants,
     .groups = "drop"
   ) %>%
-  arrange(desc(n_plats_uniq))
+  mutate(region = fct_reorder(region, plats_par_resto))
 
-# ── 3. Bar plot : on affiche un bar plot représentant la diversité pour chaque région par ordre croissant
-diversite %>%
-  mutate(region = fct_reorder(region, n_plats_uniq)) %>%
-  ggplot(aes(x = n_plats_uniq, y = region, fill = n_plats_uniq)) +
-  geom_col(show.legend = FALSE) +
-  geom_text(aes(label = n_plats_uniq),
-            hjust = -0.15, size = 3, color = "grey30") +
+ggplot(diversite_norm, aes(x = plats_par_resto, y = region, fill = plats_par_resto)) +
+  geom_col(show.legend = FALSE, width = 0.75) +
+  geom_text(
+    aes(label = sprintf("%.1f", plats_par_resto)),
+    hjust = -0.15, size = 3.2, color = "grey30"
+  ) +
+  geom_vline(
+    xintercept = mean(diversite_norm$plats_par_resto),
+    linetype = "dashed", color = "firebrick", linewidth = 0.8
+  ) +
+  annotate(
+    "text", x = mean(diversite_norm$plats_par_resto) + 0.3,
+    y = 1.5, label = "Moyenne", color = "firebrick", size = 3.2, hjust = 0
+  ) +
   scale_fill_gradient(low = "#b7dde8", high = "#1a6fa8") +
-  scale_x_continuous(expand = expansion(mult = c(0, .12))) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.15))) +
   labs(
-    title    = "Diversité des plats par région",
-    subtitle = "Nombre de plats distincts présents dans les menus",
-    x        = "Nombre de plats distincts",
+    title    = "Diversité normalisée : plats distincts par restaurant et par région",
+    subtitle = "Corrige le biais de taille — les grandes régions ne sont plus avantagées",
+    x        = "Nombre moyen de plats distincts par restaurant",
     y        = NULL
   ) +
   theme_minimal(base_size = 12) +
   theme(
-    plot.title    = element_text(face = "bold", size = 14),
+    plot.title         = element_text(face = "bold", size = 14),
     panel.grid.major.y = element_blank()
   )
 ```
 
-On remarque donc que la région avec la plus grande diversité de plats et le Nord (Lille) avec 450 plats distincts. On se rend également compte que la différence entre le premier (Lille) et le deuxième (Normandie) est de plus de 100 ce qui nous montrent une vraie disparité dans la diversité des plats en fonction des régions.
+#### Commentaire
+
+Une fois normalisée par le nombre de restaurants, le classement change considérablement par rapport à un simple comptage brut. **Lille** reste en tête (≈ 20 plats distincts par restaurant), suivie de **Strasbourg** et **Toulouse**. À l'inverse, **Nice** et **Montpellier** se retrouvent en bas du classement avec moins de 4 plats distincts par restaurant en moyenne, révélant une offre très répétitive. La ligne pointillée indique la moyenne nationale, permettant d'identifier d'un coup d'œil les régions en-dessous du seuil moyen.
+
+#### Critique
+
+- Cette métrique additionne les plats *sur l'ensemble des restaurants* de la région avant de diviser : si tous les restaurants d'une région proposent exactement les mêmes plats, le score sera élevé mais la diversité réelle sera nulle.
+- Elle ne distingue pas la diversité *intra*-restaurant (au sein d'un même restaurant) de la diversité *inter*-restaurants (entre établissements d'une même région).
+
+---
+
+### Graphique 2 — Entropie de Shannon : équilibre de l'offre au sein de chaque restaurant
+
+L'entropie de Shannon mesure à quel point les plats sont **équilibrés** dans un menu : une entropie maximale signifie que chaque plat est proposé aussi souvent que les autres, sans qu'un plat unique monopolise l'offre. Elle vaut 0 si un seul plat est servi en permanence, et augmente avec la variété et l'équilibre.
+
+Nous calculons l'entropie de Shannon pour chaque restaurant, puis nous moyennons par région. Cela donne une vision de la diversité *interne* à chaque établissement.
+
+```{r q16-graph2, echo=FALSE, message=FALSE, warning=FALSE, fig.width=13, fig.height=7, out.width="100%"}
+# Entropie de Shannon par restaurant
+shannon_entropy <- function(x) {
+  counts <- table(x)
+  probs  <- counts / sum(counts)
+  probs  <- probs[probs > 0]
+  -sum(probs * log2(probs))
+}
+
+shannon_par_resto <- df %>%
+  group_by(region, restaurant_id) %>%
+  summarise(shannon = shannon_entropy(plat), .groups = "drop")
+
+shannon_par_region <- shannon_par_resto %>%
+  group_by(region) %>%
+  summarise(
+    shannon_moyen = mean(shannon),
+    shannon_sd    = sd(shannon),
+    n_rest        = n(),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    region  = fct_reorder(region, shannon_moyen),
+    # Intervalle de confiance à 95 %
+    ic_low  = shannon_moyen - qt(0.975, df = n_rest - 1) * shannon_sd / sqrt(n_rest),
+    ic_high = shannon_moyen + qt(0.975, df = n_rest - 1) * shannon_sd / sqrt(n_rest)
+  )
+
+ggplot(shannon_par_region,
+       aes(x = shannon_moyen, y = region, color = shannon_moyen)) +
+  geom_segment(
+    aes(x = ic_low, xend = ic_high, yend = region),
+    linewidth = 1, alpha = 0.35
+  ) +
+  geom_point(size = 4, show.legend = FALSE) +
+  geom_vline(
+    xintercept = mean(shannon_par_region$shannon_moyen),
+    linetype = "dashed", color = "firebrick", linewidth = 0.8
+  ) +
+  annotate(
+    "text", x = mean(shannon_par_region$shannon_moyen) + 0.05,
+    y = 1.5, label = "Moyenne", color = "firebrick", size = 3.2, hjust = 0
+  ) +
+  scale_color_gradient(low = "#b7dde8", high = "#1a6fa8") +
+  scale_x_continuous(limits = c(0, NA)) +
+  labs(
+    title    = "Entropie de Shannon moyenne par région",
+    subtitle = "Mesure l'équilibre de la distribution des plats au sein de chaque restaurant\nLes segments représentent l'intervalle de confiance à 95 %",
+    x        = "Entropie de Shannon moyenne (bits)",
+    y        = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title         = element_text(face = "bold", size = 14),
+    panel.grid.major.y = element_blank()
+  )
+```
+
+#### Commentaire
+
+L'entropie de Shannon donne un classement partiellement différent du précédent. **Corse**, **Strasbourg** et **Lille** arrivent en tête, ce qui signifie que leurs restaurants proposent des menus à la fois variés *et* équilibrés, sans plats dominants répétés à l'excès. **Nice**, **Paris** et **Nancy-Metz** se retrouvent en bas du classement : leurs restaurants tournent autour d'un répertoire de plats très restreint. Les intervalles de confiance révèlent également une forte hétérogénéité intra-régionale (grands segments), notamment pour **Toulouse** et **Paris**, où les restaurants sont très inégaux entre eux.
+
+#### Critique
+
+- L'entropie est sensible au nombre d'observations : un restaurant avec peu de plats enregistrés aura une entropie artificiellement faible.
+- Elle ne distingue pas la nature des plats (un restaurant peut avoir une entropie haute en proposant 10 fois la même salade verte déclinée différemment).
+
+---
+
+### Graphique 3 — Composition par style culinaire (que proposent réellement les régions ?)
+
+Les deux métriques précédentes mesurent *combien* il y a de diversité, mais pas *quelle* diversité. Ce troisième graphique décrit la **composition culinaire** de chaque région : quelle part de l'offre est dédiée à la cuisine traditionnelle, au street food, aux plats frais ou sucrés ?
+
+```{r q16-graph3, echo=FALSE, message=FALSE, warning=FALSE, fig.width=14, fig.height=8, out.width="100%"}
+# Part de chaque style culinaire par région
+styles_region <- df %>%
+  group_by(region, style_culinaire) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(region) %>%
+  mutate(pct = n / sum(n)) %>%
+  ungroup()
+
+# Ordonnancement des régions par part de "Cuisine Traditionnelle" (croissant → plus diversifiée)
+ordre_regions <- styles_region %>%
+  filter(style_culinaire == "Cuisine Traditionnelle") %>%
+  arrange(pct) %>%
+  pull(region)
+
+palette_styles <- c(
+  "Cuisine Traditionnelle" = "#1a6fa8",
+  "Street Food"            = "#e07b39",
+  "Fraîcheur"              = "#3aaa6e",
+  "Plats Sucrés"           = "#e8c63a",
+  "Soupes"                 = "#9b59b6"
+)
+
+styles_region %>%
+  mutate(region = factor(region, levels = ordre_regions)) %>%
+  ggplot(aes(x = pct, y = region, fill = style_culinaire)) +
+  geom_col(width = 0.8, position = "stack") +
+  scale_fill_manual(values = palette_styles, name = "Style culinaire") +
+  scale_x_continuous(labels = percent_format(accuracy = 1),
+                     expand = expansion(mult = c(0, 0.01))) +
+  labs(
+    title    = "Composition culinaire des menus par région",
+    subtitle = "Régions triées par part croissante de Cuisine Traditionnelle → les plus diversifiées en haut",
+    x        = "Part dans l'offre totale de la région",
+    y        = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title         = element_text(face = "bold", size = 14),
+    panel.grid.major.y = element_blank(),
+    legend.position    = "bottom"
+  )
+```
+
+#### Commentaire
+
+Ce graphique révèle que **la Cuisine Traditionnelle domine massivement l'offre dans toutes les régions**, représentant entre 70 % et 100 % des plats selon les territoires. Néanmoins, des nuances existent : **Bordeaux**, **Strasbourg** et **Amiens** affichent une proportion plus élevée de Street Food et de plats Fraîcheur, signe d'une offre plus contemporaine. À l'inverse, des régions comme **Nice**, **Montpellier** ou **Nancy-Metz** sont presque exclusivement ancrées dans la cuisine traditionnelle, ce qui confirme leur faible score d'entropie observé dans le graphique 2.
+
+#### Critique
+
+- La variable `style_culinaire` ne compte que 5 valeurs, ce qui limite fortement la granularité de l'analyse.
+- La prédominance de la Cuisine Traditionnelle peut refléter un biais d'encodage lors de l'enrichissement des données plutôt qu'une réalité culinaire.
+
+---
+
+### Synthèse
+
+| Indicateur | Classement « plus diversifié » | Classement « moins diversifié » |
+|---|---|---|
+| Plats distincts / restaurant | Lille, Strasbourg, Toulouse | Nice, Montpellier, Paris |
+| Entropie de Shannon | Corse, Strasbourg, Lille | Nice, Nancy-Metz, Paris |
+| Diversité stylistique | Bordeaux, Strasbourg, Amiens | Nice, Montpellier, Nancy-Metz |
+
+Les trois approches convergent sur plusieurs points : **Nice** et **Montpellier** apparaissent systématiquement comme les régions les moins diversifiées, tandis que **Strasbourg** et **Lille** figurent régulièrement parmi les plus riches. Cette convergence renforce la robustesse du diagnostic malgré les différentes limites propres à chaque métrique.
+
+**Limites générales de l'analyse :**
+
+- Les données couvrent une période courte (mars–mai 2026) et ne reflètent pas nécessairement l'offre annuelle habituelle.
+- Le nombre de restaurants par région est très variable (de 5 à 33), ce qui fragilise les comparaisons pour les petites régions comme la Corse ou Antilles-Guyane.
+- La variable `plat` contient de nombreuses variantes orthographiques d'un même plat, ce qui peut gonfler artificiellement le comptage de plats distincts.
 
 ## Question 22 : Certains restaurants ont-ils des données moins fiables ?
 
