@@ -44,6 +44,8 @@ Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et
 <hr>
 <br>
 
+
+
 ## Question 5 : Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
 
 Nous nous intéressons à la qualité nutritionnelle de l'offre de restauration collective CROUS. Le CROUS constitue la principale solution de restauration pour la population étudiante, offrant des repas à tarif social.
@@ -87,7 +89,7 @@ Par souci de lisibilité, nous avons également choisi de placer les plats en ab
 library(tidyverse)
 library(ggplot2)
 
-menus <- read_csv("menus_complets_enrichis.csv")
+menus <- read_csv("../data/menus_complets_enrichis.csv")
 
 data_nutri <- menus %>%
   mutate(
@@ -373,7 +375,7 @@ Cette approche multi-niveaux permet d’éviter une conclusion basée sur un seu
 
 library(tidyverse)
 
-menus <- read_csv("menus_complets_enrichis.csv")
+menus <- read_csv("../data/menus_complets_enrichis.csv")
 
 menus_clean <- menus %>%
   filter(!is.na(impact_carbone)) %>%
@@ -388,7 +390,7 @@ eco_score <- menus_clean %>%
   )
 
 # Chargement des restaurants
-restaurants <- read_csv("liste_restaurants.csv")
+restaurants <- read_csv("../data/liste_restaurants.csv")
 
 # Jointure des scores environnementaux avec les informations des restaurants
 eco_score_named <- eco_score %>%
@@ -559,10 +561,10 @@ Pour répondre à cette question, nous procédons en trois grandes étapes :
 
 ```{r,fig.cap="Diversité des plats par région",  echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
 # ── 0. Chargement ────────────────────────────────────────────
-restaurants <- read_csv("liste_restaurants.csv",
+restaurants <- read_csv("../data/liste_restaurants.csv",
                         show_col_types = FALSE)
 
-menus <- read_csv("menus_complets_enrichis.csv",
+menus <- read_csv("../data/menus_complets_enrichis.csv",
                   show_col_types = FALSE)
 
 # ── 1. Jointure : on rattache la région à chaque ligne de menu ─
