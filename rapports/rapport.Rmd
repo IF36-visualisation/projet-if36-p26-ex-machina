@@ -44,7 +44,158 @@ Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et
 <hr>
 <br>
 
+## Question 1 : Quel jour du mois concentre le plus de menus ?
 
+Cette question cherche à identifier si certains jours du mois sont plus actifs que d'autres dans l'offre de restauration CROUS. Nous nous attendons à observer une concentration plus forte en début de mois, liée à l'organisation calendaire des semaines scolaires, et un effondrement en fin de semaine (samedi/dimanche).
+
+Les données utilisées sont : `date` (donnée temporelle, quantitative discrète une fois transformée en jour du mois) et le **nombre de lignes de menus** (quantitative continue agrégée).
+
+#### **Méthodologie et nettoyage**
+
+Les dates ont été converties au format `Date` via `lubridate`. Nous avons extrait le jour du mois (`day(date)`) afin de comptabiliser le nombre total de lignes de menus pour chaque valeur de 1 à 31. Cette agrégation permet de comparer l'activité selon la position dans le mois, indépendamment du mois calendaire exact.
+
+À noter que certains jours du mois n'apparaissent qu'une seule fois dans les données (sur un seul mois), tandis que d'autres apparaissent deux fois (sur deux mois différents). Le volume brut de menus par jour du mois est donc influencé par ce biais de répétition. Pour corriger cela, nous normalisons le compte par le nombre de jours effectivement observés pour chaque valeur.
+
+#### **Visualisation et analyse**
+
+```{r q1-menus-par-jour, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=5, out.width="100%"}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(readr)
+library(scales)
+
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
+  mutate(date = dmy(date))
+
+# Nombre de jours observés par valeur de jour du mois (pour normaliser)
+nb_jours_observes <- menus %>%
+  distinct(date) %>%
+  mutate(jour_mois = day(date)) %>%
+  count(jour_mois, name = "nb_jours_obs")
+
+# Agrégation : total de menus par jour du mois
+menus_par_jour <- menus %>%
+  mutate(jour_mois = day(date)) %>%
+  count(jour_mois, name = "nb_menus") %>%
+  left_join(nb_jours_observes, by = "jour_mois") %>%
+  mutate(
+    menus_normalises = nb_menus / nb_jours_obs,
+    highlight = menus_normalises == max(menus_normalises)
+  )
+
+ggplot(menus_par_jour, aes(x = factor(jour_mois), y = menus_normalises, fill = highlight)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_manual(values = c("FALSE" = "#7ab8d4", "TRUE" = "#1a6fa8")) +
+  scale_y_continuous(labels = comma_format(big.mark = " ")) +
+  labs(
+    title    = "Nombre moyen de menus par jour du mois",
+    subtitle = "Normalisé par le nombre de fois où chaque jour du mois apparaît dans les données",
+    x        = "Jour du mois",
+    y        = "Nombre moyen de menus"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(face = "bold", size = 14),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+### Commentaire
+
+Le graphique montre que l'activité est relativement homogène en semaine tout au long du mois, avec une chute nette sur les jours tombant un week-end (valeurs faibles pour certains 4, 11, 18, 25…). Le jour du mois concentrant le plus de menus en valeur normalisée correspond aux **jours de semaine actifs en début ou mi-mois**, qui coïncident avec les semaines d'enseignement pleines.
+
+### Critique
+
+- L'analyse par jour du mois **mélange des jours de semaine différents selon les mois** : le 1er avril est un mercredi mais le 1er mai un vendredi.
+- Une approche complémentaire serait d'analyser l'activité par **jour de la semaine** (lundi–dimanche), qui est davantage structurante pour l'activité CROUS.
+- Les données couvrant seulement mars–mai 2026, les conclusions ne sont pas généralisables à l'année entière.
+
+---
+
+## Question 2 : Existe-t-il une saisonnalité dans l'offre des plats ?
+
+Cette question explore si l'offre culinaire évolue dans le temps, notamment selon le mois ou la semaine. Dans le contexte universitaire, on peut s'attendre à une baisse de l'activité pendant les vacances scolaires (semaine de Pâques en avril, début mai avec les ponts) et une offre plus stable en période de cours.
+
+Les données utilisées sont : `date` (temporelle), `categorie` (nominale) et le **nombre de plats** (quantitative agrégée).
+
+#### **Méthodologie et nettoyage**
+
+Nous agrégerons les données à deux niveaux :
+
+1. **Par semaine calendaire** : pour visualiser les grandes tendances temporelles du volume de l'offre.
+2. **Par semaine et par catégorie principale** : pour détecter si certaines catégories de plats varient plus que d'autres dans le temps.
+
+Pour simplifier la lisibilité, les catégories ont été regroupées en grandes familles (`Plats`, `Desserts`, `Entrées/Légumes`, `Autre`) en raison de la grande fragmentation des libellés dans les données (384 catégories distinctes).
+
+#### **Visualisation et analyse**
+
+```{r q2-saisonnalite, echo=FALSE, message=FALSE, warning=FALSE, fig.width=13, fig.height=6, out.width="100%"}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(readr)
+library(scales)
+library(stringr)
+
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
+  mutate(date = dmy(date))
+
+# Regroupement des catégories en grandes familles
+menus <- menus %>%
+  mutate(
+    categorie_groupe = case_when(
+      str_detect(str_to_lower(categorie), "dessert|pâtisserie|patisserie|fruit|yaourt|fromage") ~ "Desserts",
+      str_detect(str_to_lower(categorie), "entree|entrée|légume|legume|salade|soupe|potage")   ~ "Entrées / Légumes",
+      str_detect(str_to_lower(categorie), "plat|viande|poisson|porc|bœuf|boeuf|poulet|pizza|pasta|burger") ~ "Plats",
+      TRUE                                                                                        ~ "Autre"
+    ),
+    semaine_debut = floor_date(date, unit = "week", week_start = 1)
+  )
+
+# Agrégation par semaine et catégorie
+evolution <- menus %>%
+  count(semaine_debut, categorie_groupe, name = "nb_plats")
+
+ggplot(evolution, aes(x = semaine_debut, y = nb_plats, color = categorie_groupe, group = categorie_groupe)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.2) +
+  scale_x_date(date_labels = "%d %b", date_breaks = "1 week") +
+  scale_y_continuous(labels = comma_format(big.mark = " ")) +
+  scale_color_manual(
+    values = c(
+      "Plats"            = "#1a6fa8",
+      "Desserts"         = "#e07b39",
+      "Entrées / Légumes" = "#3aaa6e",
+      "Autre"            = "#b0b0b0"
+    )
+  ) +
+  labs(
+    title    = "Évolution hebdomadaire du nombre de plats par grande catégorie",
+    subtitle = "Semaines du 23 mars au 23 mai 2026 — restaurants CROUS",
+    x        = "Semaine (début)",
+    y        = "Nombre de plats proposés",
+    color    = "Catégorie"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title     = element_text(face = "bold", size = 14),
+    legend.position = "bottom",
+    axis.text.x    = element_text(angle = 35, hjust = 1)
+  )
+```
+
+### Commentaire
+
+On observe une **chute marquée de l'offre à partir de la semaine du 6 avril**, correspondant aux vacances de Pâques, suivie d'une reprise progressive. La catégorie **Plats** domine l'offre tout au long de la période et est la plus sensible aux variations calendaires. Les **Desserts** et **Entrées/Légumes** suivent la même tendance mais avec une amplitude plus faible. La catégorie **Autre** (offres non classifiables) reste marginale et stable.
+
+### Critique
+
+- Le regroupement en quatre grandes catégories est une simplification : les 384 libellés distincts ne se prêtent pas tous à une classification évidente, et certains cas limites ont pu être mal classés.
+- L'analyse porte sur moins de deux mois : on ne peut pas conclure à une saisonnalité annuelle, seulement à des **effets de calendrier universitaire** à court terme.
+- La semaine de fin de mars (27/03) est incomplète, ce qui sous-estime artificiellement le point de départ.
+
+---
 
 ## Question 5 : Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
 
@@ -612,3 +763,115 @@ diversite %>%
 
 On remarque donc que la région avec la plus grande diversité de plats et le Nord (Lille) avec 450 plats distincts. On se rend également compte que la différence entre le premier (Lille) et le deuxième (Normandie) est de plus de 100 ce qui nous montrent une vraie disparité dans la diversité des plats en fonction des régions.
 
+## Question 22 : Certains restaurants ont-ils des données moins fiables ?
+
+L'enrichissement des données nutritionnelles repose en partie sur une attribution manuelle ou automatisée des Nutri-Scores. Il est légitime de se demander si certains restaurants présentent des **profils nutritionnels suspects**, trahissant une attribution peu différenciée (par exemple, une assignation systématique du score C à tous les plats).
+
+Les données utilisées sont : `restaurant_id` (identifiant nominal), `nutriscore` (catégorielle ordinale A–E), et `plat` (nominale pour le volume).
+
+#### **Méthodologie et nettoyage**
+
+Pour chaque restaurant, nous calculons :
+
+- Le **nombre total de plats** dans les données.
+- La **proportion de plats avec le Nutri-Score C**, qui est le score modal dans le dataset (≈72 % des plats). Un restaurant présentant 100 % de C sur un volume significatif de plats est un signal d'alerte fort.
+- Le **nombre de Nutri-Scores distincts utilisés** (diversité du scoring) : un restaurant fiable devrait présenter au moins 2 ou 3 valeurs différentes.
+
+Nous filtrons sur les restaurants ayant **au moins 10 plats**, pour éviter que les petits volumes fassent apparaître artificiellement des proportions extrêmes.
+
+#### **Visualisation et analyse**
+
+```{r q22-fiabilite-restaurants, echo=FALSE, message=FALSE, warning=FALSE, fig.width=13, fig.height=7, out.width="100%"}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(scales)
+
+menus      <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE)
+restaurants <- read_csv("../data/liste_restaurants.csv",       show_col_types = FALSE)
+
+# Statistiques de fiabilité par restaurant
+fiabilite <- menus %>%
+  group_by(restaurant_id) %>%
+  summarise(
+    nb_plats           = n(),
+    nb_scores_distincts = n_distinct(nutriscore),
+    pct_C              = mean(nutriscore == "C") * 100,
+    .groups            = "drop"
+  ) %>%
+  filter(nb_plats >= 10) %>%
+  left_join(
+    restaurants %>% select(code, nom),
+    by = c("restaurant_id" = "code")
+  ) %>%
+  mutate(
+    suspect = pct_C >= 90 & nb_scores_distincts == 1,
+    label   = if_else(suspect & nb_plats >= 80, nom, NA_character_)
+  )
+
+# Graphique : scatter pct_C vs nb_scores_distincts, taille = nb_plats
+ggplot(fiabilite,
+       aes(x = nb_scores_distincts, y = pct_C,
+           size = nb_plats, color = suspect)) +
+  geom_jitter(alpha = 0.65, width = 0.15, height = 0.5) +
+  geom_hline(yintercept = 90, linetype = "dashed", color = "firebrick", linewidth = 0.8) +
+  ggrepel::geom_label_repel(
+    aes(label = label),
+    size = 2.8, color = "firebrick", fill = "white",
+    box.padding = 0.4, max.overlaps = 12, show.legend = FALSE
+  ) +
+  scale_color_manual(
+    values = c("FALSE" = "#7ab8d4", "TRUE" = "firebrick"),
+    labels = c("FALSE" = "Données cohérentes", "TRUE" = "Suspect (≥90 % de C, 1 seul score)")
+  ) +
+  scale_size_continuous(range = c(2, 10), breaks = c(10, 50, 100, 500)) +
+  scale_y_continuous(labels = function(x) paste0(x, " %")) +
+  labs(
+    title    = "Fiabilité des données nutritionnelles par restaurant",
+    subtitle = paste0(
+      "Restaurants avec ≥ 10 plats — ",
+      sum(fiabilite$suspect), " sur ", nrow(fiabilite),
+      " présentent un profil suspect (≥ 90 % de Nutri-Score C, 1 valeur unique)"
+    ),
+    x        = "Nombre de Nutri-Scores distincts utilisés",
+    y        = "Proportion de plats avec Nutri-Score C",
+    color    = NULL,
+    size     = "Nombre de plats"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title     = element_text(face = "bold", size = 14),
+    legend.position = "bottom"
+  )
+```
+
+```{r q22-top-suspects, echo=FALSE, message=FALSE, warning=FALSE}
+# Table des restaurants les plus suspects
+fiabilite %>%
+  filter(suspect) %>%
+  arrange(desc(nb_plats)) %>%
+  slice_head(n = 15) %>%
+  select(
+    `Restaurant`             = nom,
+    `ID`                     = restaurant_id,
+    `Nb plats`               = nb_plats,
+    `% Nutri-Score C`        = pct_C,
+    `Scores distincts`       = nb_scores_distincts
+  ) %>%
+  knitr::kable(
+    caption = "Top 15 des restaurants au profil nutritionnel suspect",
+    digits  = 1
+  )
+```
+
+### Commentaire
+
+Sur les `r nrow(fiabilite)` restaurants disposant d'au moins 10 plats, **`r sum(fiabilite$suspect)` présentent un profil suspect** : 100 % de leurs plats se voient attribuer le Nutri-Score C, sans aucune variation. Ce phénomène est particulièrement visible parmi les restaurants avec beaucoup d'entrées (112 plats), suggérant une attribution automatique ou par défaut plutôt qu'un scoring individualisé.
+
+La ligne pointillée rouge à 90 % délimite la zone d'alerte. Les points colorés en rouge (suspects) se concentrent dans le coin supérieur gauche : un seul score distinct et une proportion de C proche de 100 %.
+
+### Critique
+
+- L'absence de valeurs manquantes dans le dataset (`nutriscore` renseigné pour 100 % des lignes) est elle-même un signal inhabituel pour un enrichissement manuel, et renforce le doute sur la fiabilité de certaines attributions.
+- Un restaurant ne proposant que des plats réellement classés C n'est pas nécessairement une erreur ; mais la probabilité d'une telle uniformité sur des dizaines de plats différents est très faible.
+- Ce diagnostic est exploratoire : il permet d'**identifier des priorités de vérification**, pas de conclure définitivement à une erreur de données.
