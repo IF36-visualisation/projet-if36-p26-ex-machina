@@ -859,6 +859,42 @@ Les résultats restent à interpréter avec prudence en raison d’une catégori
 <hr>
 <br>
 
+<br>
+<hr>
+<br>
+
+## Question 15 : Existe-t-il une fracture nutritionnelle entre les régions ou les villes ?
+
+Le Nutri-Score permet d'évaluer la qualité nutritionnelle globale des menus. En calculant la moyenne de ces scores par région, on cherche à savoir si la localisation des restaurants influence la composition des repas. On pourrait s'attendre à une certaine uniformité sur tout le territoire, ou au contraire à des disparités régionales (par exemple, des régions plus axées sur des plats traditionnels riches ou des zones plus orientées vers une offre équilibrée).
+
+Nous avons choisi de réalisé ce graphique sur Power BI et nous avons obtenu ce résultat : 
+
+**TODO : Une photo de la visu Power BI**
+
+#### **Interprétation**
+
+Sur la carte, on observe plusieurs phénomènes : 
+
+- Une tendance vers des scores intermédiaires à médiocres : La majorité des points visibles sur la carte affichent des teintes jaunes, orangées ou rouges (notamment dans la moitié ouest et le centre de la France). Cela indique que le Nutri-Score moyen des restaurants s'établit plutôt autour de notes comme C, D ou E. Les repas proposés y sont globalement riches.
+
+- Le Sud et l'Île-de-France se démarquent : On observe des bulles vertes bien distinctes près de Marseille, sur la Côte d'Azur et au niveau de Paris. Cela suggère que l'offre de restauration y est statistiquement plus équilibrée, avec une présence plus forte de plats légers (Nutri-Score A ou B).
+
+- Le cas particulier des régions pleines : La Corse (en vert franc), la Bourgogne-Franche-Comté (en orange) et la Normandie (en kaki/jaune) apparaissent sous forme de grandes zones coloriées. La Corse affiche un profil plutôt vert (offre plus saine en moyenne), tandis que la Bourgogne-Franche-Comté penche vers un orange affirmé (plats plus riches).
+
+**Attention : Corrélation ne veut pas dire Causalité !**
+
+Le fait qu'une région soit colorée en orange ou en rouge ne signifie pas que le climat ou la région en elle-même rend les plats moins équilibrés. Ce résultat est simplement le reflet des types de restaurants ou de plats proposés à ces endroits.
+
+Par exemple, si la Bourgogne-Franche-Comté est très orange, c'est peut-être tout simplement parce que les restaurants de cette zone proposent une majorité de plats traditionnels riches en sauces ou en graisses saturées (ce qui fait grimper la moyenne), et non pas parce que les habitants de cette région mangent moins bien par nature.
+
+**Anomalie visuelle constatée**
+Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions.
+
+
+<br>
+<hr>
+<br>
+
 ## Question 16 : La diversité des plats varie-t-elle selon la région ?
 
 L'offre culinaire des restaurants universitaires est-elle homogène sur tout le territoire, ou certaines régions proposent-elles des menus nettement plus variés ? Cette question est importante pour évaluer les inégalités d'accès à une alimentation diversifiée selon le lieu d'études.
