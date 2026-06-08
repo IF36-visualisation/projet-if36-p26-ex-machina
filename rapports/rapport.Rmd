@@ -1258,3 +1258,73 @@ La ligne pointillée rouge à 90 % délimite la zone d'alerte. Les points color�
 - L'absence de valeurs manquantes dans le dataset (`nutriscore` renseigné pour 100 % des lignes) est elle-même un signal inhabituel pour un enrichissement manuel, et renforce le doute sur la fiabilité de certaines attributions.
 - Un restaurant ne proposant que des plats réellement classés C n'est pas nécessairement une erreur ; mais la probabilité d'une telle uniformité sur des dizaines de plats différents est très faible.
 - Ce diagnostic est exploratoire : il permet d'**identifier des priorités de vérification**, pas de conclure définitivement à une erreur de données.
+
+
+## Question 25 : Comment le Nutri-Score se répartit-il selon le style culinaire ?
+
+Les différents styles culinaires de nos menus (Fraîcheur, Plats sucrés, Produits traditionnels, Soupes, Street food) utilisent des ingrédients et des profils de recettes radicalement opposés. On se demande si la structure des notes Nutri-Score (de A à E) valide la réputation de chacun de ces styles. On s'attendrait logiquement à ce que les catégories "Fraîcheur" et "Soupes" dominent le haut du classement avec un maximum de vert (A et B), tandis que le "Sucré" et la "Street food" afficheraient une concentration de couleurs plus sombres (D et E).
+
+```{r q25-stacked-bar, fig.cap="Répartition du Nutri-Score selon le style culinaire", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
+
+
+library(tidyverse)
+
+# Chargement
+menus <- read.csv("menus_complets_enrichis.csv")
+
+# Nettoyage des données
+df_clean <- menus %>%
+  filter(
+    !is.na(style_culinaire),
+    style_culinaire != "",
+    !is.na(nutriscore),
+    nutriscore != ""
+  )
+
+# Regrouper les styles trop rares
+top_styles <- df_clean %>%
+  count(style_culinaire, sort = TRUE) %>%
+  top_n(10, n) %>%
+  pull(style_culinaire)
+
+df_clean <- df_clean %>%
+  mutate(style_culinaire = ifelse(style_culinaire %in% top_styles,
+                                  style_culinaire,
+                                  "Autres"))
+
+# Ordre des nutriscores
+df_clean$nutriscore <- factor(df_clean$nutriscore,
+                              levels = c("A", "B", "C", "D", "E"))
+
+# Visualisation (Stackbar)
+ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
+  geom_bar(position = "fill", width = 0.6) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(
+    values = c(
+      "A" = "#549464", 
+      "B" = "#a3cc75", 
+      "C" = "#f5d44c", 
+      "D" = "#db9346", 
+      "E" = "#cf6342"
+    ),
+    name = "Nutri-Score"
+  ) +
+  labs(
+    title = "Répartition du Nutri-Score selon le style culinaire",
+    x = "Style culinaire",
+    y = "Proportion de plats"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+#### **Interprétation**
+
+- "Soupes" et "Fraîcheur" :  Comme prévu, ces deux styles écrasent le classement avec un profil supérieur ou égaux à C. La catégorie `Soupes` affiche quasiment une égalité de A et de C, ce qui s'explique par une composition riche en eau, en légumes et pauvre en graisses. Le style Fraîcheur est principalement constitué de salades, crudités, etc ce qui explique la majorité de A et B.
+
+- "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
+
+- "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
