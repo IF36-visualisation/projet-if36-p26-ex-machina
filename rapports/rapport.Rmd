@@ -552,6 +552,87 @@ En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories 
 <hr>
 <br>
 
+## Question 13 : Existe-t-il un lien entre calories et Nutri-Score ?
+
+La qualité nutritionnelle d'un plat, mesurée par le Nutri-Score, intègre de nombreux facteurs (nutriments à limiter comme les acides gras saturés, le sucre, le sel, ou à favoriser comme les fibres et protéines). On cherche à savoir si l'apport calorique global d'un plat est directement lié à sa note. On s'attend théoriquement à ce que les plats les moins caloriques obtiennent les meilleures notes (A, B) et les bombes caloriques soient classées en D ou E.
+
+```{r q13-boxplot, fig.cap="Distribution des calories selon la qualité nutritionnelle", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+menus <- read_csv("menus_complets_enrichis.csv")
+
+# Nettoyage
+df <- menus %>%
+  filter(
+    !is.na(nutriscore),
+    !is.na(calories_estimees)
+  ) %>%
+  filter(
+    nutriscore %in% c("A", "B", "C", "D", "E")
+  )
+
+# Boxplot
+ggplot(df,
+       aes(
+         x = nutriscore,
+         y = calories_estimees,
+         fill = nutriscore
+       )) +
+  
+  geom_boxplot(alpha = 0.8) +
+  
+  scale_fill_manual(
+    values = c(
+      "A" = "#038141",
+      "B" = "#85BB2F",
+      "C" = "#FECB02",
+      "D" = "#EE8100",
+      "E" = "#E63E11"
+    )
+  ) +
+  
+  labs(
+    title = "Question 13 : Existe-t-il un lien entre calories et Nutri-Score ?",
+    subtitle = "Distribution des calories selon la qualité nutritionnelle",
+    x = "Nutri-Score",
+    y = "Calories estimées"
+  ) +
+  
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold")
+  )
+
+```
+#### **Interprétation**
+
+Le graphique  montre une tendance : plus un plat est riche en calories, plus sa note Nutri-Score a tendance à descendre vers le orange (D) ou le rouge (E). 
+
+Cependant, en regardant le détail, on observe des nuances:
+
+- Le Nutri-Score A regroupe les plats les plus légers. La majorité d'entre eux se situent sous la barre des 150 calories. C'est la catégorie la plus basse et la plus stable du graphique.
+
+- Le Nutri-Score B réserve une surprise : les notes s'étalent énormément. On y trouve des plats très légers, mais aussi des plats contenant beaucoup de calories (qui montent parfois plus haut que les catégories D ou E). Cela s'explique par le fait qu'un plat calorique peut garder une bonne note s'il contient beaucoup de légumes, de fibres ou de protéines pour compenser.
+
+- Le Nutri-Score C est très particulier : presque toutes les données sont bloquées sur une seule ligne horizontale autour de 250 calories. Cela indique qu'il s'agit sûrement de plats très standardisés qui se ressemblent tous dans leur composition.
+
+- Les Nutri-Scores D et E sont presque identiques. Leurs blocs sont placés très haut sur le graphique, ce qui prouve que les plats les plus riches en énergie écopent presque toujours des moins bonnes notes.
+
+**Attention : Corrélation ne veut pas dire Causalité !**
+
+Ce n'est pas le nombre de calories en soi qui déclenche une mauvaise note. Le Nutri-Score utilise une formule mathématique  qui regarde la quantité de sucre, de sel ou de graisses saturées. Un plat peut être calorique parce qu'il contient de l'huile d'olive ou du saumon (de bonnes graisses) et s'en sortir avec une note correcte (comme on le voit pour le groupe B).
+
+Le graphique montre simplement que les deux critères avancent souvent ensemble, car les plats riches en sucre ou en mauvaises graisses sont, par nature, des plats très caloriques.
+
+**Nouvelle question :** Si les calories ne font pas tout, quels sont les vrais coupables qui font basculer un plat du Nutri-Score D au Nutri-Score E ? Est-ce une overdose de sel, ou une quantité de sucre plus élevée ?
+
+<br>
+<hr>
+<br>
+
 ## Question 14 : Peut-on identifier des restaurants « écoresponsables » ?
 
 ###  Formulation de la question
