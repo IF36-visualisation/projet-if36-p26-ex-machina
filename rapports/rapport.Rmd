@@ -34,6 +34,82 @@ Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et
 - Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents) 
 
 
+## Présentation des données
+
+Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data/` :
+
+### 1. **`liste_restaurants.csv`** : liste des restaurants distincts
+- **Nombre d’observations :** 942 (correspond au nombre de restaurants présents dans le fichier CSV)  
+- **Nombre de variables :** 20  
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `code` | entier | Identifiant unique du restaurant |
+| `nom` | texte | Nom du restaurant |
+| `adresse` | texte | Adresse complète |
+| `latitude` | numérique | Latitude GPS |
+| `longitude` | numérique | Longitude GPS |
+| `horaires` | texte | Horaires d’ouverture (ex. 11:00-22:00) |
+| `jours_ouvert` | texte | Jours de la semaine où le restaurant est ouvert |
+| `image_url` | texte | Lien vers une image représentative du restaurant |
+| `email` | texte | Adresse email du restaurant |
+| `telephone` | texte | Numéro de téléphone |
+| `ispmr` | booléen | Accessibilité PMR (personnes à mobilité réduite) |
+| `zone` | texte | Zone géographique ou quartier |
+| `paiement` | texte | Modes de paiement acceptés |
+| `acces` | texte | Informations sur l’accès (parking, transports…) |
+| `ouvert` | booléen | Indique si le restaurant est actuellement ouvert |
+| `actif` | booléen | Indique si le restaurant est actif dans la base |
+| `region.code` | entier | Code de la région |
+| `region.libelle` | texte | Nom de la région |
+| `type.code` | entier | Code du type de restaurant |
+| `type.libelle` | texte | Libellé du type de restaurant (ex. Brasserie, Fast-food) |
+   - Chaque observation correspond à un restaurant unique dans une région.
+
+### 2. **`menus_complets_enrichis.csv`** : liste des  menus pour chaque restaurant
+
+### Description
+Cette table contient l’ensemble des menus proposés dans les restaurants universitaires.  
+Chaque ligne correspond à un plat spécifique servi dans un restaurant donné, à une date, pour un type de repas et une catégorie précis.
+
+Les données ont été enrichies manuellement à partir d’informations issues du site **OpenFoodFacts** (https://world-fr.openfoodfacts.org/), puis combinées avec les données récupérées via l’API **CROUStillant Menu**.
+
+Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
+- le volume très important des données OpenFoodFacts (~9 Go),
+- la complexité de leur structure,
+- la forte sensibilité aux variations d’écriture des noms de plats.
+
+- **Nombre d’observations :** 80 307 
+- **Nombre de variables :** 10
+
+### Colonnes
+
+| Champ | Type | Description |
+|----------|------|------------|
+| `restaurant_id` | entier | Identifiant du restaurant |
+| `date` | date | Date du menu |
+| `repas` | texte | Type de repas |
+| `categorie` | texte | Catégorie du plat |
+| `plat` | texte | Nom du plat |
+| `nutriscore` | texte | Score nutritionnel (A–E) |
+| `regime` | texte | Type alimentaire (carné, végétarien, etc) |
+| `impact_carbone` | texte | Empreinte carbone (bas, moyen, élevé) |
+| `style_culinaire` | texte | Style du plat (soupe, cuisine traditionnelle, etc) |
+| `calories_estimees` | entier | Nombre de calories estimées en kcal |
+
+**Organisation et sous-groupes :**  
+
+- Les données sont hiérarchisées : **restaurants → menus → types de repas → catégories → plats**  
+- Chaque restaurant peut avoir plusieurs menus par jour et plusieurs plats par catégorie  
+
+**Format :** CSV, séparateur `,`  
+
+**Contexte et choix des données :**  
+
+- Ces données permettent d’étudier les menus sur différentes périodes et restaurants.  
+- Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.  
+
+
 <br>
 <hr>
 <br>
