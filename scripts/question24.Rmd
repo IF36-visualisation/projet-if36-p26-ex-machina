@@ -14,13 +14,13 @@ Ces deux graphiques sont générés dans l'application Shiny (onglet "Calories")
 
 Le boxplot ci-dessous permet de lire simultanément la médiane, l'étendue interquartile et les valeurs extrêmes de chaque catégorie. Les catégories sont ordonnées par médiane croissante de bas en haut. Les catégories sont triées de la moins calorique en bas à la plus calorique en haut.
 
-![Boxplot des calories par catégorie de plat](boxplotcat.png)
+![Boxplot des calories par catégorie de plat](images/boxplotcat.png)
 
 **Note de lecture :** on remarque que quatre catégories (Snacking, Plats, Petit-déjeuner, Formules/Menus) semblent visuellement identiques sur le boxplot, avec des boîtes réduites à un simple trait vertical. Cela ne signifie pas qu'elles ont exactement les mêmes valeurs : leurs médianes diffèrent de quelques kcal, ce qui suffit à les classer différemment, mais l'écart est trop faible pour être visible à l'œil nu. Ce phénomène s'explique par le mode d'estimation des calories : les valeurs ayant été enrichies manuellement à partir d'OpenFoodFacts, beaucoup de plats d'une même catégorie ont reçu la même estimation calorique par défaut, ce qui écrase la dispersion. Seuls les **Entrées** et les **Desserts** montrent de vraies boîtes visibles, signe que leurs calories ont été estimées de façon plus variée. C'est pourquoi le diagramme en barres des moyennes ci-dessous est un complément indispensable pour différencier les catégories entre elles.
 
 Le diagramme en barres ci-dessous présente la moyenne arithmétique des calories par catégorie, triée par ordre décroissant, offrant une lecture plus synthétique.
 
-![Calories moyennes par catégorie de plat](calmoycat.png)
+![Calories moyennes par catégorie de plat](images/calmoycat.png)
 
 **Interprétation des résultats**
 
