@@ -16,11 +16,11 @@ Ces deux graphiques sont générés dans l'application Shiny (onglet "Nutri-Scor
 
 Ce premier graphique représente la distribution globale des Nutri-Scores dans l'ensemble du dataset. Chaque barre correspond au nombre de plats associés à une catégorie de Nutri-Score.
 
-![Répartition globale des Nutri-Scores](repeGlobale.png)
+![Répartition globale des Nutri-Scores](images/repeGlobale.png)
 
 Le second graphique présente la proportion de chaque Nutri-Score au sein des différentes catégories de plats, permettant d'identifier les familles d'aliments les plus équilibrées ou les moins favorables sur le plan nutritionnel.
 
-![Répartition des Nutri-Scores par catégorie de plat](prop.png)
+![Répartition des Nutri-Scores par catégorie de plat](images/prop.png)
 
 *Figures générées dans l'application Shiny (onglet "Nutri-Score"). Les filtres région et type de repas permettent d'explorer la distribution de façon interactive.*
 
