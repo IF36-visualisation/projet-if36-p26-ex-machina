@@ -1,0 +1,33 @@
+### Question 24 : Les calories varient-elles selon les catégories de plats ?
+
+Dans cette partie, nous cherchons à analyser l'apport énergétique des plats proposés par le CROUS en fonction de leur catégorie de plat.
+
+L'objectif est de déterminer quelles catégories concentrent les plats les plus caloriques, et de mesurer l'homogénéité de l'offre au sein de chaque catégorie. On s'attend à ce que les **Plats** dominent en calories car ce sont des repas chauds complets avec viandes et féculents. Les **Desserts** devraient présenter une forte dispersion car la catégorie va d'un simple fruit à une pâtisserie riche. Enfin, les **Boissons** devraient être parmi les moins caloriques, l'eau et les boissons chaudes sans sucre y occupant une place importante.
+
+**Méthodologie**
+
+Pour répondre à cette question, nous avons utilisé un **boxplot** permettant d'observer la distribution complète (médiane, étendue interquartile, valeurs extrêmes) au sein de chaque catégorie, et un **diagramme en barres des moyennes** facilitant la comparaison directe entre catégories. Les données proviennent du fichier *menus_complets_enrichis.csv*. Les variables utilisées sont `calories_estimees` (variable quantitative continue, en kcal) et `categorie_groupe` (variable nominale issue du regroupement défini dans le projet). Les plats ne disposant pas d'estimation calorique ou présentant une valeur nulle ont été exclus de l'analyse.
+
+Ces deux graphiques sont générés dans l'application Shiny (onglet "Calories") et ont des filtres sur la région, le type de repas et la catégorie.
+
+**Visualisation et analyse**
+
+Le boxplot ci-dessous permet de lire simultanément la médiane, l'étendue interquartile et les valeurs extrêmes de chaque catégorie. Les catégories sont ordonnées par médiane croissante de bas en haut. Les catégories sont triées de la moins calorique en bas à la plus calorique en haut.
+
+![Boxplot des calories par catégorie de plat](boxplotcat.png)
+
+**Note de lecture :** on remarque que quatre catégories (Snacking, Plats, Petit-déjeuner, Formules/Menus) semblent visuellement identiques sur le boxplot, avec des boîtes réduites à un simple trait vertical. Cela ne signifie pas qu'elles ont exactement les mêmes valeurs : leurs médianes diffèrent de quelques kcal, ce qui suffit à les classer différemment, mais l'écart est trop faible pour être visible à l'œil nu. Ce phénomène s'explique par le mode d'estimation des calories : les valeurs ayant été enrichies manuellement à partir d'OpenFoodFacts, beaucoup de plats d'une même catégorie ont reçu la même estimation calorique par défaut, ce qui écrase la dispersion. Seuls les **Entrées** et les **Desserts** montrent de vraies boîtes visibles, signe que leurs calories ont été estimées de façon plus variée. C'est pourquoi le diagramme en barres des moyennes ci-dessous est un complément indispensable pour différencier les catégories entre elles.
+
+Le diagramme en barres ci-dessous présente la moyenne arithmétique des calories par catégorie, triée par ordre décroissant, offrant une lecture plus synthétique.
+
+![Calories moyennes par catégorie de plat](calmoycat.png)
+
+**Interprétation des résultats**
+
+Les **Plats arrivent en tête** avec la moyenne la plus élevée (environ 300 kcal). Ce résultat est attendu : cette catégorie regroupe les plats chauds complets (viandes, grillades, accompagnements féculents) qui constituent le cœur énergétique d'un repas. Le **Petit-déjeuner se situe en deuxième position** (environ 280 kcal), ce qui s'explique par la composition de l'offre CROUS le matin : viennoiseries, formules incluant plusieurs éléments, et boissons lactées : des aliments naturellement denses en calories.
+
+Le **Snacking présente une moyenne intermédiaire** (environ 250 kcal). Même si le boxplot ne le montre pas clairement à cause de la faible granularité des estimations, le diagramme en barres confirme que cette catégorie se situe bien entre les Plats et les Desserts. Les outliers du boxplot, eux, révèlent que certains produits de snacking (burgers, paninis) dépassent largement la moyenne. Les **Desserts présentent la dispersion la plus large** dans le boxplot, reflétant une offre très variable allant de simples compotes (environ 50 kcal) à des pâtisseries riches pouvant dépasser 600 kcal.
+
+Les **Boissons** affichent une moyenne plus élevée qu'attendu (environ 220 kcal). Notre hypothèse initiale les plaçait en dernière position, mais la présence de boissons sucrées et de cafés préparés tire la moyenne vers le haut. Le boxplot montre toutefois une médiane basse avec des outliers importants : ce sont ces valeurs extrêmes qui gonflent la moyenne. Enfin, les **Formules/Menus** se situent dans la partie basse du classement, ce qui s'explique probablement par le fait que la valeur calorique enregistrée correspond à un élément individuel de la formule plutôt qu'à la formule complète.
+
+Globalement, ces résultats montrent que les catégories ne sont pas comparables sur la base de la seule moyenne : la dispersion interne est souvent aussi informative que la valeur centrale. Un étudiant peut trouver au sein d'une même catégorie aussi bien un choix léger qu'un choix très calorique, ce qui lui laisse une marge de choix importante selon ses besoins.
