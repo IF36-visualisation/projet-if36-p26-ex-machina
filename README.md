@@ -118,7 +118,7 @@ Afin d’explorer les données issues des fichiers `liste_restaurants.csv` et `m
 
 | # | Question | Variables | Visualisation | Objectif |
 |---|----------|-----------|---------------|----------|
-| 1 | Quel jour du mois concentre le plus de menus ? | `date` | Bar chart | Identifier les pics d'activité |
+| 1 | Quel jour de la semaine concentre le plus de menus ? | `date` | Bar chart | Identifier les pics d'activité |
 | 2 | Existe-t-il une saisonnalité dans l’offre des plats ? | `date`, `categorie` | Line chart | Détecter des tendances temporelles |
 | 3 | Quelle est la fréquence d'ouverture réelle des restaurants sur l'année ? | `jours_ouvert`, `restaurant_id` | Heatmap calendaire | Mesurer la régularité du service et identifier les fermetures prolongées |
 | 4 | L’offre nutritionnelle évolue-t-elle dans le temps ? | `date`, `nutriscore` | Line chart | Observer l’évolution de la qualité nutritionnelle |
