@@ -1,0 +1,33 @@
+### Question 11 : Quelle est la distribution des Nutri-Scores ?
+
+Dans cette partie, nous cherchons à évaluer la qualité nutritionnelle globale de l'offre de restauration proposée par le CROUS à travers la répartition des Nutri-Scores des plats.
+
+L'objectif de cette analyse est de déterminer si l'offre de restauration étudiante est majoritairement composée de plats présentant un profil nutritionnel favorable ou si, au contraire, les plats moins équilibrés occupent une place importante. Cette information permet d'évaluer la cohérence de l'offre avec les objectifs de santé publique et de nutrition.
+
+**Méthodologie**
+
+Pour répondre à cette question, nous avons utilisé un **diagramme en barres** représentant la fréquence de chaque catégorie de Nutri-Score. Les données proviennent du fichier *menus_complets_enrichis.csv*. Les variables utilisées sont `nutriscore` (variable nominale ordonnée de A à E) et le nombre de plats (variable quantitative discrète).
+
+Afin de compléter cette analyse globale, un second graphique présente la répartition proportionnelle des Nutri-Scores selon les grandes catégories de plats (boissons, plats, desserts, snacking, entrées, etc.).
+
+Ces deux graphiques sont générés dans l'application Shiny (onglet "Nutri-Score") et bénéficient de filtres interactifs (région, type de repas). Le lecteur est invité à exécuter l'application dans le dossier `/shiny/` pour interagir avec ces visualisations.
+
+**Visualisation et analyse**
+
+Ce premier graphique représente la distribution globale des Nutri-Scores dans l'ensemble du dataset. Chaque barre correspond au nombre de plats associés à une catégorie de Nutri-Score.
+
+![Répartition globale des Nutri-Scores](repeGlobale.png)
+
+Le second graphique présente la proportion de chaque Nutri-Score au sein des différentes catégories de plats, permettant d'identifier les familles d'aliments les plus équilibrées ou les moins favorables sur le plan nutritionnel.
+
+![Répartition des Nutri-Scores par catégorie de plat](prop.png)
+
+*Figures générées dans l'application Shiny (onglet "Nutri-Score"). Les filtres région et type de repas permettent d'explorer la distribution de façon interactive.*
+
+**Interprétation des résultats**
+
+Le graphique montre une **forte domination du Nutri-Score C**, qui représente la majorité des plats proposés. Cela indique que l'offre du CROUS est globalement composée d'aliments présentant une qualité nutritionnelle moyenne. Les Nutri-Scores **A et B** sont également bien présents, ce qui témoigne de la disponibilité d'options plus équilibrées pour les étudiants. À l'inverse, les catégories **D et E** restent minoritaires, suggérant que les plats les moins favorables sur le plan nutritionnel occupent une place limitée dans l'offre globale.
+
+L'analyse par catégorie révèle également que les **boissons** sont généralement mieux notées, tandis que les **desserts** et les produits de **snacking** concentrent davantage de Nutri-Scores moins favorables. Globalement, ces résultats montrent une offre relativement équilibrée, dominée par des produits de qualité nutritionnelle intermédiaire.
+
+Ces résultats suggèrent que les étudiants disposent d'un choix relativement varié leur permettant d'opter pour des repas plus ou moins équilibrés selon leurs préférences, tout en maintenant une offre globalement cohérente avec les recommandations nutritionnelles.
