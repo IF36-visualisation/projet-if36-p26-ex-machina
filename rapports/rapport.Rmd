@@ -120,7 +120,7 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
 <hr>
 <br>
 
-## Question 1 : Quel jour du mois concentre le plus de menus ?
+## Question 1 : Quel jour de la semaine concentre le plus de menus ?
 
 Cette question cherche à identifier si certains jours du mois sont plus actifs que d'autres dans l'offre de restauration CROUS. Nous nous attendons à observer une concentration plus forte en début de mois, liée à l'organisation calendaire des semaines scolaires, et un effondrement en fin de semaine (samedi/dimanche).
 
