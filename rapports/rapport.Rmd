@@ -1328,3 +1328,51 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 - "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
 
 - "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
+
+## Une minorité de plats concentre-t-elle la majorité des occurrences ?
+
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(lubridate)
+
+menus <- read_csv(
+  "menus_complets_enrichis.csv",
+  show_col_types = FALSE
+)
+
+restaurants <- read_csv(
+  "liste_restaurants.csv",
+  show_col_types = FALSE
+)
+# Jointure pour récupérer le nom du restaurant
+data <- menus %>%
+  left_join(
+    restaurants %>%
+      select(code, nom),
+    by = c("restaurant_id" = "code")
+  )
+
+pareto <- data %>%
+  count(plat, sort = TRUE) %>%
+  mutate(
+    part = n / sum(n),
+    part_cum = cumsum(part)
+  )
+pareto <- data %>%
+  count(plat, sort = TRUE) %>%
+  mutate(
+    part_cum = cumsum(n) / sum(n)
+  ) %>%
+  filter(part_cum <= 0.80)
+
+ggplot(pareto, aes(x = reorder(plat, -n))) + geom_col(aes(y = n), fill = "#1a6fa8") + geom_line(aes(y = part_cum * max(n), group = 1), color = "red", linewidth = 1) + geom_point(aes(y = part_cum * max(n)), color = "red") + scale_y_continuous( name = "Fréquence des plats", sec.axis = sec_axis(~ . / max(pareto$n), name = "Proportion cumulée") ) + labs( title = "Concentration de l’offre culinaire (loi de Pareto)", subtitle = "Une minorité de plats concentre-t-elle la majorité des occurrences ?", x = "Plats (classés par fréquence)" ) + theme_minimal() + theme(axis.text.x = element_blank())
+
+```
+
+### **Interpretation**
+Le diagramme de Pareto révèle une concentration significative de l'offre culinaire. Un nombre restreint de plats concentre une grande partie des occurrences observées, tandis que la majorité des plats présente des fréquences faibles. Cette structure traduit l'existence de préférences marquées des consommateurs pour certains plats, les autres constituant une longue traîne de produits moins demandés.
+
