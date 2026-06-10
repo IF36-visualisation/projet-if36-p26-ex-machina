@@ -1,0 +1,77 @@
+### Question 6 : Comment les catégories varient-elles selon les repas ?
+
+Les restaurants CROUS proposent différents types de repas (matin, midi, soir). On se demande si la structure des catégories de plats (Entrées, Plats, Desserts...) est la même pour chaque repas, ou si elle varie. On s'attend à ce que le midi soit le repas le plus complet, avec toutes les catégories représentées, et le matin le plus limité.
+
+**Méthodologie**
+
+Pour répondre à cette question, nous avons utilisé un **stacked bar chart normalisé** (barres empilées à 100 %) qui permet de comparer la structure des catégories entre les trois types de repas indépendamment du volume. Les données proviennent du fichier *menus_complets_enrichis.csv*. Les variables utilisées sont `repas` (variable nominale : matin, midi, soir) et `categorie` (variable nominale, regroupée en grandes familles via le dictionnaire de regroupement du projet).
+
+Les catégories brutes du dataset étant très fragmentées, elles ont été regroupées en sept familles principales (Entrées, Plats, Desserts, Boissons, Snacking, Formules/Menus, Petit-déjeuner) et une catégorie résiduelle "Autre" pour les libellés inclassables.
+
+**Visualisation et analyse**
+
+Le graphique ci-dessous montre, pour chaque type de repas, la proportion occupée par chaque catégorie de plat. Les barres sont empilées à 100 %, ce qui permet de comparer directement la structure des repas entre eux sans être influencé par les différences de volume.
+
+```{r q7-stacked-bar, fig.cap="Répartition des catégories de plats par type de repas", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
+library(tidyverse)
+library(scales)
+
+restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
+menus       <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Dictionnaire de regroupement des catégories
+groupes <- c(
+  "Entrées"        = "entr",
+  "Plats"          = "plat|chaud|accompagne|grillade",
+  "Desserts"       = "dessert|douceur|patisserie|compote|yaourt",
+  "Boissons"       = "boisson|cafe|froid",
+  "Snacking"       = "sandwich|panini|snacking|salade",
+  "Formules/Menus" = "formule|menu",
+  "Petit-déjeuner" = "viennois|petit.dej"
+)
+
+# Fonction de regroupement
+classer <- function(categorie) {
+  cat_lower <- tolower(categorie)
+  for (groupe in names(groupes)) {
+    if (str_detect(cat_lower, groupes[groupe])) return(groupe)
+  }
+  return("Autre")
+}
+
+# Calcul des proportions
+structure_repas <- menus %>%
+  mutate(categorie_groupe = map_chr(categorie, classer)) %>%
+  group_by(repas, categorie_groupe) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(repas) %>%
+  mutate(proportion = n / sum(n))
+
+# Visualisation
+ggplot(structure_repas,
+       aes(x = repas, y = proportion, fill = categorie_groupe)) +
+  geom_col(position = "fill", width = 0.6) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_brewer(palette = "Set2", name = "Catégorie") +
+  labs(
+    title = "Répartition des catégories de plats par type de repas",
+    x     = "Type de repas",
+    y     = "Proportion"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+**Interprétation des résultats**
+
+Le graphique révèle des structures très différentes selon le type de repas, ce qui confirme notre hypothèse de départ.
+
+**Le matin** est dominé par les formules et/ou menus (environ 25 %), le Petit-déjeuner et les Boissons, ce qui est cohérent avec une offre de restauration rapide matinale. Les catégories Entrées, Plats et Desserts y sont quasiment absentes.
+
+**Le midi** est le repas le plus diversifié : on y trouve du Snacking (environ 30 %), des Formules/Menus, des Plats, des Entrées et des Desserts. Toutes les catégories sont représentées, ce qui confirme que le déjeuner est le repas principal de l'offre CROUS.
+
+**Le soir** ressemble au midi dans sa structure mais avec une part de "Autre" très importante (environ 30 %), ce qui suggère que les restaurants du soir utilisent des catégories non standardisées, difficiles à classer avec notre dictionnaire de regroupement.
+
+La catégorie "Autre" reste présente dans les trois repas, ce qui confirme le problème de normalisation des catégories dans le dataset. Une partie significative des données reste inclassable avec notre regroupement actuel, ce qui constitue une limite de cette analyse.
+
+**Nouvelle question :** La forte présence des Formules/Menus au matin et au midi cache-t-elle une vraie diversité de plats, ou s'agit-il toujours des mêmes plats regroupés différemment selon les restaurants ?

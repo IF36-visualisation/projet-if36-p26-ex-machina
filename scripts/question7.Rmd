@@ -1,0 +1,75 @@
+### Question 7 : Les restaurants proposent-ils des menus équilibrés en catégories ?
+
+Les restaurants CROUS proposent-ils un nombre similaire de plats dans chaque catégorie, ou certains établissements sont-ils structurellement déséquilibrés ? On s'attend à une forte hétérogénéité : selon leur format (cafétéria, snack, brasserie), certains restaurants pourraient surreprésenter une catégorie (par exemple beaucoup de Snacking et peu de Plats chauds) tandis que d'autres proposeraient une offre plus équilibrée entre toutes les catégories.
+
+**Méthodologie**
+
+Pour répondre à cette question, nous avons utilisé un **boxplot horizontal** qui permet de visualiser, pour chaque catégorie, la distribution du nombre de plats proposés par restaurant. Les données proviennent du fichier *menus_complets_enrichis.csv*. Les variables utilisées sont `restaurant_id` (variable nominale), `categorie_groupe` (variable nominale issue du regroupement) et le nombre de plats par croisement restaurant/catégorie (variable quantitative discrète).
+
+La catégorie "Autre" a été exclue du graphique car elle regroupe des libellés inclassables qui fausseraient l'interprétation.
+
+**Visualisation et analyse**
+
+Le boxplot ci-dessous montre, pour chaque catégorie, comment le nombre de plats se répartit entre les restaurants. La barre verticale au milieu de chaque boîte représente la médiane (la valeur typique), la boîte colorée couvre les 50 % des restaurants les plus centraux, et les points isolés représentent les restaurants atypiques qui proposent un nombre anormalement élevé de plats dans cette catégorie.
+
+```{r q8-boxplot, fig.cap="Distribution du nombre de plats par catégorie et par restaurant", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
+library(tidyverse)
+library(scales)
+
+restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
+menus       <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Dictionnaire de regroupement (identique à Q7)
+groupes <- c(
+  "Entrées"        = "entr",
+  "Plats"          = "plat|chaud|accompagne|grillade",
+  "Desserts"       = "dessert|douceur|patisserie|compote|yaourt",
+  "Boissons"       = "boisson|cafe|froid",
+  "Snacking"       = "sandwich|panini|snacking|salade",
+  "Formules/Menus" = "formule|menu",
+  "Petit-déjeuner" = "viennois|petit.dej"
+)
+
+classer <- function(categorie) {
+  cat_lower <- tolower(categorie)
+  for (groupe in names(groupes)) {
+    if (str_detect(cat_lower, groupes[groupe])) return(groupe)
+  }
+  return("Autre")
+}
+
+# Comptage par restaurant et catégorie
+nb_plats_cat <- menus %>%
+  mutate(categorie_groupe = map_chr(categorie, classer)) %>%
+  filter(categorie_groupe != "Autre") %>%
+  group_by(restaurant_id, categorie_groupe) %>%
+  summarise(nb_plats = n(), .groups = "drop")
+
+# Visualisation
+ggplot(nb_plats_cat,
+       aes(x = categorie_groupe, y = nb_plats, fill = categorie_groupe)) +
+  geom_boxplot(outlier.size = 0.8, alpha = 0.7, show.legend = FALSE) +
+  scale_fill_brewer(palette = "Set2") +
+  coord_flip() +
+  labs(
+    title = "Nombre de plats par catégorie et par restaurant",
+    x     = "Catégorie",
+    y     = "Nombre de plats"
+  ) +
+  theme_minimal(base_size = 11)
+```
+
+**Interprétation des résultats**
+
+Le graphique confirme une forte hétérogénéité entre les catégories et entre les restaurants.
+
+**Les Boissons** présentent la plus grande variance : la boîte est très étalée, ce qui signifie que certains restaurants proposent énormément de boissons tandis que d'autres très peu. Les outliers dépassent 1000 plats pour le Snacking et environ 900 pour les Formules/Menus, ce qui correspond probablement à des restaurants de type cafétéria ou snack spécialisés.
+
+**Les Entrées et les Plats** ont des boîtes très resserrées et des médianes basses. La majorité des restaurants proposent peu de plats dans ces catégories, ce qui infirme l'idée d'un menu traditionnel équilibré Entrée/Plat/Dessert. L'offre CROUS ne suit donc pas le schéma classique de la restauration à table.
+
+**Le Snacking** a la boîte la plus large avec les outliers les plus extrêmes (environ 1400 plats). Certains restaurants sont clairement spécialisés dans ce format et concentrent l'essentiel de leur offre sur cette catégorie.
+
+En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories : l'offre est dominée par les Boissons et le Snacking, au détriment des Entrées et Plats traditionnels. Cette structure reflète l'évolution de la restauration universitaire vers un modèle de type cafétéria/snack plutôt que le repas classique en trois temps.
+
+**Nouvelle question :** Ces restaurants très spécialisés en Snacking ou Boissons correspondent-ils à un type particulier dans `type.libelle` ? On pourrait croiser ces outliers avec les métadonnées de `liste_restaurants.csv` pour identifier leur profil.
