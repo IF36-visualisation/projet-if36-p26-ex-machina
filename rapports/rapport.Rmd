@@ -811,235 +811,7 @@ Le graphique montre simplement que les deux critères avancent souvent ensemble,
 <hr>
 <br>
 
-## Question 14 : Peut-on identifier des restaurants « écoresponsables » ?
 
-###  Formulation de la question
-
-L’objectif de cette analyse est d’identifier si certains restaurants universitaires peuvent être considérés comme **plus écoresponsables que d’autres**, en se basant sur la composition de leurs menus.
-
-Plus précisément, on cherche à répondre à la question suivante :
-
-*Certains restaurants proposent-ils une proportion significativement plus élevée de plats à faible impact carbone, et peut-on les identifier clairement ?*
-
-
-
-### Choix méthodologique et indicateur retenu
-
-#### Indicateur utilisé
-
-Chaque plat est associé à une variable qualitative `impact_carbone` (bas, moyen, élevé).
-Nous construisons donc, pour chaque restaurant, l’indicateur suivant :
-
-\[
-\text{Part de plats à faible impact carbone}
-=
-\frac{\text{Nombre de plats à impact carbone bas}}
-{\text{Nombre total de plats}}
-\]
-
-Cet indicateur permet :
-
-* une **comparaison équitable entre restaurants**, indépendamment de leur taille,
-* une **lecture simple et interprétable**,
-* une approche cohérente avec les enjeux environnementaux de la restauration collective.
-
-#### Visualisations retenues
-
-Pour répondre à la question, plusieurs visualisations complémentaires sont utilisées :
-
-* **Bar chart** : comparer les restaurants entre eux
-* **Classement (top / bottom)** : identifier les extrêmes
-* **Histogramme avec seuil** : analyser la distribution globale
-* **Indicateurs agrégés** : quantifier les restaurants au-dessus / en dessous d’un objectif
-
-Cette approche multi-niveaux permet d’éviter une conclusion basée sur un seul graphique.
-
-
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# Préparation des données
-
-library(tidyverse)
-
-menus <- read_csv("../data/menus_complets_enrichis.csv")
-
-menus_clean <- menus %>%
-  filter(!is.na(impact_carbone)) %>%
-  mutate(impact_carbone = str_to_lower(impact_carbone))
-
-eco_score <- menus_clean %>%
-  group_by(restaurant_id) %>%
-  summarise(
-    total_plats = n(),
-    plats_bas_carbone = sum(impact_carbone == "bas"),
-    part_bas_carbone = plats_bas_carbone / total_plats
-  )
-
-# Chargement des restaurants
-restaurants <- read_csv("../data/liste_restaurants.csv")
-
-# Jointure des scores environnementaux avec les informations des restaurants
-eco_score_named <- eco_score %>%
-  left_join(restaurants, by = c("restaurant_id" = "code")) %>%
-  select(restaurant_id, nom, region.libelle, part_bas_carbone)
-
-# Analyse globale : comparaison entre restaurants
-
-ggplot(eco_score_named,
-       aes(x = reorder(nom, part_bas_carbone),
-           y = part_bas_carbone)) +
-  geom_col(fill = "darkgreen") +
-  coord_flip() +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(
-    title = "Part de plats à faible impact carbone par restaurant",
-    x = "Restaurant",
-    y = "Part de plats à faible impact carbone"
-  ) +
-  theme_minimal()
-```
-
-### Commentaire
-
-Le graphique présentant la part de plats à faible impact carbone pour l’ensemble des restaurants met en évidence une forte dispersion des valeurs.
-Bien que certains restaurants atteignent une proportion très élevée de plats bas carbone, d’autres présentent une offre beaucoup plus limitée.
-**La lisibilité du graphique est toutefois réduite par le grand nombre d’établissements**, ce qui justifie l’introduction d’analyses ciblées sur des sous-ensembles de restaurants (classements et seuils).
-
-### Critique
-* Trop de restaurants -> **surcharge visuelle**
-* Graphique utile pour constater l’hétérogénéité, mais pas pour identifier précisément les établissements
-* Nécessité de résumer l’information
-
-
-###  Focus sur les extrêmes : meilleurs et moins bons restaurants
-
-
-```{r,echo=FALSE}
-# a) Restaurants les plus écoresponsables (Top 20)
-
-top_eco_restaurants <- eco_score_named %>%
-  arrange(desc(part_bas_carbone)) %>%
-  slice_head(n = 20)
-
-ggplot(top_eco_restaurants,
-       aes(x = reorder(nom, part_bas_carbone),
-           y = part_bas_carbone)) +
-  geom_col(fill = "darkgreen") +
-  coord_flip() +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(
-    title = "Restaurants les plus écoresponsables",
-    x = "Restaurant",
-    y = "Part de plats à faible impact carbone"
-  ) +
-  theme_minimal()
-```
-
-### Commentaire 
-
-Les restaurants les plus écoresponsables se distinguent par une proportion très élevée de plats à faible impact carbone, de 100 %.
-
-Ces établissements proposent une offre fortement orientée vers des plats peu carbonés, ce qui peut refléter une spécialisation (cafétérias, points de vente légers) ou des choix alimentaires plus végétariens.
-
-### Critique
-* Ces résultats ne signifient pas nécessairement une démarche environnementale volontaire
-* La structure de l’offre (type de restaurant) influence fortement le score
-* Les restaurants très spécialisés peuvent être favorisés
-
-
-```{r,echo=FALSE}
-# b) Restaurants les moins écoresponsables (Bottom 20)
-
-bottom_eco_restaurants <- eco_score_named %>%
-  arrange(part_bas_carbone) %>%
-  slice_head(n = 20)
-
-ggplot(bottom_eco_restaurants,
-       aes(x = reorder(nom, part_bas_carbone),
-           y = part_bas_carbone)) +
-  geom_col(fill = "firebrick") +
-  coord_flip() +
-  scale_y_continuous(labels = scales::percent_format()) +
-  labs(
-    title = "Restaurants les moins écoresponsables",
-    subtitle = "Plus faible proportion de plats à faible impact carbone",
-    x = "Restaurant",
-    y = "Part de plats à impact carbone bas"
-  ) +
-  theme_minimal()
-```
-
-### Commentaire
-
-Les restaurants les moins écoresponsables présentent une proportion nettement plus faible de plats à faible impact carbone.
-Toutefois, même parmi ces établissements, la part de plats bas carbone reste rarement nulle, ce qui suggère une présence minimale d’alternatives plus durables dans l’offre globale.
-
-Point important (à souligner)
-
-`Être dans le bas du classement ne signifie pas absence totale d’efforts, mais plutôt une offre dominée par des plats plus carbonés` , souvent liée à :
-
-* une offre majoritairement carnée,
-* des menus traditionnels,
-* ou des contraintes de restauration collective.
-
-
-### Analyse par seuil environnemental
-
-Plutôt qu’un classement arbitraire, on introduit un **seuil** permettant d’évaluer si un restaurant atteint un objectif environnemental donné.
-
-```{r,echo=FALSE}
-seuil <- 0.90  # 80 %
-
-#  Distribution globale avec seuil
-
-ggplot(eco_score_named, aes(x = part_bas_carbone)) +
-  geom_histogram(bins = 20, fill = "grey70", color = "white") +
-  geom_vline(xintercept = seuil, color = "red", linetype = "dashed") +
-  scale_x_continuous(labels = scales::percent_format()) +
-  labs(
-    title = "Distribution des restaurants selon leur part de plats bas carbone",
-    subtitle = paste("Seuil fixé à", seuil * 100, "%"),
-    x = "Part de plats à faible impact carbone",
-    y = "Nombre de restaurants"
-  ) +
-  theme_minimal()
-
-# Nombre de restaurants au-dessus / en dessous du seuil
-
-repartition_seuil <- eco_score_named %>%
-  summarise(
-    total_restaurants = n(),
-    nb_en_dessous = sum(part_bas_carbone < seuil),
-    nb_au_dela = sum(part_bas_carbone >= seuil),
-    part_au_dela = nb_au_dela / total_restaurants
-  )
-
-repartition_seuil
-```
-### Commentaire
-
-L’histogramme montre une distribution fortement concentrée vers les valeurs élevées de part de plats bas carbone.
-Le seuil de 90 % se situe à l’intérieur de la masse principale de la distribution, ce qui explique pourquoi une majorité de restaurants le dépasse malgré le caractère a priori exigeant de ce seuil.
-
- `Point important :`
-Le seuil de 90 %, bien que élevé en apparence, reste atteint par une majorité de restaurants, ce qui montre que :
-
-* l’indicateur utilisé est fortement influencé par la nature des plats proposés,
-* certains types de restaurants (cafétérias, points de vente rapides) sont structurellement favorisés.
-
-### Conclusion et limites
-
-Cette analyse montre qu’il est possible d’évaluer l’écoresponsabilité des restaurants universitaires à partir de leurs menus et met en évidence des écarts entre établissements. Toutefois, la forte proportion de plats à faible impact carbone limite la capacité de l’indicateur à réellement les différencier.
-Les résultats restent à interpréter avec prudence en raison d’une catégorisation simplifiée, de l’absence de pondération par la fréquence de service et de la non-prise en compte d’autres enjeux environnementaux. 
-
-
-<br>
-<hr>
-<br>
-
-<br>
-<hr>
-<br>
 
 ## Question 15 : Existe-t-il une fracture nutritionnelle entre les régions ou les villes ?
 
@@ -1545,50 +1317,414 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 
 - "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
 
-## Une minorité de plats concentre-t-elle la majorité des occurrences ?
 
 
-```{r}
+## Q23 — Quelle est la distribution calorique des plats proposés dans les restaurants CROUS ?
 
-library(dplyr)
+**Hypothèse**
+Les plats servis en restauration universitaire devraient couvrir un repas complet, donc tendre vers 600–900 kcal. On s'attend à une distribution unimodale centrée sur cette plage.
+
+**Méthode choisie**  : Histogramme + densité KDE + lignes médiane/moyenne
+
+**Pourquoi** : L'histogramme révèle la forme brute de la distribution (modes, asymétrie, queues). La densité KDE lisse le bruit de discrétisation. Les deux lignes de position centrale permettent de détecter l'asymétrie sans calcul supplémentaire. C'est la méthode canonique pour une variable continue sans groupement naturel.
+```{r include=FALSE}
+library(tidyverse)
 library(ggplot2)
-library(readr)
 library(lubridate)
+library(scales)
 
-menus <- read_csv(
-  "../data/menus_complets_enrichis.csv",
-  show_col_types = FALSE
-)
+# ── Menus
+menus <- read_csv("menus_complets_enrichis.csv", show_col_types = FALSE) |>
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
 
-restaurants <- read_csv(
-  "../data/liste_restaurants.csv",
-  show_col_types = FALSE
-)
-# Jointure pour récupérer le nom du restaurant
-data <- menus %>%
-  left_join(
-    restaurants %>%
-      select(code, nom),
-    by = c("restaurant_id" = "code")
+# Vérification rapide
+message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " → ", max(menus$date, na.rm=TRUE))
+message("Lignes : ", nrow(menus))
+
+# ── Restaurants (jointure
+restos <- read_csv("liste_restaurants.csv",
+                   show_col_types = FALSE) |>
+  select(code, nom, region.libelle) |>
+  mutate(
+    nom_court = if_else(nchar(nom) > 32,
+                         paste0(substr(nom, 1, 30), "…"), nom)
   )
 
-pareto <- data %>%
-  count(plat, sort = TRUE) %>%
-  mutate(
-    part = n / sum(n),
-    part_cum = cumsum(part)
-  )
-pareto <- data %>%
-  count(plat, sort = TRUE) %>%
-  mutate(
-    part_cum = cumsum(n) / sum(n)
-  ) %>%
-  filter(part_cum <= 0.80)
-
-ggplot(pareto, aes(x = reorder(plat, -n))) + geom_col(aes(y = n), fill = "#1a6fa8") + geom_line(aes(y = part_cum * max(n), group = 1), color = "red", linewidth = 1) + geom_point(aes(y = part_cum * max(n)), color = "red") + scale_y_continuous( name = "Fréquence des plats", sec.axis = sec_axis(~ . / max(pareto$n), name = "Proportion cumulée") ) + labs( title = "Concentration de l’offre culinaire (loi de Pareto)", subtitle = "Une minorité de plats concentre-t-elle la majorité des occurrences ?", x = "Plats (classés par fréquence)" ) + theme_minimal() + theme(axis.text.x = element_blank())
-
+# Fonction utilitaire : join rapide sur menus
+join_restos <- function(df) {
+  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
+    mutate(nom_court = coalesce(nom_court,
+                                 paste0("ID ", restaurant_id)))
+}
 ```
 
-### **Interpretation**
-Le diagramme de Pareto révèle une concentration significative de l'offre culinaire. Un nombre restreint de plats concentre une grande partie des occurrences observées, tandis que la majorité des plats présente des fréquences faibles. Cette structure traduit l'existence de préférences marquées des consommateurs pour certains plats, les autres constituant une longue traîne de produits moins demandés.
 
+```{r echo=FALSE}
+# Q23 — Distribution des calories
+menus_cal <- menus |>
+  filter(!is.na(calories_estimees), calories_estimees > 0)
+
+med_cal  <- median(menus_cal$calories_estimees)
+moy_cal  <- mean(menus_cal$calories_estimees)
+bw       <- 50   # binwidth histogramme
+
+ggplot(menus_cal, aes(x = calories_estimees)) +
+  geom_histogram(binwidth = bw, fill = "#AFA9EC",
+                  colour = "white", linewidth = 0.25, alpha = 0.85) +
+  geom_density(aes(y = after_stat(count) * bw),
+               colour = "#534AB7", linewidth = 0.9) +
+  geom_vline(xintercept = med_cal, linetype = "dashed",
+             colour = "#3C3489", linewidth = 0.8) +
+  geom_vline(xintercept = moy_cal, linetype = "dotted",
+             colour = "#D85A30", linewidth = 0.8) +
+  annotate("text", x = med_cal + 25, y = Inf, vjust = 1.6, hjust = 0,
+           label = paste0("Médiane : ", round(med_cal), " kcal"),
+           colour = "#3C3489", size = 3.2, fontface = "bold") +
+  annotate("text", x = moy_cal + 25, y = Inf, vjust = 3.2, hjust = 0,
+           label = paste0("Moyenne : ", round(moy_cal), " kcal"),
+           colour = "#D85A30", size = 3.2, fontface = "bold") +
+  scale_x_continuous(breaks = seq(0, 2000, 200),
+                     labels = label_number(suffix = " kcal"),
+                     limits = c(0, NA)) +
+  scale_y_continuous(labels = label_comma()) +
+  labs(title    = "Distribution des calories estimées par plat",
+       subtitle = "Tous restaurants et toutes catégories confondus",
+       x = "Calories estimées (kcal)", y = "Nombre de plats",
+       caption  = "Tirets = médiane · Pointillés = moyenne") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title       = element_text(size = 13, face = "bold"),
+        panel.grid.minor = element_blank())
+```
+**Résultats — lecture précise du graphique**
+
+**Médiane** = 250 kcal, Moyenne = 265 kcal → léger écart indiquant une asymétrie droite modérée
+La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
+
+**Bosse 1** ~50–100 kcal : petit groupe de plats très légers (boissons, condiments ?)
+**Bosse 2** ~150–200 kcal : second groupe intermédiaire (desserts, fruits ?)
+Pic principal ~250–300 kcal : mode dominant, ~20 000 plats — écrasant
+**Bosse 3** ~450–500 kcal : groupe secondaire notable (~2 500 plats)
+Queue droite ~600–700+ kcal : plats caloriques, effectifs très faibles
+
+
+Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plats
+
+**Interprétation critique**
+
+*L'hypothèse est infirmée — et de loin*.
+
+La valeur centrale (~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité — ce qui tire mécaniquement la moyenne vers le bas.
+
+La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente — ni un dessert (~100 kcal), ni un plat principal (~500 kcal).
+
+Verdict : le graphique répond à la question posée, mais la question elle-même était mal formulée. Demander la distribution "des plats" sans distinguer les catégories revient à calculer la taille moyenne d'un humain en mélangeant nourrissons et adultes.
+
+➜ Nouveau cycle
+Nouvelle question : La distribution calorique diffère-t-elle significativement selon la catégorie de plat ? (soit la Q.24)
+
+
+## Q10 — Les restaurants CROUS renouvellent-ils activement et régulièrement leur carte ?
+
+**Hypothèse**
+
+Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes.
+
+**Méthode choisie** : Courbes cumulées par restaurant 
+**Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible.
+**PS**:On recupere les top 8 pour plus de lisibilité
+```{r echo=FALSE}
+# Q10 — Renouvellement cumulé des plats 
+
+nouveautes <- menus |>
+  filter(!is.na(date)) |>
+  group_by(restaurant_id, plat) |>
+  summarise(premiere_date = min(date), .groups = "drop") |>
+  mutate(semaine = floor_date(premiere_date,
+                               unit = "week", week_start = 1))
+
+top_ids <- nouveautes |>
+  count(restaurant_id, sort = TRUE) |>
+  slice_head(n = 8) |>
+  pull(restaurant_id)
+
+nouveautes_top <- nouveautes |>
+  filter(restaurant_id %in% top_ids) |>
+  count(restaurant_id, semaine) |>
+  group_by(restaurant_id) |>
+  arrange(semaine) |>
+  mutate(cumul = cumsum(n)) |>
+  ungroup() |>
+  join_restos() |>
+  mutate(nom_court = as.factor(nom_court))
+
+# ── Calcul des breaks depuis les données réelles
+date_min <- floor_date(min(nouveautes_top$semaine), "week", week_start = 1)
+date_max <- ceiling_date(max(nouveautes_top$semaine), "week", week_start = 1)
+
+# Breaks hebdomadaires forcés sur toute la plage
+breaks_x <- seq.Date(date_min, date_max, by = "1 week")
+
+# Si trop de semaines (>16), espacer d'une semaine sur deux
+if (length(breaks_x) > 16) {
+  breaks_x <- breaks_x[seq(1, length(breaks_x), by = 2)]
+}
+
+ggplot(nouveautes_top,
+       aes(x = semaine, y = cumul,
+           colour = nom_court, group = nom_court)) +
+  geom_line(linewidth = 0.95, alpha = 0.9) +
+  geom_point(size = 2, alpha = 0.8) +
+  scale_colour_brewer(palette = "Dark2", name = NULL) +
+  scale_x_date(
+    breaks = breaks_x,                   # ← breaks forcés depuis les données
+    labels = function(d) format(d, "%d %b"),
+    expand = expansion(mult = c(0.02, 0.02))
+  ) +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 6),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title    = "Renouvellement cumulé des plats — top 8 restaurants",
+    subtitle = "Nombre cumulé de plats apparus pour la première fois, par semaine",
+    x = NULL, y = "Plats nouveaux (cumulés)",
+    caption  = "Un 'nouveau plat' = première apparition dans un restaurant donné"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(size = 13, face = "bold"),
+    axis.text.x      = element_text(angle = 45, hjust = 1, size = 8.5),
+    legend.position  = "right",
+    legend.text      = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )
+```
+
+
+**Interprétation critique**
+
+Le graphe s'arrête au 6 avril — et ce n'est pas un bug. C'est le résultat le plus important de cette analyse.
+
+**Ce que le graphe dit réellement** : l'intégralité du catalogue de chaque restaurant a été introduite en **3 semaines** (fin mars → début avril). Après le 6 avril, aucun nouveau plat n'apparaît dans aucun des 8 restaurants — les données couvrent pourtant jusqu'au 23 mai, soit encore **7 semaines supplémentaires** de données non représentées ici car elles ne contiennent aucune nouveauté.
+
+**Traduction concrète** : à partir de la semaine du 6 avril, les restaurants CROUS tournent en boucle sur un catalogue fixe. Les plats observés après cette date sont tous des répétitions de plats déjà servis. Il n'y a pas de renouvellement — il y a de la **rotation**.
+
+**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total. Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
+
+➜ **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte — ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
+
+
+
+## Q14 — Les restaurants CROUS ont-ils des profils d'écoresponsabilité contrastés ?
+
+**Hypothèse**
+
+Les restaurants présentent des comportements environnementaux hétérogènes : certains proposent une offre massivement bas-carbone, d'autres non. On s'attend à une distribution dispersée avec des écarts significatifs entre établissements.
+
+**Méthode choisie** : Classification par tertiles + barplots empilés, jutifié par le fait que les tertiles permettent une comparaison relative entre restaurants sans présupposer un seuil normatif externe.
+```{r echo=FALSE}
+# Q14 — Structure relative de l’offre selon l’impact carbone des plats
+# Classification comparative par tertiles
+# Nécessite le bloc INIT exécuté avant
+
+# ── Étape 0 : diagnostic de la distribution réelle
+menus |>
+  filter(!is.na(impact_carbone)) |>
+  count(impact_carbone) |>
+  mutate(pct = round(n / sum(n) * 100, 1)) |>
+  print()
+
+# ── Étape 1 : calcul de la structure d’offre par restaurant
+eco_base <- menus |>
+  filter(!is.na(impact_carbone)) |>
+  group_by(restaurant_id) |>
+  summarise(
+    total       = n(),
+    n_bas       = sum(impact_carbone == "Bas"),
+    n_moyen     = sum(impact_carbone == "Moyen"),
+    n_eleve     = sum(impact_carbone == "Élevé"),
+    pct_bas     = n_bas   / total * 100,
+    pct_moyen   = n_moyen / total * 100,
+    pct_eleve   = n_eleve / total * 100,
+    .groups     = "drop"
+  ) |>
+  filter(total >= 50)
+
+# ── Étape 2 : seuils dynamiques (tertiles empiriques)
+seuil_bas  <- quantile(eco_base$pct_bas, 0.33)
+seuil_haut <- quantile(eco_base$pct_bas, 0.67)
+
+message(sprintf(
+  "Seuils empiriques (tertiles) : Faible < %.1f%% · Intermédiaire %.1f–%.1f%% · Forte ≥ %.1f%%",
+  seuil_bas, seuil_bas, seuil_haut, seuil_haut
+))
+
+# ── Étape 3 : classification descriptive (non normative)
+eco_score <- eco_base |>
+  mutate(
+    profil = case_when(
+      pct_bas >= seuil_haut ~ "Forte part de plats à impact bas",
+      pct_bas >= seuil_bas  ~ "Part intermédiaire de plats à impact bas",
+      TRUE                  ~ "Faible part de plats à impact bas"
+    ),
+    profil = factor(
+      profil,
+      levels = c(
+        "Forte part de plats à impact bas",
+        "Part intermédiaire de plats à impact bas",
+        "Faible part de plats à impact bas"
+      )
+    )
+  ) |>
+  join_restos()
+
+# Vérification
+message("Répartition des profils descriptifs :")
+eco_score |> count(profil) |> print()
+
+# ── Graphe 1 : vue macro
+resume_profil <- eco_score |>
+  count(profil) |>
+  mutate(
+    pct   = n / sum(n) * 100,
+    label = paste0(n, " restaurants\n(", round(pct, 1), "%)")
+  )
+
+p_macro <- ggplot(resume_profil,
+                  aes(x = profil, y = n, fill = profil)) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(aes(label = label),
+            vjust = -0.35, size = 3.4,
+            lineheight = 0.9, colour = "#222") +
+  scale_fill_manual(values = c(
+    "Forte part de plats à impact bas"        = "#1D9E75",
+    "Part intermédiaire de plats à impact bas"= "#EF9F27",
+    "Faible part de plats à impact bas"       = "#E24B4A"
+  )) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.25))) +
+  labs(
+    title    = "Orientation carbone relative de l’offre des restaurants",
+    subtitle = sprintf(
+      "Classification comparative par tertiles — seuils empiriques : %.1f%% et %.1f%%",
+      seuil_bas, seuil_haut
+    ),
+    x = NULL,
+    y = "Nombre de restaurants",
+    caption =
+      "Analyse descriptive de la structure d’offre\nSeuils définis à partir de la distribution observée\nRestaurants avec ≥ 50 plats documentés"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title         = element_text(size = 13, face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank()
+  )
+
+print(p_macro)
+
+# ── Fonction commune pour les graphes détaillés
+make_profil_plot <- function(profil_cible, couleur_titre, n_top = 20) {
+
+  df <- eco_score |>
+    filter(profil == profil_cible) |>
+    slice_max(pct_bas, n = n_top, with_ties = FALSE) |>
+    arrange(pct_bas) |>
+    mutate(nom_court = factor(nom_court, levels = nom_court))
+
+  if (nrow(df) == 0) return(NULL)
+
+  n_affiche <- nrow(df)
+
+  df_long <- df |>
+    pivot_longer(c(pct_bas, pct_moyen, pct_eleve),
+                 names_to  = "impact",
+                 values_to = "pct") |>
+    mutate(
+      impact = factor(
+        impact,
+        levels = c("pct_eleve", "pct_moyen", "pct_bas"),
+        labels = c("Élevé", "Moyen", "Bas")
+      )
+    )
+
+  ggplot(df_long, aes(x = nom_court, y = pct, fill = impact)) +
+    geom_col(width = 0.72) +
+    geom_text(
+      data = df,
+      aes(x = nom_court, y = pct_bas / 2,
+          label = paste0(round(pct_bas, 1), "%")),
+      colour = "white", size = 2.8, fontface = "bold",
+      inherit.aes = FALSE
+    ) +
+    geom_text(
+      data = df,
+      aes(x = nom_court, y = 103,
+          label = paste0(round(pct_bas, 1), "% bas")),
+      size = 2.5, hjust = 0, colour = "#444",
+      inherit.aes = FALSE
+    ) +
+    scale_fill_manual(
+      values = c("Bas" = "#1D9E75",
+                 "Moyen" = "#EF9F27",
+                 "Élevé" = "#E24B4A"),
+      name = "Impact carbone"
+    ) +
+    scale_y_continuous(
+      breaks = seq(0, 100, 25),
+      labels = function(x) paste0(x, "%"),
+      limits = c(0, 140)
+    ) +
+    coord_flip() +
+    labs(
+      title = paste0(
+        profil_cible, " — top ", n_affiche, " restaurants"
+      ),
+      subtitle = "Structure relative de l’offre (classification comparative)",
+      x = NULL,
+      y = "Part des plats (%)",
+      caption =
+        "% blanc = part de plats à impact bas · valeur à droite = score descriptif"
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title      = element_text(size = 13, face = "bold",
+                                     colour = couleur_titre),
+      legend.position = "bottom",
+      panel.grid.major.y = element_blank(),
+      axis.text.y     = element_text(size = 9)
+    )
+}
+
+# ── Génération des graphes détaillés
+p_fort   <- make_profil_plot(
+  "Forte part de plats à impact bas", "#0F6E56"
+)
+p_inter  <- make_profil_plot(
+  "Part intermédiaire de plats à impact bas", "#B37310"
+)
+p_faible <- make_profil_plot(
+  "Faible part de plats à impact bas", "#A32D2D"
+)
+
+print(p_fort)
+print(p_inter)
+print(p_faible)
+```
+
+**Résultats — lecture des graphiques**
+Distribution globale (Image 1) :
+
+94,8% des plats sont à impact "Bas", 4,9% "Moyen", 0,3% "Très Haut"
+Seuils tertiles : Faible < 93,7% · Intermédiaire 93,7–100% · Forte = 100%
+Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
+
+-->  Ce n'est plus une répartition en tiers égaux — la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de pct_bas est très concentrée vers 100%.
+
+**Interprétation critique**
+**L'hypothèse est infirmée.**
+
+Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points — sur une variable qui varie entre 88,8% et 100%, soit une plage de variation extrêmement comprimée.
+
+La classification en tertiles amplifie visuellement des différences qui sont, en valeur absolue, négligeables. Un restaurant à 88,8% de plats bas-carbone ne peut raisonnablement pas être qualifié de "faible" en écoresponsabilité.
+
+Anomalie révélatrice : Le seuil supérieur est à 100% — cela signifie qu'un tiers des restaurants ne servent aucun plat à impact moyen ou élevé. Ce n'est pas de l'écoresponsabilité différenciée, c'est une contrainte d'approvisionnement ou de catégorisation qui force les menus vers le "Bas".
