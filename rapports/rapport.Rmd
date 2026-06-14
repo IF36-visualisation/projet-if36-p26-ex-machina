@@ -273,6 +273,94 @@ On observe une **chute marquée de l'offre à partir de la semaine du 6 avril**,
 
 ---
 
+## Question 3 : Quelle est la fréquence d'ouverture réelle des restaurants sur l'année ?
+
+Cette question cherche à estimer la fréquence à laquelle les restaurants apparaissent réellement ouverts dans les données, en utilisant les jours où au moins un menu est observé comme indicateur d'ouverture effective. L'objectif est de dépasser les horaires déclarés, qui peuvent être incomplets ou théoriques, pour mesurer l'activité effectivement visible dans le jeu de données.
+
+Les données utilisées sont : `restaurant_id`, `date` dans le fichier des menus et les informations descriptives des restaurants issues de `liste_restaurants.csv`.
+
+#### **Méthodologie et nettoyage**
+
+Pour chaque restaurant, nous comptons le nombre de dates distinctes où au moins un menu est renseigné. Ce nombre est ensuite rapporté au nombre total de jours couverts par le fichier de menus (du 27/03/2026 au 23/05/2026, soit 58 jours). L’annualisation est réalisée en multipliant la fréquence observée sur cette période par 365, afin d’estimer le nombre de jours d’ouverture sur une année complète. Cette estimation reste indicative, car elle suppose que le comportement observé sur 2 mois est représentatif de l’année entière.
+
+#### **Visualisation et analyse**
+
+```{r q3-frequence-ouverture-reelle, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=6, out.width="100%"}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(readr)
+library(scales)
+
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
+  mutate(date = dmy(date))
+
+restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
+
+periode <- menus %>%
+  summarise(
+    date_debut = min(date, na.rm = TRUE),
+    date_fin   = max(date, na.rm = TRUE),
+    nb_jours   = as.integer(date_fin - date_debut) + 1
+  )
+
+ouverture_reelle <- menus %>%
+  distinct(restaurant_id, date) %>%
+  count(restaurant_id, name = "jours_avec_menu") %>%
+  right_join(
+    restaurants %>% select(code, nom, type.libelle, region.libelle),
+    by = c("restaurant_id" = "code")
+  ) %>%
+  mutate(
+    jours_avec_menu = coalesce(jours_avec_menu, 0L),
+    frequence_observee = jours_avec_menu / periode$nb_jours,
+    jours_annualises = frequence_observee * 365,
+    classe_frequence = cut(
+      frequence_observee,
+      breaks = c(-Inf, 0, 0.10, 0.25, 0.50, 0.75, Inf),
+      labels = c("0 %", "1-10 %", "10-25 %", "25-50 %", "50-75 %", "75-100 %")
+    )
+  )
+
+ggplot(ouverture_reelle, aes(x = classe_frequence)) +
+  geom_bar(fill = "#1a6fa8", width = 0.75) +
+  geom_text(
+    stat = "count",
+    aes(label = after_stat(count)),
+    vjust = -0.35,
+    size = 3.4
+  ) +
+  scale_y_continuous(labels = comma_format(big.mark = " "), expand = expansion(mult = c(0, 0.08))) +
+  labs(
+    title = "Fréquence d'ouverture réelle observée des restaurants",
+    subtitle = paste0(
+      "Indicateur : présence d'au moins un menu par jour, du ",
+      format(periode$date_debut, "%d/%m/%Y"), " au ",
+      format(periode$date_fin, "%d/%m/%Y"),
+      " ; fréquence annualisée uniquement indicative"
+    ),
+    x = "Part des jours couverts avec au moins un menu",
+    y = "Nombre de restaurants"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.major.x = element_blank()
+  )
+```
+
+### Commentaire
+
+Le graphique met en évidence une forte hétérogénéité d'activité : 562 restaurants n'apparaissent jamais dans les menus observés (0 %), tandis qu'un noyau d'établissements publie des menus sur une part importante des jours couverts. Cette mesure correspond donc davantage à une ouverture effective observable qu'à une ouverture administrative.
+
+### Critique
+
+- Les données de menus ne couvrent pas toute l'année civile (du 27/03/2026 au 23/05/2026) : l'annualisation est une approximation.
+- L'absence de menu ne signifie pas nécessairement que le restaurant est fermé (ex. : la classe « 0 % » inclut les restaurants absents des données pour toute la période) : il peut aussi s'agir d'une absence de saisie ou d'un défaut de collecte.
+- La mesure est plus fiable pour comparer les restaurants entre eux que pour affirmer un nombre exact de jours d'ouverture annuels, surtout pour les classes inférieures à 10 %.
+
+---
+
 ## Question 5 : Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
 
 Nous nous intéressons à la qualité nutritionnelle de l'offre de restauration collective CROUS. Le CROUS constitue la principale solution de restauration pour la population étudiante, offrant des repas à tarif social.
@@ -552,6 +640,96 @@ En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories 
 <hr>
 <br>
 
+## Question 9 : Les restaurants accessibles PMR offrent-ils des menus plus sains ?
+
+Cette question vise à vérifier si l’accessibilité PMR d’un restaurant est associée à une offre nutritionnelle différente. L’idée n’est pas de supposer un lien causal, mais de comparer les distributions de Nutri-Score entre restaurants accessibles et non accessibles aux personnes à mobilité réduite.
+
+Les données utilisées sont : `ispmr` dans `liste_restaurants.csv`, `nutriscore` et `restaurant_id` dans `menus_complets_enrichis.csv`.
+
+#### **Méthodologie et nettoyage**
+
+Les menus sont joints à la table des restaurants grâce à l’identifiant du restaurant. Les Nutri-Scores sont ordonnés de A à E, puis comparés en proportions afin d’éviter que les restaurants PMR, potentiellement plus nombreux ou plus actifs, ne dominent mécaniquement le graphique. Un score numérique indicatif est aussi calculé pour le sous-titre : A vaut 5 points, B 4 points, C 3 points, D 2 points et E 1 point.
+
+#### **Visualisation et analyse**
+
+```{r q9-pmr-menus-sains, echo=FALSE, message=FALSE, warning=FALSE, fig.width=11, fig.height=6, out.width="100%"}
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(scales)
+
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE)
+restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
+
+pmr_nutri <- menus %>%
+  filter(nutriscore %in% c("A", "B", "C", "D", "E")) %>%
+  left_join(
+    restaurants %>% select(code, ispmr),
+    by = c("restaurant_id" = "code")
+  ) %>%
+  filter(!is.na(ispmr)) %>%
+  mutate(
+    accessibilite = if_else(ispmr, "Accessible PMR", "Non accessible PMR"),
+    nutriscore = factor(nutriscore, levels = c("A", "B", "C", "D", "E")),
+    score_sante = case_when(
+      nutriscore == "A" ~ 5,
+      nutriscore == "B" ~ 4,
+      nutriscore == "C" ~ 3,
+      nutriscore == "D" ~ 2,
+      nutriscore == "E" ~ 1,
+      TRUE ~ NA_real_
+    )
+  )
+
+scores_moyens <- pmr_nutri %>%
+  group_by(accessibilite) %>%
+  summarise(score_moyen = mean(score_sante), .groups = "drop")
+
+subtitle_q9 <- paste(
+  paste0(scores_moyens$accessibilite, " : score moyen ", round(scores_moyens$score_moyen, 2), "/5"),
+  collapse = " | "
+)
+
+ggplot(pmr_nutri, aes(x = accessibilite, fill = nutriscore)) +
+  geom_bar(position = "fill", width = 0.65) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_fill_manual(
+    values = c(
+      "A" = "#549464",
+      "B" = "#a3cc75",
+      "C" = "#f5d44c",
+      "D" = "#db9346",
+      "E" = "#cf6342"
+    ),
+    name = "Nutri-Score"
+  ) +
+  labs(
+    title = "Répartition des Nutri-Scores selon l'accessibilité PMR",
+    subtitle = subtitle_q9,
+    x = NULL,
+    y = "Proportion de plats"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "bottom",
+    panel.grid.major.x = element_blank()
+  )
+```
+
+### Commentaire
+
+Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) présentent une répartition quasi identique des Nutri-Scores, avec un score moyen de 3,26/5 pour chacun. Les proportions de plats notables (A-B), intermédiaires (C) et moins favorables (D-E) sont donc comparables, ce qui suggère qu’aucune différence nutritionnelle marquée n’est associée à l’accessibilité PMR dans l’offre observée.
+
+### Critique
+
+- L’accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété comme causal.
+- Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d’où l’utilisation de proportions plutôt que de volumes bruts.
+- Le score moyen (A=5, E=1) affiché dans le sous-titre permet une comparaison globale entre les deux groupes.
+- Les Nutri-Scores proviennent d’un enrichissement du jeu de données ; les limites de qualité évoquées dans le rapport s’appliquent aussi ici.
+
+---
+
 ## Question 13 : Existe-t-il un lien entre calories et Nutri-Score ?
 
 La qualité nutritionnelle d'un plat, mesurée par le Nutri-Score, intègre de nombreux facteurs (nutriments à limiter comme les acides gras saturés, le sucre, le sel, ou à favoriser comme les fibres et protéines). On cherche à savoir si l'apport calorique global d'un plat est directement lié à sa note. On s'attend théoriquement à ce que les plats les moins caloriques obtiennent les meilleures notes (A, B) et les bombes caloriques soient classées en D ou E.
@@ -561,7 +739,7 @@ library(dplyr)
 library(ggplot2)
 library(readr)
 
-menus <- read_csv("menus_complets_enrichis.csv")
+menus <- read_csv("../data/menus_complets_enrichis.csv")
 
 # Nettoyage
 df <- menus %>%
@@ -1270,7 +1448,7 @@ Les différents styles culinaires de nos menus (Fraîcheur, Plats sucrés, Produ
 library(tidyverse)
 
 # Chargement
-menus <- read.csv("menus_complets_enrichis.csv")
+menus <- read.csv("../data/menus_complets_enrichis.csv")
 
 # Nettoyage des données
 df_clean <- menus %>%
@@ -1340,12 +1518,12 @@ library(readr)
 library(lubridate)
 
 menus <- read_csv(
-  "menus_complets_enrichis.csv",
+  "../data/menus_complets_enrichis.csv",
   show_col_types = FALSE
 )
 
 restaurants <- read_csv(
-  "liste_restaurants.csv",
+  "../data/liste_restaurants.csv",
   show_col_types = FALSE
 )
 # Jointure pour récupérer le nom du restaurant
