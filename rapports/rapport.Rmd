@@ -1077,11 +1077,10 @@ Le graphique révèle un comportement anormal : seules trois régions (Normandie
 
 L'offre culinaire des restaurants universitaires est-elle homogène sur tout le territoire, ou certaines régions proposent-elles des menus nettement plus variés ? Cette question est importante pour évaluer les inégalités d'accès à une alimentation diversifiée selon le lieu d'études.
 
-Mesurer la « diversité » n'est pas trivial : un simple comptage de plats distincts favorise mécaniquement les grandes régions qui comptent plus de restaurants. Nous mobilisons donc **trois indicateurs complémentaires**, qui éclairent chacun un aspect différent de la diversité :
+Mesurer la « diversité » n'est pas trivial : un simple comptage de plats distincts favorise mécaniquement les grandes régions qui comptent plus de restaurants. Nous mobilisons donc **deux indicateurs complémentaires**, qui éclairent chacun un aspect différent de la diversité :
 
 1. **Plats distincts par restaurant** — diversité normalisée par la taille de la région.
 2. **Entropie de Shannon** — mesure l'équilibre de la distribution des plats au sein de chaque restaurant : une entropie haute signifie que les plats sont variés *et* équilibrés (aucun ne domine massivement).
-3. **Composition par style culinaire** — répartition des grandes familles culinaires (Cuisine Traditionnelle, Street Food, Fraîcheur, Plats Sucrés, Soupes) pour aller au-delà du simple comptage et décrire *ce que* les régions proposent.
 
 Les régions avec un seul restaurant (Créteil, Rennes) sont exclues de l'analyse car elles ne permettent pas de généralisation régionale.
 
@@ -1090,8 +1089,6 @@ library(dplyr)
 library(ggplot2)
 library(readr)
 library(forcats)
-library(tidyr)
-library(scales)
 
 # ── Chargement ──────────────────────────────────────────────────────────────
 restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
@@ -1114,8 +1111,6 @@ regions_valides <- df %>%
 
 df <- df %>% filter(region %in% regions_valides)
 
-# ── Palette commune ─────────────────────────────────────────────────────────
-palette_regions <- colorRampPalette(c("#b7dde8", "#1a6fa8"))(length(regions_valides))
 ```
 
 ### Graphique 1 — Nombre de plats distincts par restaurant (diversité normalisée)
@@ -1203,18 +1198,20 @@ shannon_par_region <- shannon_par_resto %>%
   ) %>%
   mutate(
     region  = fct_reorder(region, shannon_moyen),
-    # Intervalle de confiance à 95 %
-    ic_low  = shannon_moyen - qt(0.975, df = n_rest - 1) * shannon_sd / sqrt(n_rest),
-    ic_high = shannon_moyen + qt(0.975, df = n_rest - 1) * shannon_sd / sqrt(n_rest)
+    # Intervalle indicatif à 95 %. L'approximation normale évite les segments
+    # illisibles lorsque certaines régions ont très peu de restaurants.
+    shannon_se = shannon_sd / sqrt(n_rest),
+    ic_low     = pmax(0, shannon_moyen - 1.96 * shannon_se),
+    ic_high    = shannon_moyen + 1.96 * shannon_se
   )
 
 ggplot(shannon_par_region,
-       aes(x = shannon_moyen, y = region, color = shannon_moyen)) +
+       aes(x = shannon_moyen, y = region)) +
   geom_segment(
     aes(x = ic_low, xend = ic_high, yend = region),
-    linewidth = 1, alpha = 0.35
+    color = "#b7cfe2", linewidth = 1.1, alpha = 0.8
   ) +
-  geom_point(size = 4, show.legend = FALSE) +
+  geom_point(aes(color = shannon_moyen), size = 4, show.legend = FALSE) +
   geom_vline(
     xintercept = mean(shannon_par_region$shannon_moyen),
     linetype = "dashed", color = "firebrick", linewidth = 0.8
@@ -1224,10 +1221,13 @@ ggplot(shannon_par_region,
     y = 1.5, label = "Moyenne", color = "firebrick", size = 3.2, hjust = 0
   ) +
   scale_color_gradient(low = "#b7dde8", high = "#1a6fa8") +
-  scale_x_continuous(limits = c(0, NA)) +
+  scale_x_continuous(
+    limits = c(0, max(shannon_par_region$ic_high, na.rm = TRUE) * 1.08),
+    expand = expansion(mult = c(0, 0.02))
+  ) +
   labs(
     title    = "Entropie de Shannon moyenne par région",
-    subtitle = "Mesure l'équilibre de la distribution des plats au sein de chaque restaurant\nLes segments représentent l'intervalle de confiance à 95 %",
+    subtitle = "Mesure l'équilibre de la distribution des plats au sein de chaque restaurant\nLes segments représentent un intervalle indicatif à 95 %",
     x        = "Entropie de Shannon moyenne (bits)",
     y        = NULL
   ) +
@@ -1240,7 +1240,7 @@ ggplot(shannon_par_region,
 
 #### Commentaire
 
-L'entropie de Shannon donne un classement partiellement différent du précédent. **Corse**, **Strasbourg** et **Lille** arrivent en tête, ce qui signifie que leurs restaurants proposent des menus à la fois variés *et* équilibrés, sans plats dominants répétés à l'excès. **Nice**, **Paris** et **Nancy-Metz** se retrouvent en bas du classement : leurs restaurants tournent autour d'un répertoire de plats très restreint. Les intervalles de confiance révèlent également une forte hétérogénéité intra-régionale (grands segments), notamment pour **Toulouse** et **Paris**, où les restaurants sont très inégaux entre eux.
+L'entropie de Shannon donne un classement partiellement différent du précédent. **Corse**, **Strasbourg** et **Lille** arrivent en tête, ce qui signifie que leurs restaurants proposent des menus à la fois variés *et* équilibrés, sans plats dominants répétés à l'excès. À l'inverse, **Nice**, **Antilles-Guyane** et **Montpellier** présentent les niveaux les plus faibles : leurs restaurants semblent tourner autour d'un répertoire de plats plus restreint ou plus répétitif. Le cas de **Toulouse** est intéressant : la région est bien placée sur le nombre de plats distincts par restaurant, mais nettement plus basse en entropie, ce qui suggère une diversité apparente moins équilibrée dans les restaurants.
 
 #### Critique
 
@@ -1249,74 +1249,16 @@ L'entropie de Shannon donne un classement partiellement différent du précéden
 
 ---
 
-### Graphique 3 — Composition par style culinaire (que proposent réellement les régions ?)
-
-Les deux métriques précédentes mesurent *combien* il y a de diversité, mais pas *quelle* diversité. Ce troisième graphique décrit la **composition culinaire** de chaque région : quelle part de l'offre est dédiée à la cuisine traditionnelle, au street food, aux plats frais ou sucrés ?
-
-```{r q16-graph3, echo=FALSE, message=FALSE, warning=FALSE, fig.width=14, fig.height=8, out.width="100%"}
-# Part de chaque style culinaire par région
-styles_region <- df %>%
-  group_by(region, style_culinaire) %>%
-  summarise(n = n(), .groups = "drop") %>%
-  group_by(region) %>%
-  mutate(pct = n / sum(n)) %>%
-  ungroup()
-
-# Ordonnancement des régions par part de "Cuisine Traditionnelle" (croissant → plus diversifiée)
-ordre_regions <- styles_region %>%
-  filter(style_culinaire == "Cuisine Traditionnelle") %>%
-  arrange(pct) %>%
-  pull(region)
-
-palette_styles <- c(
-  "Cuisine Traditionnelle" = "#1a6fa8",
-  "Street Food"            = "#e07b39",
-  "Fraîcheur"              = "#3aaa6e",
-  "Plats Sucrés"           = "#e8c63a",
-  "Soupes"                 = "#9b59b6"
-)
-
-styles_region %>%
-  mutate(region = factor(region, levels = ordre_regions)) %>%
-  ggplot(aes(x = pct, y = region, fill = style_culinaire)) +
-  geom_col(width = 0.8, position = "stack") +
-  scale_fill_manual(values = palette_styles, name = "Style culinaire") +
-  scale_x_continuous(labels = percent_format(accuracy = 1),
-                     expand = expansion(mult = c(0, 0.01))) +
-  labs(
-    title    = "Composition culinaire des menus par région",
-    subtitle = "Régions triées par part croissante de Cuisine Traditionnelle → les plus diversifiées en haut",
-    x        = "Part dans l'offre totale de la région",
-    y        = NULL
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title         = element_text(face = "bold", size = 14),
-    panel.grid.major.y = element_blank(),
-    legend.position    = "bottom"
-  )
-```
-
-#### Commentaire
-
-Ce graphique révèle que **la Cuisine Traditionnelle domine massivement l'offre dans toutes les régions**, représentant entre 70 % et 100 % des plats selon les territoires. Néanmoins, des nuances existent : **Bordeaux**, **Strasbourg** et **Amiens** affichent une proportion plus élevée de Street Food et de plats Fraîcheur, signe d'une offre plus contemporaine. À l'inverse, des régions comme **Nice**, **Montpellier** ou **Nancy-Metz** sont presque exclusivement ancrées dans la cuisine traditionnelle, ce qui confirme leur faible score d'entropie observé dans le graphique 2.
-
-#### Critique
-
-- La variable `style_culinaire` ne compte que 5 valeurs, ce qui limite fortement la granularité de l'analyse.
-- La prédominance de la Cuisine Traditionnelle peut refléter un biais d'encodage lors de l'enrichissement des données plutôt qu'une réalité culinaire.
-
----
-
 ### Synthèse
 
 | Indicateur | Classement « plus diversifié » | Classement « moins diversifié » |
 |---|---|---|
 | Plats distincts / restaurant | Lille, Strasbourg, Toulouse | Nice, Montpellier, Paris |
-| Entropie de Shannon | Corse, Strasbourg, Lille | Nice, Nancy-Metz, Paris |
-| Diversité stylistique | Bordeaux, Strasbourg, Amiens | Nice, Montpellier, Nancy-Metz |
+| Entropie de Shannon | Corse, Strasbourg, Lille | Nice, Antilles-Guyane, Montpellier |
 
-Les trois approches convergent sur plusieurs points : **Nice** et **Montpellier** apparaissent systématiquement comme les régions les moins diversifiées, tandis que **Strasbourg** et **Lille** figurent régulièrement parmi les plus riches. Cette convergence renforce la robustesse du diagnostic malgré les différentes limites propres à chaque métrique.
+Les deux indicateurs convergent sur plusieurs points : **Strasbourg** et **Lille** figurent parmi les régions les plus diversifiées, à la fois en volume de plats distincts et en équilibre de l'offre. À l'inverse, **Nice** et **Montpellier** apparaissent comme des régions peu diversifiées selon les deux lectures. D'autres régions changent de position selon l'indicateur : **Toulouse** est forte en nombre de plats distincts par restaurant, mais moins convaincante en entropie, tandis que **Corse** se distingue surtout par un bon équilibre interne des menus.
+
+Cette double lecture est plus prudente qu'un simple classement unique : le premier graphique mesure la largeur du répertoire culinaire, tandis que le second vérifie si ce répertoire est réellement réparti de manière équilibrée dans les restaurants.
 
 **Limites générales de l'analyse :**
 
