@@ -139,7 +139,7 @@ library(readr)
 library(scales)
 
 # 1. Chargement et conversion robuste
-menus <- read_csv("data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
   mutate(
     date_propre = dmy(date) # Conversion basée sur le format DD/MM/YYYY visible sur l'image
   )
@@ -208,93 +208,6 @@ Mais la visualisation  présente également un deuxième "problème": le nombre 
 - Les données couvrant seulement mars–mai 2026, les conclusions ne sont pas généralisables à l'année entière.
 - Notre jeu de données n'est pas assez fourni sur le mois de mai ce qui explique une baisse puis une  stabilisation du nombre de plats à cette période.
 
----
-
-## Question 3 : Quelle est la fréquence d'ouverture réelle des restaurants sur l'année ?
-
-Cette question cherche à estimer la fréquence à laquelle les restaurants apparaissent réellement ouverts dans les données, en utilisant les jours où au moins un menu est observé comme indicateur d'ouverture effective. L'objectif est de dépasser les horaires déclarés, qui peuvent être incomplets ou théoriques, pour mesurer l'activité effectivement visible dans le jeu de données.
-
-Les données utilisées sont : `restaurant_id`, `date` dans le fichier des menus et les informations descriptives des restaurants issues de `liste_restaurants.csv`.
-
-#### **Méthodologie et nettoyage**
-
-Pour chaque restaurant, nous comptons le nombre de dates distinctes où au moins un menu est renseigné. Ce nombre est ensuite rapporté au nombre total de jours couverts par le fichier de menus (du 27/03/2026 au 23/05/2026, soit 58 jours). L’annualisation est réalisée en multipliant la fréquence observée sur cette période par 365, afin d’estimer le nombre de jours d’ouverture sur une année complète. Cette estimation reste indicative, car elle suppose que le comportement observé sur 2 mois est représentatif de l’année entière.
-
-#### **Visualisation et analyse**
-
-```{r q3-frequence-ouverture-reelle, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=6, out.width="100%"}
-library(dplyr)
-library(ggplot2)
-library(lubridate)
-library(readr)
-library(scales)
-
-menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) %>%
-  mutate(date = dmy(date))
-
-restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
-
-periode <- menus %>%
-  summarise(
-    date_debut = min(date, na.rm = TRUE),
-    date_fin   = max(date, na.rm = TRUE),
-    nb_jours   = as.integer(date_fin - date_debut) + 1
-  )
-
-ouverture_reelle <- menus %>%
-  distinct(restaurant_id, date) %>%
-  count(restaurant_id, name = "jours_avec_menu") %>%
-  right_join(
-    restaurants %>% select(code, nom, type.libelle, region.libelle),
-    by = c("restaurant_id" = "code")
-  ) %>%
-  mutate(
-    jours_avec_menu = coalesce(jours_avec_menu, 0L),
-    frequence_observee = jours_avec_menu / periode$nb_jours,
-    jours_annualises = frequence_observee * 365,
-    classe_frequence = cut(
-      frequence_observee,
-      breaks = c(-Inf, 0, 0.10, 0.25, 0.50, 0.75, Inf),
-      labels = c("0 %", "1-10 %", "10-25 %", "25-50 %", "50-75 %", "75-100 %")
-    )
-  )
-
-ggplot(ouverture_reelle, aes(x = classe_frequence)) +
-  geom_bar(fill = "#1a6fa8", width = 0.75) +
-  geom_text(
-    stat = "count",
-    aes(label = after_stat(count)),
-    vjust = -0.35,
-    size = 3.4
-  ) +
-  scale_y_continuous(labels = comma_format(big.mark = " "), expand = expansion(mult = c(0, 0.08))) +
-  labs(
-    title = "Fréquence d'ouverture réelle observée des restaurants",
-    subtitle = paste0(
-      "Indicateur : présence d'au moins un menu par jour, du ",
-      format(periode$date_debut, "%d/%m/%Y"), " au ",
-      format(periode$date_fin, "%d/%m/%Y"),
-      " ; fréquence annualisée uniquement indicative"
-    ),
-    x = "Part des jours couverts avec au moins un menu",
-    y = "Nombre de restaurants"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold", size = 14),
-    panel.grid.major.x = element_blank()
-  )
-```
-
-### Commentaire
-
-Le graphique met en évidence une forte hétérogénéité d'activité : 562 restaurants n'apparaissent jamais dans les menus observés (0 %), tandis qu'un noyau d'établissements publie des menus sur une part importante des jours couverts. Cette mesure correspond donc davantage à une ouverture effective observable qu'à une ouverture administrative.
-
-### Critique
-
-- Les données de menus ne couvrent pas toute l'année civile (du 27/03/2026 au 23/05/2026) : l'annualisation est une approximation.
-- L'absence de menu ne signifie pas nécessairement que le restaurant est fermé (ex. : la classe « 0 % » inclut les restaurants absents des données pour toute la période) : il peut aussi s'agir d'une absence de saisie ou d'un défaut de collecte.
-- La mesure est plus fiable pour comparer les restaurants entre eux que pour affirmer un nombre exact de jours d'ouverture annuels, surtout pour les classes inférieures à 10 %.
 
 ---
 
@@ -1271,7 +1184,7 @@ library(lubridate)
 library(scales)
 
 # ── Menus
-menus <- read_csv("menus_complets_enrichis.csv", show_col_types = FALSE) |>
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) |>
   mutate(date = as.Date(date, format = "%d/%m/%Y"))
 
 # Vérification rapide
@@ -1279,7 +1192,7 @@ message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " → ", max(menus$
 message("Lignes : ", nrow(menus))
 
 # ── Restaurants (jointure
-restos <- read_csv("liste_restaurants.csv",
+restos <- read_csv("../data/liste_restaurants.csv",
                    show_col_types = FALSE) |>
   select(code, nom, region.libelle) |>
   mutate(
