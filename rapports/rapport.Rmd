@@ -384,6 +384,7 @@ print(p_vertical)
 
 ---
 
+
 ### Question 6 : Comment les catégories varient-elles selon les repas ?
 
 Les restaurants CROUS proposent différents types de repas (matin, midi, soir). On se demande si la structure des catégories de plats (Entrées, Plats, Desserts...) est la même pour chaque repas, ou si elle varie. On s'attend à ce que le midi soit le repas le plus complet, avec toutes les catégories représentées, et le matin le plus limité.
@@ -462,72 +463,7 @@ La catégorie "Autre" reste présente dans les trois repas, ce qui confirme le p
 
 **Nouvelle question :** La forte présence des Formules/Menus au matin et au midi cache-t-elle une vraie diversité de plats, ou s'agit-il toujours des mêmes plats regroupés différemment selon les restaurants ?
 
----
 
-## Question 6 : Comment les catégories varient-elles selon les repas ?
-
-Les restaurants CROUS proposent différents types de repas (matin, midi, soir). On se demande si la structure des catégories de plats (Entrées, Plats, Desserts…) est la même pour chaque repas, ou si elle varie. On s'attend à ce que le midi soit le repas le plus complet, avec toutes les catégories représentées, et le matin le plus limité.
-
-```{r q6-stacked-bar, fig.cap="Répartition des catégories de plats par type de repas", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
-# Dictionnaire de regroupement des catégories
-groupes <- c(
-  "Entrées"        = "entr",
-  "Plats"          = "plat|chaud|accompagne|grillade",
-  "Desserts"       = "dessert|douceur|patisserie|compote|yaourt",
-  "Boissons"       = "boisson|cafe|froid",
-  "Snacking"       = "sandwich|panini|snacking|salade",
-  "Formules/Menus" = "formule|menu",
-  "Petit-déjeuner" = "viennois|petit.dej"
-)
-
-# Fonction de regroupement
-classer <- function(categorie) {
-  cat_lower <- tolower(categorie)
-  for (groupe in names(groupes)) {
-    if (str_detect(cat_lower, groupes[groupe])) return(groupe)
-  }
-  return("Autre")
-}
-
-# Calcul des proportions
-structure_repas <- menus %>%
-  mutate(categorie_groupe = map_chr(categorie, classer)) %>%
-  group_by(repas, categorie_groupe) %>%
-  summarise(n = n(), .groups = "drop") %>%
-  group_by(repas) %>%
-  mutate(proportion = n / sum(n))
-
-# Visualisation
-ggplot(structure_repas,
-       aes(x = repas, y = proportion, fill = categorie_groupe)) +
-  geom_col(position = "fill", width = 0.6) +
-  scale_y_continuous(labels = scales::percent_format()) +
-  scale_fill_brewer(palette = "Set2", name = "Catégorie") +
-  labs(
-    title = "Répartition des catégories de plats par type de repas",
-    x     = "Type de repas",
-    y     = "Proportion"
-  ) +
-  theme_minimal(base_size = 11)
-```
-
-#### **Interprétation**
-
-Le graphique révèle des structures très différentes selon le type de repas, ce qui confirme notre hypothèse de départ.
-
--   **Le matin** est dominé par les formules et/ou menus (\~25%), le Petit-déjeuner et les Boissons — cohérent avec une offre de restauration rapide matinale.
-
--   **Le midi** est le repas le plus diversifié : on y trouve du Snacking (\~30%), des Formules/Menus, des Plats, des Entrées et des Desserts — toutes les catégories sont représentées.
-
--   **Le soir** ressemble au midi mais avec une part de "Autre" très importante (\~30%), ce qui suggère que les restaurants du soir utilisent des catégories non standardisées, difficiles à classer.
-
-La catégorie "Autre" reste présente dans les trois repas, ce qui confirme le problème de normalisation des catégories observé précédemment. Ainsi une partie significative des données reste inclassable avec notre regroupement actuel.
-
-
-
-<br>
-<hr>
-<br>
 
 ---
 
