@@ -224,9 +224,9 @@ Le jeu de données initial contient de nombreuses entrées textuelles qui ne son
 
 - **Regrouper les variantes de plats :** (fusionner tous les types de burgers, de pâtes ou de sandwiches). Il existe une grande variété de patisseries, sandwichs, pâtes,etc, qui risqueraient de fausser notre analyse.
 
-- **Numériser le Nutri-Score :** Nous avons converti le Nutri-Score alphabétique (A-E) en échelle numérique (1-5) pour permettre le calcul d'une moyenne en fonction des regroupements effectués.
+- **Numériser le Nutri-Score :** Nous avons converti le Nutri-Score alphabétique (A-E) en échelle numérique ((5-1) pour permettre le calcul d'une moyenne en fonction des regroupements effectués.
 
-Les données utilisées sont : `plat` (ce sont des données nominales), `nutriscore` (ce sont des données nominales mais une fois converties, elles devient des données quantitatives / numériques ordinales et discrètes de 1 à 5).
+Les données utilisées sont : `plat` (ce sont des données nominales), `nutriscore` (ce sont des données nominales mais une fois converties, elles devient des données quantitatives / numériques ordinales et discrètes de 5 à 1).
 
 
 #### **Visualisation et analyse**
@@ -234,7 +234,7 @@ Les données utilisées sont : `plat` (ce sont des données nominales), `nutrisc
 Le graphique ci-dessous utilise un format **"Lollipop" divergent**. 
 
 La ligne pointillée centrale représente le Nutri-Score C (valeur 3). Nous avons choisi cette valeur car il s'agit de la médiane des Nutri-scores. 
-Visuellement, cela permet également de créer un graphique divergent : tout ce qui part à gauche (vers 1 et 2) est statistiquement "au-dessus de la moyenne théorique", et tout ce qui part à droite (4 et 5) est "en-dessous". Cela nous permet donc de distinguer d'un coup d'œil les plats "plutôt sains" des plats "plutôt gourmands". 
+Visuellement, cela permet également de créer un graphique divergent : tout ce qui part à gauche (vers 4 et 5) est statistiquement "en-dessus de la moyenne théorique", et tout ce qui part à droite (1 et 2) est "au-dessous". Cela nous permet donc de distinguer d'un coup d'œil les plats "plutôt sains" des plats "plutôt gourmands". 
 Enfin, C est le pivot : ce sont des aliments dont la qualité nutritionnelle est jugée "moyenne" ou "neutre".
 
 ```{r q5-lollipop_chart, echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
@@ -251,11 +251,11 @@ data_nutri <- menus %>%
     plat_test = str_squish(plat_test),
     # Conversion du Nutri-Score
     nutri_num = case_when(
-      nutriscore == "A" ~ 1,
-      nutriscore == "B" ~ 2,
+      nutriscore == "A" ~ 5,
+      nutriscore == "B" ~ 4,
       nutriscore == "C" ~ 3,
-      nutriscore == "D" ~ 4,
-      nutriscore == "E" ~ 5,
+      nutriscore == "D" ~ 2,
+      nutriscore == "E" ~ 1,
       TRUE ~ NA_real_
     )
   ) %>%
@@ -321,10 +321,10 @@ p_vertical <- ggplot(top_100_nutri_div, aes(x = reorder(plat_general, nutri_moye
   geom_text(aes(label = nutri_label), color = "white", size = 3.5, fontface = "bold") +
   
   scale_color_gradientn(
-    colors = c("#1a9850", "#91cf60", "#fee08b", "#fc8d59", "#d73027"),
+    colors = c("#d73027", "#fc8d59", "#fee08b", "#91cf60","#1a9850"),
     limits = c(1, 5), 
     breaks = c(1, 2, 3, 4, 5),             
-    labels = c("1-A", "2-B", "3-C", "4-D", "5-E"), 
+    labels = c("5-A", "4-B", "3-C", "2-D", "1-E"), 
     name = "Qualité Nutritionnelle"
   ) +
   
@@ -361,18 +361,14 @@ print(p_vertical)
 #### **Interprétation des résultats**
 À la lecture de ce graphique, nous observons que :
 
-- Les plats équilibrés : Les soupes, salades composées et plats à base de légumineuses se concentrent sous la barre des 3, affichant des scores A et B.
+- Les plats équilibrés : Les soupes, salades composées et plats à base de légumineuses se concentrent au-dessus de la barre des 3, affichant des scores A et B.
 
 - Le cœur de l'offre : Une grande partie des plats cuisinés (viandes blanches, pâtes) oscille autour du pivot C.
 
-- Les options "plaisir" : Les burgers, pizzas et surtout les viennoiseries s'élèvent vers les scores 4 (D) et 5 (E), ce qui confirme notre hypothèse initiale sur la qualité nutritionnelle de l'offre snacking.
+- Les options "plaisir" : Les burgers, pizzas et surtout les viennoiseries descendent vers les scores 2 (D) et 1 (E), ce qui confirme notre hypothèse initiale sur la qualité nutritionnelle de l'offre snacking.
 
-<br>
-<hr>
-<br>
 
 ---
-
 
 ### Question 6 : Comment les catégories varient-elles selon les repas ?
 
