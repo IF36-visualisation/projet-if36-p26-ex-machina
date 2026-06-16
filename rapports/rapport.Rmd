@@ -318,7 +318,7 @@ p_vertical <- ggplot(top_100_nutri_div, aes(x = reorder(plat_general, nutri_moye
     colors = c("#d73027", "#fc8d59", "#fee08b", "#91cf60","#1a9850"),
     limits = c(1, 5), 
     breaks = c(1, 2, 3, 4, 5),             
-    labels = c("5-A", "4-B", "3-C", "2-D", "1-E"), 
+    labels = c("1-E", "2-D", "3-C", "4-B","5-A" ), 
     name = "Qualité Nutritionnelle"
   ) +
   
@@ -611,9 +611,10 @@ Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) 
 
 **Hypothèse**
 
-Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes.
+Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes. Cela veut dire qu'on s'attend à voir des courbes d'évolution lineaires et continues donc des droites. 
 
-**Méthode choisie** : Courbes cumulées par restaurant **Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible. **PS**:On recupere les top 8 pour plus de lisibilité
+**Méthode choisie** : Courbes cumulées par restaurant 
+**Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible. On recupère le top 8 pour plus de lisibilité (il y a trop de restaurants : presque 1 000).
 
 ```{r include=FALSE}
 library(tidyverse)
@@ -714,7 +715,7 @@ ggplot(nouveautes_top,
   )
 ```
 
-**Interprétation critique**
+#### **Interprétation des résultats**
 
 Le graphe s'arrête au 6 avril - et ce n'est pas un bug. C'est le résultat le plus important de cette analyse.
 
@@ -722,9 +723,10 @@ Le graphe s'arrête au 6 avril - et ce n'est pas un bug. C'est le résultat le p
 
 **Traduction concrète** : à partir de la semaine du 6 avril, les restaurants CROUS tournent en boucle sur un catalogue fixe. Les plats observés après cette date sont tous des répétitions de plats déjà servis. Il n'y a pas de renouvellement - il y a de la **rotation**.
 
-**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total. Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
+**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total(Dans notre code on arrête l'affichage lorsqu'il n'y a plus de renouvelement. Mais si on avait continué, on aurait eu un plateau / droite horizontale).
+Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
 
--\> **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte - ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
+**Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte - ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
 
 ## Question 11 : Quelle est la distribution des Nutri-Scores ?
 
@@ -740,7 +742,7 @@ Afin de compléter cette analyse globale, un second graphique présente la répa
 
 Ces deux graphiques sont générés dans l'application Shiny (onglet "Nutri-Score") et bénéficient de filtres interactifs (région, type de repas). Le lecteur est invité à exécuter l'application dans le dossier `/shiny/` pour interagir avec ces visualisations.
 
-**Visualisation et analyse**
+#### **Visualisation et analyse**
 
 Ce premier graphique représente la distribution globale des Nutri-Scores dans l'ensemble du dataset. Chaque barre correspond au nombre de plats associés à une catégorie de Nutri-Score.
 
@@ -752,13 +754,14 @@ Le second graphique présente la proportion de chaque Nutri-Score au sein des di
 
 *Figures générées dans l'application Shiny (onglet "Nutri-Score"). Les filtres région et type de repas permettent d'explorer la distribution de façon interactive.*
 
-**Interprétation des résultats**
+#### **Interprétation des résultats**
 
 Le graphique montre une **très forte domination du Nutri-Score C**, qui concentre près de 20 000 plats à lui seul, soit la grande majorité de l'offre. Cela indique que l'offre du CROUS est globalement composée d'aliments présentant une qualité nutritionnelle moyenne. Le Nutri-Score **A** arrive en deuxième position (environ 4 000 plats), témoignant d'une présence non négligeable d'options équilibrées. Les Nutri-Scores **B et D** sont à peu près au même niveau (autour de 1 500 plats chacun), et le **E** reste minoritaire (environ 500 plats), ce qui montre que les plats les moins favorables sur le plan nutritionnel occupent une place limitée dans l'offre globale.
 
-L'analyse par catégorie nuance fortement cette vision globale. Les **Boissons** se distinguent par une part importante de Nutri-Scores A (environ 30 %), ce qui en fait l'une des catégories les mieux notées, bien qu'elles contiennent aussi une part visible de D. Les **Entrées** et les **Desserts** présentent un profil étonnamment favorable, avec environ 40 % de A - leur composition variée (compotes, salades, fruits) tire la moyenne vers le haut malgré quelques plats en D ou E. À l'inverse, le **Snacking**, le **Petit-déjeuner** et les **Formules/Menus** sont massivement classés C, avec très peu de variation, ce qui suggère une attribution standardisée plutôt qu'un scoring fin. Les **Plats** sont également dominés par le C, avec néanmoins une part non négligeable de D.
+Les **Boissons** se distinguent par une part importante de Nutri-Scores A (environ 30 %) peut-être à cause des bouteilles d'eau minérale et gazeuse vendues, ce qui en fait l'une des catégories les mieux notées, bien qu'elles contiennent aussi une part visible de D (peut-être pour les boissons sucrées). 
+Les **Entrées** et les **Desserts** présentent un profil étonnamment favorable, avec environ 40 % de A - leur composition variée (compotes, salades, fruits) tire la moyenne vers le haut malgré quelques plats en D ou E. À l'inverse, le **Snacking**, le **Petit-déjeuner** et les **Formules/Menus** sont massivement classés C, avec très peu de variation, ce qui suggère une attribution standardisée plutôt qu'un scoring fin et précis de l'offre. Les **Plats** sont également dominés par le C, avec néanmoins une part non négligeable de D peut-être à cause de certains plats traditionnels composés de matières très riches (viande, beurre, huiles, etc).
 
-Ces résultats suggèrent que les étudiants disposent d'un choix relativement varié leur permettant d'opter pour des repas plus ou moins équilibrés selon leurs préférences, mais la forte concentration sur le Nutri-Score C dans plusieurs catégories interroge sur la précision de l'attribution des scores plutôt que sur la qualité réelle de l'offre.
+Ces résultats suggèrent que les étudiants disposent d'un choix relativement varié leur permettant d'opter pour des repas plus ou moins équilibrés selon leurs préférences, mais la forte concentration sur le Nutri-Score C dans plusieurs catégories interroge sur la précision de l'attribution des scores (qui a été fait manuellement sur notre dataset menus_enrichis) plutôt que sur la qualité réelle de l'offre.
 
 ------------------------------------------------------------------------
 
@@ -824,11 +827,11 @@ Le graphique montre une tendance : plus un plat est riche en calories, plus sa n
 
 Cependant, en regardant le détail, on observe des nuances:
 
--   Le Nutri-Score A regroupe les plats les plus légers. La majorité d'entre eux se situent sous la barre des 150 calories. C'est la catégorie la plus basse et la plus stable du graphique.
+-   Le Nutri-Score A regroupe les plats les plus légers. La majorité d'entre eux se situent sous la barre des 150 calories. C'est la catégorie la plus basse du graphique.
 
--   Le Nutri-Score B réserve une surprise : les notes s'étalent énormément. On y trouve des plats très légers, mais aussi des plats contenant beaucoup de calories (qui montent parfois plus haut que les catégories D ou E). Cela s'explique par le fait qu'un plat calorique peut garder une bonne note s'il contient beaucoup de légumes, de fibres ou de protéines pour compenser.
+-   Le Nutri-Score B : les notes s'étalent énormément. On y trouve des plats très légers, mais aussi des plats contenant beaucoup de calories (qui montent parfois plus haut que les catégories D ou E). Cela s'explique par le fait qu'un plat calorique peut garder une bonne note s'il contient beaucoup de légumes, de fibres ou de protéines pour compenser.
 
--   Le Nutri-Score C est très particulier : presque toutes les données sont bloquées sur une seule ligne horizontale autour de 250 calories. Cela indique qu'il s'agit sûrement de plats très standardisés qui se ressemblent tous dans leur composition.
+-   Le Nutri-Score C est très particulier : presque toutes les données sont bloquées sur une seule ligne horizontale autour de 250 calories. Cela indique qu'il s'agit sûrement de plats très standardisés qui se ressemblent tous dans leur composition (pommes de terre + légumes, salade + lentilles).
 
 -   Les Nutri-Scores D et E sont presque identiques. Leurs blocs sont placés très haut sur le graphique, ce qui prouve que les plats les plus riches en énergie écopent presque toujours des moins bonnes notes.
 
@@ -838,7 +841,6 @@ Ce n'est pas le nombre de calories en soi qui déclenche une mauvaise note. Le N
 
 Le graphique montre simplement que les deux critères avancent souvent ensemble, car les plats riches en sucre ou en mauvaises graisses sont, par nature, des plats très caloriques.
 
-**Nouvelle question :** Si les calories ne font pas tout, quels sont les vrais coupables qui font basculer un plat du Nutri-Score D au Nutri-Score E ? Est-ce une overdose de sel, ou une quantité de sucre plus élevée ?
 
 <br>
 
@@ -852,7 +854,7 @@ Le graphique montre simplement que les deux critères avancent souvent ensemble,
 
 Les restaurants présentent des comportements environnementaux hétérogènes : certains proposent une offre massivement bas-carbone, d'autres non. On s'attend à une distribution dispersée avec des écarts significatifs entre établissements.
 
-**Méthode choisie** : Classification par tertiles + barplots empilés, jutifié par le fait que les tertiles permettent une comparaison relative entre restaurants sans présupposer un seuil normatif externe.
+**Méthode choisie** : Classification par tertiles (on coupe la population en 3) + barplots empilés, jutifié par le fait que les tertiles permettent une comparaison relative entre restaurants sans introduire notre propre seuil (car on ne sait pas sur quel seuil se baser).
 
 ```{r echo=FALSE}
 library(tidyverse)
@@ -865,8 +867,8 @@ menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE)
   mutate(date = as.Date(date, format = "%d/%m/%Y"))
 
 # Vérification rapide
-message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " -> ", max(menus$date, na.rm=TRUE))
-message("Lignes : ", nrow(menus))
+#("Plage dates menus : ", min(menus$date, na.rm=TRUE), " -> ", max(menus$date, na.rm=TRUE))
+#message("Lignes : ", nrow(menus))
 
 # -- Restaurants (jointure
 restos <- read_csv("../data/liste_restaurants.csv",
@@ -885,17 +887,13 @@ join_restos <- function(df) {
 }
 ```
 
+
 ```{r echo=FALSE}
 # Q14 - Structure relative de l'offre selon l'impact carbone des plats
 # Classification comparative par tertiles
 # Nécessite le bloc INIT exécuté avant
 
-# -- Étape 0 : diagnostic de la distribution réelle
-menus |>
-  filter(!is.na(impact_carbone)) |>
-  count(impact_carbone) |>
-  mutate(pct = round(n / sum(n) * 100, 1)) |>
-  print()
+
 
 # -- Étape 1 : calcul de la structure d'offre par restaurant
 eco_base <- menus |>
@@ -917,10 +915,7 @@ eco_base <- menus |>
 seuil_bas  <- quantile(eco_base$pct_bas, 0.33)
 seuil_haut <- quantile(eco_base$pct_bas, 0.67)
 
-message(sprintf(
-  "Seuils empiriques (tertiles) : Faible < %.1f%% - Intermédiaire %.1f-%.1f%% - Forte >= %.1f%%",
-  seuil_bas, seuil_bas, seuil_haut, seuil_haut
-))
+
 
 # -- Étape 3 : classification descriptive (non normative)
 eco_score <- eco_base |>
@@ -942,8 +937,8 @@ eco_score <- eco_base |>
   join_restos()
 
 # Vérification
-message("Répartition des profils descriptifs :")
-eco_score |> count(profil) |> print()
+#message("Répartition des profils descriptifs :")
+#eco_score |> count(profil) |> print()
 
 # -- Graphe 1 : vue macro
 resume_profil <- eco_score |>
@@ -1076,17 +1071,26 @@ print(p_faible)
 
 **Résultats - lecture des graphiques** Distribution globale (Image 1) :
 
-94,8% des plats sont à impact "Bas", 4,9% "Moyen", 0,3% "Très Haut" Seuils tertiles : Faible \< 93,7% - Intermédiaire 93,7-100% - Forte = 100% Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
+Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
 
---\> Ce n'est plus une répartition en tiers égaux - la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de pct_bas est très concentrée vers 100%.
+Seuils tertiles : 
 
-**Interprétation critique** **L'hypothèse est infirmée.**
+- Faible \< 93,7% 
+- Intermédiaire 93,7-100% 
+- Forte = 100% 
 
-Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points - sur une variable qui varie entre 88,8% et 100%, soit une plage de variation extrêmement comprimée.
+
+
+ Ce n'est plus une répartition en tiers égaux - la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de % carbone total bas est très concentrée vers 100%.
+
+
+#### **Interprétation critique** **L'hypothèse est infirmée.**
+
+Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points, soit une plage de variation extrêmement comprimée.
 
 La classification en tertiles amplifie visuellement des différences qui sont, en valeur absolue, négligeables. Un restaurant à 88,8% de plats bas-carbone ne peut raisonnablement pas être qualifié de "faible" en écoresponsabilité.
 
-Anomalie révélatrice : Le seuil supérieur est à 100% - cela signifie qu'un tiers des restaurants ne servent aucun plat à impact moyen ou élevé. Ce n'est pas de l'écoresponsabilité différenciée, c'est une contrainte d'approvisionnement ou de catégorisation qui force les menus vers le "Bas".
+En conclusion, la majorité de nos restaurants ont un faible impact carbone. Le "moins" eco-responsable étant à 88% environ. Cependant, la représntation avec les tertiles nous aa permis de voir d'analyser en profondeur nos données et de voir que l'écart en terme d'éco-responsabilité n'est pas très grand.
 
 ## Question 15 : Existe-t-il une fracture nutritionnelle entre les régions ou les villes ?
 
@@ -1094,7 +1098,11 @@ Le Nutri-Score permet d'évaluer la qualité nutritionnelle globale des menus. E
 
 Nous avons choisi de réalisé ce graphique sur Power BI et nous avons obtenu ce résultat :
 
-**TODO : Une photo de la visu Power BI**
+![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_1.png)
+![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_2x.png)
+
+Même si on a des teintes vertes, le nutriscore moyen tourne autour de 3 pour quasiment toutes les régions : Notre échelle n'est pas sur le nutriscore mais va de la moyenne la moins pire (qui a la couleur verte) à la pire moyenne (qui prend une couleur rouge)
+
 
 #### **Interprétation**
 
@@ -1112,7 +1120,10 @@ Le fait qu'une région soit colorée en orange ou en rouge ne signifie pas que l
 
 Par exemple, si la Bourgogne-Franche-Comté est très orange, c'est peut-être tout simplement parce que les restaurants de cette zone proposent une majorité de plats traditionnels riches en sauces ou en graisses saturées (ce qui fait grimper la moyenne), et non pas parce que les habitants de cette région mangent moins bien par nature.
 
-**Anomalie visuelle constatée** Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions.
+**Anomalies visuelles constatées** 
+- Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions.
+- Certaines régions n'ont pas de valeur de nutriscore (comme Versailles) : Cela signifie tout simplement qu'il n'y a pas de plats associé à ces régions dans notre fichier.
+
 
 <br>
 
@@ -1544,9 +1555,7 @@ library(scales)
 menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) |>
   mutate(date = as.Date(date, format = "%d/%m/%Y"))
 
-# Vérification rapide
-message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " -> ", max(menus$date, na.rm=TRUE))
-message("Lignes : ", nrow(menus))
+
 
 # -- Restaurants (jointure
 restos <- read_csv("../data/liste_restaurants.csv",
@@ -1606,7 +1615,15 @@ ggplot(menus_cal, aes(x = calories_estimees)) +
 
 **Médiane** = 250 kcal, Moyenne = 265 kcal -\> léger écart indiquant une asymétrie droite modérée La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
 
-**Bosse 1** \~50-100 kcal : petit groupe de plats très légers (boissons, condiments ?) **Bosse 2** \~150-200 kcal : second groupe intermédiaire (desserts, fruits ?) Pic principal \~250-300 kcal : mode dominant, \~20 000 plats - écrasant **Bosse 3** \~450-500 kcal : groupe secondaire notable (\~2 500 plats) Queue droite \~600-700+ kcal : plats caloriques, effectifs très faibles
+**Bosse 1** : \~50-100 kcal : petit groupe de plats très légers (boissons, condiments ?) 
+
+**Bosse 2** : \~150-200 kcal : second groupe intermédiaire (desserts, fruits ?) 
+
+**Bosse 3** : Pic principal \~250-300 kcal : mode dominant, \~20 000 plats - écrasant 
+
+**Bosse 4** : \~450-500 kcal : groupe secondaire notable (\~2 500 plats)
+
+Queue droite \~600-700+ kcal : plats caloriques, effectifs très faibles(contre l'hypothèse de départ)
 
 Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plats
 
@@ -1614,7 +1631,7 @@ Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plat
 
 *L'hypothèse est infirmée - et de loin*.
 
-La valeur centrale (\~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité - ce qui tire mécaniquement la moyenne vers le bas.
+La valeur centrale (\~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité  ce qui tire la moyenne vers le bas.
 
 La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente - ni un dessert (\~100 kcal), ni un plat principal (\~500 kcal).
 
@@ -1636,15 +1653,17 @@ Ces deux graphiques sont générés dans l'application Shiny (onglet "Calories")
 
 **Visualisation et analyse**
 
-Le boxplot ci-dessous permet de lire simultanément la médiane, l'étendue interquartile et les valeurs extrêmes de chaque catégorie. Les catégories sont ordonnées par médiane croissante de bas en haut. Les catégories sont triées de la moins calorique en bas à la plus calorique en haut.
+Le boxplot ci-dessous permet de lire simultanément la médiane, l'étendue interquartile (longueur du boxplot) et les valeurs extrêmes de chaque catégorie. Les catégories sont ordonnées par médiane croissante de bas en haut. Les catégories sont triées de la moins calorique en bas à la plus calorique en haut.
 
 ![Boxplot des calories par catégorie de plat](../images/question24a.png)
+
 
 **Note de lecture :** on remarque que quatre catégories (Snacking, Plats, Petit-déjeuner, Formules/Menus) semblent visuellement identiques sur le boxplot, avec des boîtes réduites à un simple trait vertical. Cela ne signifie pas qu'elles ont exactement les mêmes valeurs : leurs médianes diffèrent de quelques kcal, ce qui suffit à les classer différemment, mais l'écart est trop faible pour être visible à l'œil nu. Ce phénomène s'explique par le mode d'estimation des calories : les valeurs ayant été enrichies manuellement à partir d'OpenFoodFacts, beaucoup de plats d'une même catégorie ont reçu la même estimation calorique par défaut, ce qui écrase la dispersion. Seuls les **Entrées** et les **Desserts** montrent de vraies boîtes visibles, signe que leurs calories ont été estimées de façon plus variée. C'est pourquoi le diagramme en barres des moyennes ci-dessous est un complément indispensable pour différencier les catégories entre elles.
 
 Le diagramme en barres ci-dessous présente la moyenne arithmétique des calories par catégorie, triée par ordre décroissant, offrant une lecture plus synthétique.
 
 ![Calories moyennes par catégorie de plat](../images/question24b.png)
+
 
 **Interprétation des résultats**
 
@@ -1654,7 +1673,8 @@ Les **Boissons** affichent une moyenne étonnamment haute en deuxième position 
 
 Le **Snacking présente une moyenne intermédiaire** (environ 265 kcal). Même si le boxplot ne le montre pas clairement à cause de la faible granularité des estimations, le diagramme en barres confirme que cette catégorie se situe bien dans la moyenne. Les outliers du boxplot, eux, révèlent que certains produits de snacking (burgers, paninis) dépassent largement les 450 kcal.
 
-Le **Petit-déjeuner** se situe en cinquième position (environ 250 kcal), contre toute attente, juste devant les **Entrées** (environ 220 kcal). Les **Desserts ferment la marche** avec la moyenne la plus basse (environ 165 kcal), ce qui s'explique par la présence massive de compotes et fruits dans l'offre, beaucoup plus légers que les pâtisseries. Le boxplot révèle pourtant pour les Desserts l'une des dispersions les plus larges, traduisant l'écart entre une simple compote (environ 50 kcal) et une pâtisserie riche dépassant 450 kcal.
+Le **Petit-déjeuner** se situe en cinquième position (environ 250 kcal), contre toute attente, juste devant les **Entrées** (environ 220 kcal). 
+Les **Desserts ferment la marche** avec la moyenne la plus basse (environ 165 kcal), ce qui s'explique par la présence massive de compotes et fruits dans l'offre, beaucoup plus légers que les pâtisseries. Le boxplot révèle pourtant pour les Desserts l'une des dispersions les plus larges, traduisant l'écart entre une simple compote (environ 50 kcal) et une pâtisserie riche dépassant 450 kcal.
 
 Globalement, ces résultats montrent que les catégories ne sont pas comparables sur la base de la seule moyenne : la dispersion interne est souvent aussi informative que la valeur centrale. Le cas des Boissons et des Desserts est particulièrement frappant ; leurs moyennes ne reflètent pas la nature de l'offre, mais le mélange entre items très légers et très caloriques au sein d'une même catégorie. Un étudiant peut donc trouver au sein d'une même catégorie aussi bien un choix léger qu'un choix très calorique, ce qui lui laisse une marge de choix importante selon ses besoins.
 
@@ -1664,7 +1684,7 @@ Globalement, ces résultats montrent que les catégories ne sont pas comparables
 
 Les différents styles culinaires de nos menus (Fraîcheur, Plats sucrés, Produits traditionnels, Soupes, Street food) utilisent des ingrédients et des profils de recettes radicalement opposés. On se demande si la structure des notes Nutri-Score (de A à E) valide la réputation de chacun de ces styles. On s'attendrait logiquement à ce que les catégories "Fraîcheur" et "Soupes" dominent le haut du classement avec un maximum de vert (A et B), tandis que le "Sucré" et la "Street food" afficheraient une concentration de couleurs plus sombres (D et E).
 
-```{r q25-stacked-bar, fig.cap="Répartition du Nutri-Score selon le style culinaire", echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
+```{r q25-stacked-bar, echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
 
 
 library(tidyverse)
@@ -1723,8 +1743,8 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 
 #### **Interprétation**
 
--   "Soupes" et "Fraîcheur" : Comme prévu, ces deux styles écrasent le classement avec un profil supérieur ou égaux à C. La catégorie `Soupes` affiche quasiment une égalité de A et de C, ce qui s'explique par une composition riche en eau, en légumes et pauvre en graisses. Le style Fraîcheur est principalement constitué de salades, crudités, etc ce qui explique la majorité de A et B.
+-   "Soupes" et "Fraîcheur" : Comme prévu, ces deux styles écrasent le classement avec un profil supérieur ou égaux à C. La catégorie `Soupes` affiche quasiment une égalité de A et de C, ce qui s'explique par une composition riche en eau, en légumes et pauvre en graisses. Le style Fraîcheur est principalement constitué de salades, crudités, etc; ce qui explique la majorité de A et B.
 
--   "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
+-   "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées, liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
 
 -   "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
