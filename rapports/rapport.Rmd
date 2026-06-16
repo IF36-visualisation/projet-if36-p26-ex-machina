@@ -451,7 +451,7 @@ Les restaurants CROUS proposent-ils un nombre similaire de plats dans chaque cat
 
 Pour répondre à cette question, nous avons utilisé un **boxplot horizontal** qui permet de visualiser, pour chaque catégorie, la distribution du nombre de plats proposés par restaurant. Les données proviennent du fichier *menus_complets_enrichis.csv*. Les variables utilisées sont `restaurant_id` (variable nominale), `categorie_groupe` (variable nominale issue du regroupement) et le nombre de plats par croisement restaurant/catégorie (variable quantitative discrète).
 
-La catégorie "Autre" a été exclue du graphique car elle regroupe des libellés inclassables qui fausseraient l'interprétation.
+La catégorie "Autre" a été exclue du graphique car elle regroupe des libellés inclassables qui fausseraient l'interprétation. Car dans "Autre", tous ce qui n'a pas pu être classé, donc il ne peut pas être utilisé pour la comparaison avec les autres catégories.
 
 **Visualisation et analyse**
 
@@ -518,8 +518,6 @@ Le graphique confirme une forte hétérogénéité entre les catégories et entr
 **Les Entrées, les Plats, les Desserts et les Boissons** ont à l'inverse des boîtes très resserrées et des médianes basses (généralement inférieures à 40 plats). La majorité des restaurants proposent peu de plats dans ces catégories, ce qui infirme l'idée d'un menu traditionnel équilibré Entrée/Plat/Dessert. Les Desserts et Boissons présentent quelques outliers modérés, mais l'essentiel de l'offre reste structurellement limité.
 
 En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories : l'offre est dominée par le Snacking et le Petit-déjeuner, au détriment des Entrées, Plats et Desserts traditionnels. Cette structure reflète l'évolution de la restauration universitaire vers un modèle de type cafétéria/snack plutôt que le repas classique en trois temps.
-
-**Nouvelle question :** Ces restaurants très spécialisés en Snacking ou Petit-déjeuner correspondent-ils à un type particulier dans `type.libelle` ? On pourrait croiser ces outliers avec les métadonnées de `liste_restaurants.csv` pour identifier leur profil.
 
 ------------------------------------------------------------------------
 
