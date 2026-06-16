@@ -1,7 +1,7 @@
 ---
-title: "Rapport d’analyse exploratoire — Croustillant Menu"
+title: "Rapport d’analyse exploratoire: Croustillant Menu"
 author: "Jules TIMADJI, Ange Ariane KAMGUE MAGNE, Housséni YABRE, Rayan LEGRAND"
-date: "2026-04-20"
+date: "2026-06-16"
 output:
   html_document:
     toc: true
@@ -20,30 +20,30 @@ library(tidyr)
 library(readr)
 library(forcats)
 library(scales)
-``` 
+```
 
 # Introduction
 
-Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (https://api.croustillant.menu/) qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
+Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (<https://api.croustillant.menu/>) qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
 
 Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et des restaurants afin de :
 
-- Identifier les tendances dans l’offre culinaire selon les restaurants et les périodes (ex. février 2026)  
-- Analyser la diversité des plats et des catégories (Entrées, Plats, Desserts)  
-- Comparer les menus entre restaurants et observer des régularités ou anomalies  
-- Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents) 
-
+-   Identifier les tendances dans l’offre culinaire selon les restaurants et les périodes (ex. février 2026)\
+-   Analyser la diversité des plats et des catégories (Entrées, Plats, Desserts)\
+-   Comparer les menus entre restaurants et observer des régularités ou anomalies\
+-   Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents)
 
 ## Présentation des données
 
 Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data/` :
 
 ### 1. **`liste_restaurants.csv`** : liste des restaurants distincts
-- **Nombre d’observations :** 942 (correspond au nombre de restaurants présents dans le fichier CSV)  
-- **Nombre de variables :** 20  
+
+-   **Nombre d’observations :** 942 (correspond au nombre de restaurants présents dans le fichier CSV)\
+-   **Nombre de variables :** 20
 
 | Champ | Type | Description |
-|-------|------|-------------|
+|-------------------|-------------------|----------------------------------|
 | `code` | entier | Identifiant unique du restaurant |
 | `nom` | texte | Nom du restaurant |
 | `adresse` | texte | Adresse complète |
@@ -64,28 +64,27 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 | `region.libelle` | texte | Nom de la région |
 | `type.code` | entier | Code du type de restaurant |
 | `type.libelle` | texte | Libellé du type de restaurant (ex. Brasserie, Fast-food) |
-   - Chaque observation correspond à un restaurant unique dans une région.
 
-### 2. **`menus_complets_enrichis.csv`** : liste des  menus pour chaque restaurant
+-   Chaque observation correspond à un restaurant unique dans une région.
+
+### 2. **`menus_complets_enrichis.csv`** : liste des menus pour chaque restaurant
 
 ### Description
-Cette table contient l’ensemble des menus proposés dans les restaurants universitaires.  
+
+Cette table contient l’ensemble des menus proposés dans les restaurants universitaires.\
 Chaque ligne correspond à un plat spécifique servi dans un restaurant donné, à une date, pour un type de repas et une catégorie précis.
 
-Les données ont été enrichies manuellement à partir d’informations issues du site **OpenFoodFacts** (https://world-fr.openfoodfacts.org/), puis combinées avec les données récupérées via l’API **CROUStillant Menu**.
+Les données ont été enrichies manuellement à partir d’informations issues du site **OpenFoodFacts** (<https://world-fr.openfoodfacts.org/>), puis combinées avec les données récupérées via l’API **CROUStillant Menu**.
 
-Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
-- le volume très important des données OpenFoodFacts (~9 Go),
-- la complexité de leur structure,
-- la forte sensibilité aux variations d’écriture des noms de plats.
+Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes : - le volume très important des données OpenFoodFacts (\~9 Go), - la complexité de leur structure, - la forte sensibilité aux variations d’écriture des noms de plats.
 
-- **Nombre d’observations :** 80 307 
-- **Nombre de variables :** 10
+-   **Nombre d’observations :** 80 307
+-   **Nombre de variables :** 10
 
 ### Colonnes
 
 | Champ | Type | Description |
-|----------|------|------------|
+|-------------------------|-------------------|-----------------------------|
 | `restaurant_id` | entier | Identifiant du restaurant |
 | `date` | date | Date du menu |
 | `repas` | texte | Type de repas |
@@ -97,37 +96,37 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
 | `style_culinaire` | texte | Style du plat (soupe, cuisine traditionnelle, etc) |
 | `calories_estimees` | entier | Nombre de calories estimées en kcal |
 
-**Organisation et sous-groupes :**  
+**Organisation et sous-groupes :**
 
-- Les données sont hiérarchisées : **restaurants → menus → types de repas → catégories → plats**  
-- Chaque restaurant peut avoir plusieurs menus par jour et plusieurs plats par catégorie  
+-   Les données sont hiérarchisées : **restaurants → menus → types de repas → catégories → plats**\
+-   Chaque restaurant peut avoir plusieurs menus par jour et plusieurs plats par catégorie
 
-**Format :** CSV, séparateur `,`  
+**Format :** CSV, séparateur `,`
 
-**Contexte et choix des données :**  
+**Contexte et choix des données :**
 
-- Ces données permettent d’étudier les menus sur différentes périodes et restaurants.  
-- Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.  
-
+-   Ces données permettent d’étudier les menus sur différentes périodes et restaurants.\
+-   Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.
 
 <br>
+
 <hr>
+
 <br>
 
 # Analyse des questions
 
 <br>
+
 <hr>
+
 <br>
 
 ## Question 1 : Quel jour de la semaine concentre le plus de menus ?
 
 Cette question cherche à identifier si certains jours de la semaine sont plus actifs que d'autres dans l'offre de restauration CROUS. Nous nous attendons à observer une concentration plus forte en début de de semaine (lundi à jeudi) et un effondrement en fin de semaine (vendredi - dimanche). Dans le contexte universitaire, on peut s'attendre également à une baisse de l'activité pendant les vacances scolaires (semaine de Pâques en avril, début mai avec les ponts) et une offre plus stable en période de cours.
 
-
-Les données utilisées sont : `date` (donnée temporelle, quantitative discrète une fois transformée en jour du mois) et le **nombre de lignes de menus** (quantitative continue agrégée).
-Nos données vont de mars à mai 2026.
-
+Les données utilisées sont : `date` (donnée temporelle, quantitative discrète une fois transformée en jour du mois) et le **nombre de lignes de menus** (quantitative continue agrégée). Nos données vont de mars à mai 2026.
 
 #### **Visualisation et analyse**
 
@@ -199,43 +198,38 @@ ggplot(menus_par_jour_hebdo, aes(x = jour_semaine, y = nb_menus, fill = highligh
 
 ### Commentaire
 
-Le graphique montre que l'activité est relativement homogène en semaine tout au long du mois, avec une chute nette sur les jours tombant un week-end (valeurs faibles pour certains 4, 11, 18, 25…). Cependant, on constate une chute sur la fin de semaine du 06 avril et les semaines du 13 et du 20 avril. Celles-ci correspondent aux semaines de vacances scolaires de Pâques ce qui pourrait expliquer la baisse d'activité. 
+Le graphique montre que l'activité est relativement homogène en semaine tout au long du mois, avec une chute nette sur les jours tombant un week-end (valeurs faibles pour certains 4, 11, 18, 25…). Cependant, on constate une chute sur la fin de semaine du 06 avril et les semaines du 13 et du 20 avril. Celles-ci correspondent aux semaines de vacances scolaires de Pâques ce qui pourrait expliquer la baisse d'activité.
 
-Mais la visualisation  présente également un deuxième "problème": le nombre de plats ne remonte pas après les vacances et reste constant voire diminue sur les semaines suivantes. Nos données ont été extraites de l'API au mois de mars et nous pensons qu'à cette période, les données n'avaient pas encore été enregistrées / mises à jour dans l'API pour le mois de mai. En faisant un count du nombre de plat, cette hypothèse est encore plus probable : On avait plus de 11 000 plats en fin mars puis on est descendu à environ 5 000 en avril pour finir à 1 000 sur les semaines de Mai.
+Mais la visualisation présente également un deuxième "problème": le nombre de plats ne remonte pas après les vacances et reste constant voire diminue sur les semaines suivantes. Nos données ont été extraites de l'API au mois de mars et nous pensons qu'à cette période, les données n'avaient pas encore été enregistrées / mises à jour dans l'API pour le mois de mai. En faisant un count du nombre de plat, cette hypothèse est encore plus probable : On avait plus de 11 000 plats en fin mars puis on est descendu à environ 5 000 en avril pour finir à 1 000 sur les semaines de Mai.
 
 ### Critique
 
-- Les données couvrant seulement mars–mai 2026, les conclusions ne sont pas généralisables à l'année entière.
-- Notre jeu de données n'est pas assez fourni sur le mois de mai ce qui explique une baisse puis une  stabilisation du nombre de plats à cette période.
+-   Les données couvrant seulement mars–mai 2026, les conclusions ne sont pas généralisables à l'année entière.
+-   Notre jeu de données n'est pas assez fourni sur le mois de mai ce qui explique une baisse puis une stabilisation du nombre de plats à cette période.
 
-
----
+------------------------------------------------------------------------
 
 ## Question 5 : Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
 
-Nous nous intéressons à la qualité nutritionnelle de l'offre de restauration collective CROUS. 
-L'objectif de cette section est de déterminer si les plats les plus fréquemment proposés (et donc potentiellement les plus consommés) présentent un profil nutritionnel favorable. Nous pouvons supposer que l'offre est dominée par des produits de type "snacking" ou "Formules/Menus" : plats à base de pains (sandwiches, paninis), de viandes, de fromages, de légumes, ainsi que des pâtisseries. Ces catégories sont souvent associées à des apports nutritionnels élevés, et nous cherchons à vérifier si cette intuition se traduit par des Nutri-Scores moins favorables (D ou E).
+Nous nous intéressons à la qualité nutritionnelle de l'offre de restauration collective CROUS. L'objectif de cette section est de déterminer si les plats les plus fréquemment proposés (et donc potentiellement les plus consommés) présentent un profil nutritionnel favorable. Nous pouvons supposer que l'offre est dominée par des produits de type "snacking" ou "Formules/Menus" : plats à base de pains (sandwiches, paninis), de viandes, de fromages, de légumes, ainsi que des pâtisseries. Ces catégories sont souvent associées à des apports nutritionnels élevés, et nous cherchons à vérifier si cette intuition se traduit par des Nutri-Scores moins favorables (D ou E).
 
 #### **Méthodologie et Nettoyage**
 
 Le jeu de données initial contient de nombreuses entrées textuelles qui ne sont pas des plats (consignes sanitaires, messages marketing, informations de service). Un nettoyage rigoureux a été effectué pour :
 
-- **Exclure les messages de gestion :** ("Simple & gourmand", "Téléchargez l'application").
+-   **Exclure les messages de gestion :** ("Simple & gourmand", "Téléchargez l'application").
 
-- **Regrouper les variantes de plats :** (fusionner tous les types de burgers, de pâtes ou de sandwiches). Il existe une grande variété de patisseries, sandwichs, pâtes,etc, qui risqueraient de fausser notre analyse.
+-   **Regrouper les variantes de plats :** (fusionner tous les types de burgers, de pâtes ou de sandwiches). Il existe une grande variété de patisseries, sandwichs, pâtes,etc, qui risqueraient de fausser notre analyse.
 
-- **Numériser le Nutri-Score :** Nous avons converti le Nutri-Score alphabétique (A-E) en échelle numérique ((5-1) pour permettre le calcul d'une moyenne en fonction des regroupements effectués.
+-   **Numériser le Nutri-Score :** Nous avons converti le Nutri-Score alphabétique (A-E) en échelle numérique ((5-1) pour permettre le calcul d'une moyenne en fonction des regroupements effectués.
 
 Les données utilisées sont : `plat` (ce sont des données nominales), `nutriscore` (ce sont des données nominales mais une fois converties, elles devient des données quantitatives / numériques ordinales et discrètes de 5 à 1).
 
-
 #### **Visualisation et analyse**
 
-Le graphique ci-dessous utilise un format **"Lollipop" divergent**. 
+Le graphique ci-dessous utilise un format **"Lollipop" divergent**.
 
-La ligne pointillée centrale représente le Nutri-Score C (valeur 3). Nous avons choisi cette valeur car il s'agit de la médiane des Nutri-scores. 
-Visuellement, cela permet également de créer un graphique divergent : tout ce qui part à gauche (vers 4 et 5) est statistiquement "en-dessus de la moyenne théorique", et tout ce qui part à droite (1 et 2) est "au-dessous". Cela nous permet donc de distinguer d'un coup d'œil les plats "plutôt sains" des plats "plutôt gourmands". 
-Enfin, C est le pivot : ce sont des aliments dont la qualité nutritionnelle est jugée "moyenne" ou "neutre".
+La ligne pointillée centrale représente le Nutri-Score C (valeur 3). Nous avons choisi cette valeur car il s'agit de la médiane des Nutri-scores. Visuellement, cela permet également de créer un graphique divergent : tout ce qui part à gauche (vers 4 et 5) est statistiquement "en-dessus de la moyenne théorique", et tout ce qui part à droite (1 et 2) est "au-dessous". Cela nous permet donc de distinguer d'un coup d'œil les plats "plutôt sains" des plats "plutôt gourmands". Enfin, C est le pivot : ce sont des aliments dont la qualité nutritionnelle est jugée "moyenne" ou "neutre".
 
 ```{r q5-lollipop_chart, echo=FALSE, message=FALSE, warning=FALSE, fig.width=16, fig.height=9, out.width="100%"}
 #Question 5 : Quel est le Nutri-Score moyen des 100 plats les plus fréquents ?
@@ -356,19 +350,18 @@ p_vertical <- ggplot(top_100_nutri_div, aes(x = reorder(plat_general, nutri_moye
 print(p_vertical)
 
 ```
- 
 
 #### **Interprétation des résultats**
+
 À la lecture de ce graphique, nous observons que :
 
-- Les plats équilibrés : Les soupes, salades composées et plats à base de légumineuses se concentrent au-dessus de la barre des 3, affichant des scores A et B.
+-   Les plats équilibrés : Les soupes, salades composées et plats à base de légumineuses se concentrent au-dessus de la barre des 3, affichant des scores A et B.
 
-- Le cœur de l'offre : Une grande partie des plats cuisinés (viandes blanches, pâtes) oscille autour du pivot C.
+-   Le cœur de l'offre : Une grande partie des plats cuisinés (viandes blanches, pâtes) oscille autour du pivot C.
 
-- Les options "plaisir" : Les burgers, pizzas et surtout les viennoiseries descendent vers les scores 2 (D) et 1 (E), ce qui confirme notre hypothèse initiale sur la qualité nutritionnelle de l'offre snacking.
+-   Les options "plaisir" : Les burgers, pizzas et surtout les viennoiseries descendent vers les scores 2 (D) et 1 (E), ce qui confirme notre hypothèse initiale sur la qualité nutritionnelle de l'offre snacking.
 
-
----
+------------------------------------------------------------------------
 
 ### Question 6 : Comment les catégories varient-elles selon les repas ?
 
@@ -438,20 +431,17 @@ ggplot(structure_repas,
 
 Le graphique révèle des structures très différentes selon le type de repas, ce qui confirme notre hypothèse de départ.
 
-**Le matin** est dominé par les formules et/ou menus (environ 25 %), le Petit-déjeuner et les Boissons, ce qui est cohérent avec une offre de restauration rapide matinale. Les catégories Entrées, Plats et Desserts y sont quasiment absentes.
+**Le matin** est dominé par le Petit-déjeuner (environ 40 %) accompagné d'une part importante de Desserts (environ 35 %) et de la catégorie "Autre" (environ 20 %). Les Boissons et les Plats y sont marginaux, et le Snacking est quasiment absent. Cette structure correspond bien à une offre matinale orientée viennoiseries et formules petit-déjeuner.
 
-**Le midi** est le repas le plus diversifié : on y trouve du Snacking (environ 30 %), des Formules/Menus, des Plats, des Entrées et des Desserts. Toutes les catégories sont représentées, ce qui confirme que le déjeuner est le repas principal de l'offre CROUS.
+**Le midi** est le repas le plus diversifié : on y trouve une forte part de Snacking (environ 35 %), suivi par "Autre" (environ 20 %), les Plats (environ 15 %), les Formules/Menus (environ 10 %), puis les Desserts, les Entrées et les Boissons. Toutes les catégories sont représentées, ce qui confirme que le déjeuner est le repas principal de l'offre CROUS.
 
-**Le soir** ressemble au midi dans sa structure mais avec une part de "Autre" très importante (environ 30 %), ce qui suggère que les restaurants du soir utilisent des catégories non standardisées, difficiles à classer avec notre dictionnaire de regroupement.
+**Le soir** présente une part de "Autre" très importante (environ 40 %) et une forte présence des Plats (environ 32 %), suivis par le Snacking (environ 16 %). Les Formules/Menus, Entrées et Desserts y sont nettement plus réduits qu'au midi. Cette structure suggère une offre du soir plus orientée plats chauds, mais aussi un usage de catégories non standardisées difficiles à classer avec notre dictionnaire de regroupement.
 
-La catégorie "Autre" reste présente dans les trois repas, ce qui confirme le problème de normalisation des catégories dans le dataset. Une partie significative des données reste inclassable avec notre regroupement actuel, ce qui constitue une limite de cette analyse.
+La catégorie "Autre" reste très présente dans les trois repas (et même dominante le soir), ce qui confirme le problème de normalisation des catégories dans le dataset. Une partie significative des données reste inclassable avec notre regroupement actuel, ce qui constitue une limite de cette analyse.
 
-**Nouvelle question :** La forte présence des Formules/Menus au matin et au midi cache-t-elle une vraie diversité de plats, ou s'agit-il toujours des mêmes plats regroupés différemment selon les restaurants ?
+**Nouvelle question :** La forte présence de la catégorie "Autre" le soir cache-t-elle des plats spécifiques aux dîners, ou simplement des libellés mal standardisés qu'il faudrait intégrer à notre dictionnaire de regroupement ?
 
-
-
----
-
+------------------------------------------------------------------------
 
 ### Question 7 : Les restaurants proposent-ils des menus équilibrés en catégories ?
 
@@ -519,19 +509,19 @@ ggplot(nb_plats_cat,
 
 Le graphique confirme une forte hétérogénéité entre les catégories et entre les restaurants.
 
-**Les Boissons** présentent la plus grande variance : la boîte est très étalée, ce qui signifie que certains restaurants proposent énormément de boissons tandis que d'autres très peu. Les outliers dépassent 1000 plats pour le Snacking et environ 900 pour les Formules/Menus, ce qui correspond probablement à des restaurants de type cafétéria ou snack spécialisés.
+**Le Petit-déjeuner** présente de loin la plus grande variance : sa boîte s'étend jusqu'à environ 280 plats, avec une médiane elle-même relativement élevée. Cela signifie que les restaurants qui servent un petit-déjeuner proposent souvent un volume très important d'items dans cette catégorie, ce qui correspond probablement à des cafétérias spécialisées dans l'offre matinale (viennoiseries, boissons chaudes, formules petit-déjeuner).
 
-**Les Entrées et les Plats** ont des boîtes très resserrées et des médianes basses. La majorité des restaurants proposent peu de plats dans ces catégories, ce qui infirme l'idée d'un menu traditionnel équilibré Entrée/Plat/Dessert. L'offre CROUS ne suit donc pas le schéma classique de la restauration à table.
+**Le Snacking** a une boîte modérée (médiane autour de 50 plats) mais affiche les outliers les plus extrêmes du graphique, certains restaurants atteignant près de 1200 plats. Ces établissements sont clairement spécialisés dans le format snack/cafétéria et concentrent une part énorme de leur offre sur cette catégorie.
 
-**Le Snacking** a la boîte la plus large avec les outliers les plus extrêmes (environ 1400 plats). Certains restaurants sont clairement spécialisés dans ce format et concentrent l'essentiel de leur offre sur cette catégorie.
+**Les Formules/Menus** ont également une boîte assez étalée (jusqu'à environ 130 plats), traduisant une politique d'offre très variable selon les établissements.
 
-En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories : l'offre est dominée par les Boissons et le Snacking, au détriment des Entrées et Plats traditionnels. Cette structure reflète l'évolution de la restauration universitaire vers un modèle de type cafétéria/snack plutôt que le repas classique en trois temps.
+**Les Entrées, les Plats, les Desserts et les Boissons** ont à l'inverse des boîtes très resserrées et des médianes basses (généralement inférieures à 40 plats). La majorité des restaurants proposent peu de plats dans ces catégories, ce qui infirme l'idée d'un menu traditionnel équilibré Entrée/Plat/Dessert. Les Desserts et Boissons présentent quelques outliers modérés, mais l'essentiel de l'offre reste structurellement limité.
 
-**Nouvelle question :** Ces restaurants très spécialisés en Snacking ou Boissons correspondent-ils à un type particulier dans `type.libelle` ? On pourrait croiser ces outliers avec les métadonnées de `liste_restaurants.csv` pour identifier leur profil.
+En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories : l'offre est dominée par le Snacking et le Petit-déjeuner, au détriment des Entrées, Plats et Desserts traditionnels. Cette structure reflète l'évolution de la restauration universitaire vers un modèle de type cafétéria/snack plutôt que le repas classique en trois temps.
 
+**Nouvelle question :** Ces restaurants très spécialisés en Snacking ou Petit-déjeuner correspondent-ils à un type particulier dans `type.libelle` ? On pourrait croiser ces outliers avec les métadonnées de `liste_restaurants.csv` pour identifier leur profil.
 
----
-
+------------------------------------------------------------------------
 
 ## Question 9 : Les restaurants accessibles PMR offrent-ils des menus plus sains ?
 
@@ -616,13 +606,12 @@ Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) 
 
 ### Critique
 
-- L’accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété comme causal.
-- Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d’où l’utilisation de proportions plutôt que de volumes bruts.
-- Le score moyen (A=5, E=1) affiché dans le sous-titre permet une comparaison globale entre les deux groupes.
-- Les Nutri-Scores proviennent d’un enrichissement du jeu de données ; les limites de qualité évoquées dans le rapport s’appliquent aussi ici.
+-   L’accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété comme causal.
+-   Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d’où l’utilisation de proportions plutôt que de volumes bruts.
+-   Le score moyen (A=5, E=1) affiché dans le sous-titre permet une comparaison globale entre les deux groupes.
+-   Les Nutri-Scores proviennent d’un enrichissement du jeu de données ; les limites de qualité évoquées dans le rapport s’appliquent aussi ici.
 
----
-
+------------------------------------------------------------------------
 
 ### Question 11 : Quelle est la distribution des Nutri-Scores ?
 
@@ -642,24 +631,23 @@ Ces deux graphiques sont générés dans l'application Shiny (onglet "Nutri-Scor
 
 Ce premier graphique représente la distribution globale des Nutri-Scores dans l'ensemble du dataset. Chaque barre correspond au nombre de plats associés à une catégorie de Nutri-Score.
 
-![Répartition globale des Nutri-Scores](images/repeGlobale.png)
+![Répartition globale des Nutri-Scores](../images/question11a.png)
 
 Le second graphique présente la proportion de chaque Nutri-Score au sein des différentes catégories de plats, permettant d'identifier les familles d'aliments les plus équilibrées ou les moins favorables sur le plan nutritionnel.
 
-![Répartition des Nutri-Scores par catégorie de plat](images/prop.png)
+![Répartition des Nutri-Scores par catégorie de plat](../images/question11b.png)
 
 *Figures générées dans l'application Shiny (onglet "Nutri-Score"). Les filtres région et type de repas permettent d'explorer la distribution de façon interactive.*
 
 **Interprétation des résultats**
 
-Le graphique montre une **forte domination du Nutri-Score C**, qui représente la majorité des plats proposés. Cela indique que l'offre du CROUS est globalement composée d'aliments présentant une qualité nutritionnelle moyenne. Les Nutri-Scores **A et B** sont également bien présents, ce qui témoigne de la disponibilité d'options plus équilibrées pour les étudiants. À l'inverse, les catégories **D et E** restent minoritaires, suggérant que les plats les moins favorables sur le plan nutritionnel occupent une place limitée dans l'offre globale.
+Le graphique montre une **très forte domination du Nutri-Score C**, qui concentre près de 20 000 plats à lui seul, soit la grande majorité de l'offre. Cela indique que l'offre du CROUS est globalement composée d'aliments présentant une qualité nutritionnelle moyenne. Le Nutri-Score **A** arrive en deuxième position (environ 4 000 plats), témoignant d'une présence non négligeable d'options équilibrées. Les Nutri-Scores **B et D** sont à peu près au même niveau (autour de 1 500 plats chacun), et le **E** reste minoritaire (environ 500 plats), ce qui montre que les plats les moins favorables sur le plan nutritionnel occupent une place limitée dans l'offre globale.
 
-L'analyse par catégorie révèle également que les **boissons** sont généralement mieux notées, tandis que les **desserts** et les produits de **snacking** concentrent davantage de Nutri-Scores moins favorables. Globalement, ces résultats montrent une offre relativement équilibrée, dominée par des produits de qualité nutritionnelle intermédiaire.
+L'analyse par catégorie nuance fortement cette vision globale. Les **Boissons** se distinguent par une part importante de Nutri-Scores A (environ 30 %), ce qui en fait l'une des catégories les mieux notées, bien qu'elles contiennent aussi une part visible de D. Les **Entrées** et les **Desserts** présentent un profil étonnamment favorable, avec environ 40 % de A — leur composition variée (compotes, salades, fruits) tire la moyenne vers le haut malgré quelques plats en D ou E. À l'inverse, le **Snacking**, le **Petit-déjeuner** et les **Formules/Menus** sont massivement classés C, avec très peu de variation, ce qui suggère une attribution standardisée plutôt qu'un scoring fin. Les **Plats** sont également dominés par le C, avec néanmoins une part non négligeable de D.
 
-Ces résultats suggèrent que les étudiants disposent d'un choix relativement varié leur permettant d'opter pour des repas plus ou moins équilibrés selon leurs préférences, tout en maintenant une offre globalement cohérente avec les recommandations nutritionnelles.
+Ces résultats suggèrent que les étudiants disposent d'un choix relativement varié leur permettant d'opter pour des repas plus ou moins équilibrés selon leurs préférences, mais la forte concentration sur le Nutri-Score C dans plusieurs catégories interroge sur la précision de l'attribution des scores plutôt que sur la qualité réelle de l'offre.
 
-
----
+------------------------------------------------------------------------
 
 ## Question 13 : Existe-t-il un lien entre calories et Nutri-Score ?
 
@@ -716,51 +704,52 @@ ggplot(df,
   )
 
 ```
+
 #### **Interprétation**
 
-Le graphique  montre une tendance : plus un plat est riche en calories, plus sa note Nutri-Score a tendance à descendre vers le orange (D) ou le rouge (E). 
+Le graphique montre une tendance : plus un plat est riche en calories, plus sa note Nutri-Score a tendance à descendre vers le orange (D) ou le rouge (E).
 
 Cependant, en regardant le détail, on observe des nuances:
 
-- Le Nutri-Score A regroupe les plats les plus légers. La majorité d'entre eux se situent sous la barre des 150 calories. C'est la catégorie la plus basse et la plus stable du graphique.
+-   Le Nutri-Score A regroupe les plats les plus légers. La majorité d'entre eux se situent sous la barre des 150 calories. C'est la catégorie la plus basse et la plus stable du graphique.
 
-- Le Nutri-Score B réserve une surprise : les notes s'étalent énormément. On y trouve des plats très légers, mais aussi des plats contenant beaucoup de calories (qui montent parfois plus haut que les catégories D ou E). Cela s'explique par le fait qu'un plat calorique peut garder une bonne note s'il contient beaucoup de légumes, de fibres ou de protéines pour compenser.
+-   Le Nutri-Score B réserve une surprise : les notes s'étalent énormément. On y trouve des plats très légers, mais aussi des plats contenant beaucoup de calories (qui montent parfois plus haut que les catégories D ou E). Cela s'explique par le fait qu'un plat calorique peut garder une bonne note s'il contient beaucoup de légumes, de fibres ou de protéines pour compenser.
 
-- Le Nutri-Score C est très particulier : presque toutes les données sont bloquées sur une seule ligne horizontale autour de 250 calories. Cela indique qu'il s'agit sûrement de plats très standardisés qui se ressemblent tous dans leur composition.
+-   Le Nutri-Score C est très particulier : presque toutes les données sont bloquées sur une seule ligne horizontale autour de 250 calories. Cela indique qu'il s'agit sûrement de plats très standardisés qui se ressemblent tous dans leur composition.
 
-- Les Nutri-Scores D et E sont presque identiques. Leurs blocs sont placés très haut sur le graphique, ce qui prouve que les plats les plus riches en énergie écopent presque toujours des moins bonnes notes.
+-   Les Nutri-Scores D et E sont presque identiques. Leurs blocs sont placés très haut sur le graphique, ce qui prouve que les plats les plus riches en énergie écopent presque toujours des moins bonnes notes.
 
 **Attention : Corrélation ne veut pas dire Causalité !**
 
-Ce n'est pas le nombre de calories en soi qui déclenche une mauvaise note. Le Nutri-Score utilise une formule mathématique  qui regarde la quantité de sucre, de sel ou de graisses saturées. Un plat peut être calorique parce qu'il contient de l'huile d'olive ou du saumon (de bonnes graisses) et s'en sortir avec une note correcte (comme on le voit pour le groupe B).
+Ce n'est pas le nombre de calories en soi qui déclenche une mauvaise note. Le Nutri-Score utilise une formule mathématique qui regarde la quantité de sucre, de sel ou de graisses saturées. Un plat peut être calorique parce qu'il contient de l'huile d'olive ou du saumon (de bonnes graisses) et s'en sortir avec une note correcte (comme on le voit pour le groupe B).
 
 Le graphique montre simplement que les deux critères avancent souvent ensemble, car les plats riches en sucre ou en mauvaises graisses sont, par nature, des plats très caloriques.
 
 **Nouvelle question :** Si les calories ne font pas tout, quels sont les vrais coupables qui font basculer un plat du Nutri-Score D au Nutri-Score E ? Est-ce une overdose de sel, ou une quantité de sucre plus élevée ?
 
 <br>
+
 <hr>
+
 <br>
-
-
 
 ## Question 15 : Existe-t-il une fracture nutritionnelle entre les régions ou les villes ?
 
 Le Nutri-Score permet d'évaluer la qualité nutritionnelle globale des menus. En calculant la moyenne de ces scores par région, on cherche à savoir si la localisation des restaurants influence la composition des repas. On pourrait s'attendre à une certaine uniformité sur tout le territoire, ou au contraire à des disparités régionales (par exemple, des régions plus axées sur des plats traditionnels riches ou des zones plus orientées vers une offre équilibrée).
 
-Nous avons choisi de réalisé ce graphique sur Power BI et nous avons obtenu ce résultat : 
+Nous avons choisi de réalisé ce graphique sur Power BI et nous avons obtenu ce résultat :
 
 **TODO : Une photo de la visu Power BI**
 
 #### **Interprétation**
 
-Sur la carte, on observe plusieurs phénomènes : 
+Sur la carte, on observe plusieurs phénomènes :
 
-- Une tendance vers des scores intermédiaires à médiocres : La majorité des points visibles sur la carte affichent des teintes jaunes, orangées ou rouges (notamment dans la moitié ouest et le centre de la France). Cela indique que le Nutri-Score moyen des restaurants s'établit plutôt autour de notes comme C, D ou E. Les repas proposés y sont globalement riches.
+-   Une tendance vers des scores intermédiaires à médiocres : La majorité des points visibles sur la carte affichent des teintes jaunes, orangées ou rouges (notamment dans la moitié ouest et le centre de la France). Cela indique que le Nutri-Score moyen des restaurants s'établit plutôt autour de notes comme C, D ou E. Les repas proposés y sont globalement riches.
 
-- Le Sud et l'Île-de-France se démarquent : On observe des bulles vertes bien distinctes près de Marseille, sur la Côte d'Azur et au niveau de Paris. Cela suggère que l'offre de restauration y est statistiquement plus équilibrée, avec une présence plus forte de plats légers (Nutri-Score A ou B).
+-   Le Sud et l'Île-de-France se démarquent : On observe des bulles vertes bien distinctes près de Marseille, sur la Côte d'Azur et au niveau de Paris. Cela suggère que l'offre de restauration y est statistiquement plus équilibrée, avec une présence plus forte de plats légers (Nutri-Score A ou B).
 
-- Le cas particulier des régions pleines : La Corse (en vert franc), la Bourgogne-Franche-Comté (en orange) et la Normandie (en kaki/jaune) apparaissent sous forme de grandes zones coloriées. La Corse affiche un profil plutôt vert (offre plus saine en moyenne), tandis que la Bourgogne-Franche-Comté penche vers un orange affirmé (plats plus riches).
+-   Le cas particulier des régions pleines : La Corse (en vert franc), la Bourgogne-Franche-Comté (en orange) et la Normandie (en kaki/jaune) apparaissent sous forme de grandes zones coloriées. La Corse affiche un profil plutôt vert (offre plus saine en moyenne), tandis que la Bourgogne-Franche-Comté penche vers un orange affirmé (plats plus riches).
 
 **Attention : Corrélation ne veut pas dire Causalité !**
 
@@ -768,12 +757,12 @@ Le fait qu'une région soit colorée en orange ou en rouge ne signifie pas que l
 
 Par exemple, si la Bourgogne-Franche-Comté est très orange, c'est peut-être tout simplement parce que les restaurants de cette zone proposent une majorité de plats traditionnels riches en sauces ou en graisses saturées (ce qui fait grimper la moyenne), et non pas parce que les habitants de cette région mangent moins bien par nature.
 
-**Anomalie visuelle constatée**
-Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions.
-
+**Anomalie visuelle constatée** Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions.
 
 <br>
+
 <hr>
+
 <br>
 
 ## Question 16 : La diversité des plats varie-t-elle selon la région ?
@@ -782,8 +771,8 @@ L'offre culinaire des restaurants universitaires est-elle homogène sur tout le 
 
 Mesurer la « diversité » n'est pas trivial : un simple comptage de plats distincts favorise mécaniquement les grandes régions qui comptent plus de restaurants. Nous mobilisons donc **deux indicateurs complémentaires**, qui éclairent chacun un aspect différent de la diversité :
 
-1. **Plats distincts par restaurant** — diversité normalisée par la taille de la région.
-2. **Entropie de Shannon** — mesure l'équilibre de la distribution des plats au sein de chaque restaurant : une entropie haute signifie que les plats sont variés *et* équilibrés (aucun ne domine massivement).
+1.  **Plats distincts par restaurant** — diversité normalisée par la taille de la région.
+2.  **Entropie de Shannon** — mesure l'équilibre de la distribution des plats au sein de chaque restaurant : une entropie haute signifie que les plats sont variés *et* équilibrés (aucun ne domine massivement).
 
 Les régions avec un seul restaurant (Créteil, Rennes) sont exclues de l'analyse car elles ne permettent pas de généralisation régionale.
 
@@ -867,10 +856,10 @@ Une fois normalisée par le nombre de restaurants, le classement change considé
 
 #### Critique
 
-- Cette métrique additionne les plats *sur l'ensemble des restaurants* de la région avant de diviser : si tous les restaurants d'une région proposent exactement les mêmes plats, le score sera élevé mais la diversité réelle sera nulle.
-- Elle ne distingue pas la diversité *intra*-restaurant (au sein d'un même restaurant) de la diversité *inter*-restaurants (entre établissements d'une même région).
+-   Cette métrique additionne les plats *sur l'ensemble des restaurants* de la région avant de diviser : si tous les restaurants d'une région proposent exactement les mêmes plats, le score sera élevé mais la diversité réelle sera nulle.
+-   Elle ne distingue pas la diversité *intra*-restaurant (au sein d'un même restaurant) de la diversité *inter*-restaurants (entre établissements d'une même région).
 
----
+------------------------------------------------------------------------
 
 ### Graphique 2 — Entropie de Shannon : équilibre de l'offre au sein de chaque restaurant
 
@@ -947,15 +936,15 @@ L'entropie de Shannon donne un classement partiellement différent du précéden
 
 #### Critique
 
-- L'entropie est sensible au nombre d'observations : un restaurant avec peu de plats enregistrés aura une entropie artificiellement faible.
-- Elle ne distingue pas la nature des plats (un restaurant peut avoir une entropie haute en proposant 10 fois la même salade verte déclinée différemment).
+-   L'entropie est sensible au nombre d'observations : un restaurant avec peu de plats enregistrés aura une entropie artificiellement faible.
+-   Elle ne distingue pas la nature des plats (un restaurant peut avoir une entropie haute en proposant 10 fois la même salade verte déclinée différemment).
 
----
+------------------------------------------------------------------------
 
 ### Synthèse
 
 | Indicateur | Classement « plus diversifié » | Classement « moins diversifié » |
-|---|---|---|
+|------------------------|------------------------|------------------------|
 | Plats distincts / restaurant | Lille, Strasbourg, Toulouse | Nice, Montpellier, Paris |
 | Entropie de Shannon | Corse, Strasbourg, Lille | Nice, Antilles-Guyane, Montpellier |
 
@@ -965,12 +954,14 @@ Cette double lecture est plus prudente qu'un simple classement unique : le premi
 
 **Limites générales de l'analyse :**
 
-- Les données couvrent une période courte (mars–mai 2026) et ne reflètent pas nécessairement l'offre annuelle habituelle.
-- Le nombre de restaurants par région est très variable (de 5 à 33), ce qui fragilise les comparaisons pour les petites régions comme la Corse ou Antilles-Guyane.
-- La variable `plat` contient de nombreuses variantes orthographiques d'un même plat, ce qui peut gonfler artificiellement le comptage de plats distincts.
+-   Les données couvrent une période courte (mars–mai 2026) et ne reflètent pas nécessairement l'offre annuelle habituelle.
+-   Le nombre de restaurants par région est très variable (de 5 à 33), ce qui fragilise les comparaisons pour les petites régions comme la Corse ou Antilles-Guyane.
+-   La variable `plat` contient de nombreuses variantes orthographiques d'un même plat, ce qui peut gonfler artificiellement le comptage de plats distincts.
 
 <br>
+
 <hr>
+
 <br>
 
 ## Question 18 : Existe-t-il une fracture géographique de l'accessibilité PMR ?
@@ -1059,11 +1050,11 @@ L'étiquette `n_pmr / n_restaurants` est essentielle pour interpréter correctem
 
 ### Critique
 
-- La variable `ispmr` indique une accessibilité déclarée dans la base, pas une vérification terrain.
-- Les régions ne contiennent pas toutes le même nombre de restaurants, ce qui rend les petites régions plus sensibles aux variations.
-- L'analyse ne tient pas compte de la localisation fine des restaurants : une région bien classée peut tout de même contenir des zones locales mal couvertes.
+-   La variable `ispmr` indique une accessibilité déclarée dans la base, pas une vérification terrain.
+-   Les régions ne contiennent pas toutes le même nombre de restaurants, ce qui rend les petites régions plus sensibles aux variations.
+-   L'analyse ne tient pas compte de la localisation fine des restaurants : une région bien classée peut tout de même contenir des zones locales mal couvertes.
 
----
+------------------------------------------------------------------------
 
 ## Question 22 : Certains restaurants ont-ils des données moins fiables ?
 
@@ -1075,9 +1066,9 @@ Les données utilisées sont : `restaurant_id` (identifiant nominal), `nutriscor
 
 Pour chaque restaurant, nous calculons :
 
-- Le **nombre total de plats** dans les données.
-- La **proportion de plats avec le Nutri-Score C**, qui est le score modal dans le dataset (≈72 % des plats). Un restaurant présentant 100 % de C sur un volume significatif de plats est un signal d'alerte fort.
-- Le **nombre de Nutri-Scores distincts utilisés** (diversité du scoring) : un restaurant fiable devrait présenter au moins 2 ou 3 valeurs différentes.
+-   Le **nombre total de plats** dans les données.
+-   La **proportion de plats avec le Nutri-Score C**, qui est le score modal dans le dataset (≈72 % des plats). Un restaurant présentant 100 % de C sur un volume significatif de plats est un signal d'alerte fort.
+-   Le **nombre de Nutri-Scores distincts utilisés** (diversité du scoring) : un restaurant fiable devrait présenter au moins 2 ou 3 valeurs différentes.
 
 Nous filtrons sur les restaurants ayant **au moins 10 plats**, pour éviter que les petits volumes fassent apparaître artificiellement des proportions extrêmes.
 
@@ -1174,12 +1165,11 @@ La ligne pointillée rouge à 90 % délimite la zone d'alerte. Les points color�
 
 ### Critique
 
-- L'absence de valeurs manquantes dans le dataset (`nutriscore` renseigné pour 100 % des lignes) est elle-même un signal inhabituel pour un enrichissement manuel, et renforce le doute sur la fiabilité de certaines attributions.
-- Un restaurant ne proposant que des plats réellement classés C n'est pas nécessairement une erreur ; mais la probabilité d'une telle uniformité sur des dizaines de plats différents est très faible.
-- Ce diagnostic est exploratoire : il permet d'**identifier des priorités de vérification**, pas de conclure définitivement à une erreur de données.
+-   L'absence de valeurs manquantes dans le dataset (`nutriscore` renseigné pour 100 % des lignes) est elle-même un signal inhabituel pour un enrichissement manuel, et renforce le doute sur la fiabilité de certaines attributions.
+-   Un restaurant ne proposant que des plats réellement classés C n'est pas nécessairement une erreur ; mais la probabilité d'une telle uniformité sur des dizaines de plats différents est très faible.
+-   Ce diagnostic est exploratoire : il permet d'**identifier des priorités de vérification**, pas de conclure définitivement à une erreur de données.
 
----
-
+------------------------------------------------------------------------
 
 ### Question 24 : Les calories varient-elles selon les catégories de plats ?
 
@@ -1197,26 +1187,27 @@ Ces deux graphiques sont générés dans l'application Shiny (onglet "Calories")
 
 Le boxplot ci-dessous permet de lire simultanément la médiane, l'étendue interquartile et les valeurs extrêmes de chaque catégorie. Les catégories sont ordonnées par médiane croissante de bas en haut. Les catégories sont triées de la moins calorique en bas à la plus calorique en haut.
 
-![Boxplot des calories par catégorie de plat](images/boxplotcat.png)
+![Boxplot des calories par catégorie de plat](../images/question24a.png)
 
 **Note de lecture :** on remarque que quatre catégories (Snacking, Plats, Petit-déjeuner, Formules/Menus) semblent visuellement identiques sur le boxplot, avec des boîtes réduites à un simple trait vertical. Cela ne signifie pas qu'elles ont exactement les mêmes valeurs : leurs médianes diffèrent de quelques kcal, ce qui suffit à les classer différemment, mais l'écart est trop faible pour être visible à l'œil nu. Ce phénomène s'explique par le mode d'estimation des calories : les valeurs ayant été enrichies manuellement à partir d'OpenFoodFacts, beaucoup de plats d'une même catégorie ont reçu la même estimation calorique par défaut, ce qui écrase la dispersion. Seuls les **Entrées** et les **Desserts** montrent de vraies boîtes visibles, signe que leurs calories ont été estimées de façon plus variée. C'est pourquoi le diagramme en barres des moyennes ci-dessous est un complément indispensable pour différencier les catégories entre elles.
 
 Le diagramme en barres ci-dessous présente la moyenne arithmétique des calories par catégorie, triée par ordre décroissant, offrant une lecture plus synthétique.
 
-![Calories moyennes par catégorie de plat](images/calmoycat.png)
+![Calories moyennes par catégorie de plat](../images/question24b.png)
 
 **Interprétation des résultats**
 
-Les **Plats arrivent en tête** avec la moyenne la plus élevée (environ 300 kcal). Ce résultat est attendu : cette catégorie regroupe les plats chauds complets (viandes, grillades, accompagnements féculents) qui constituent le cœur énergétique d'un repas. Le **Petit-déjeuner se situe en deuxième position** (environ 280 kcal), ce qui s'explique par la composition de l'offre CROUS le matin : viennoiseries, formules incluant plusieurs éléments, et boissons lactées : des aliments naturellement denses en calories.
+Les **Plats arrivent en tête** avec la moyenne la plus élevée (environ 330 kcal). Ce résultat est attendu : cette catégorie regroupe les plats chauds complets (viandes, grillades, accompagnements féculents) qui constituent le cœur énergétique d'un repas.
 
-Le **Snacking présente une moyenne intermédiaire** (environ 250 kcal). Même si le boxplot ne le montre pas clairement à cause de la faible granularité des estimations, le diagramme en barres confirme que cette catégorie se situe bien entre les Plats et les Desserts. Les outliers du boxplot, eux, révèlent que certains produits de snacking (burgers, paninis) dépassent largement la moyenne. Les **Desserts présentent la dispersion la plus large** dans le boxplot, reflétant une offre très variable allant de simples compotes (environ 50 kcal) à des pâtisseries riches pouvant dépasser 600 kcal.
+Les **Boissons** affichent une moyenne étonnamment haute en deuxième position (environ 290 kcal), bien au-dessus de notre hypothèse initiale qui les plaçait en dernière position. Le boxplot montre d'ailleurs une boîte très large pour cette catégorie : les boissons sucrées, jus et cafés préparés tirent fortement la moyenne vers le haut malgré la présence d'eaux et de boissons chaudes peu caloriques. Les **Formules/Menus** se situent en troisième position (environ 275 kcal), ce qui peut s'expliquer par leur composition multi-éléments souvent dense en énergie.
 
-Les **Boissons** affichent une moyenne plus élevée qu'attendu (environ 220 kcal). Notre hypothèse initiale les plaçait en dernière position, mais la présence de boissons sucrées et de cafés préparés tire la moyenne vers le haut. Le boxplot montre toutefois une médiane basse avec des outliers importants : ce sont ces valeurs extrêmes qui gonflent la moyenne. Enfin, les **Formules/Menus** se situent dans la partie basse du classement, ce qui s'explique probablement par le fait que la valeur calorique enregistrée correspond à un élément individuel de la formule plutôt qu'à la formule complète.
+Le **Snacking présente une moyenne intermédiaire** (environ 265 kcal). Même si le boxplot ne le montre pas clairement à cause de la faible granularité des estimations, le diagramme en barres confirme que cette catégorie se situe bien dans la moyenne. Les outliers du boxplot, eux, révèlent que certains produits de snacking (burgers, paninis) dépassent largement les 450 kcal.
 
-Globalement, ces résultats montrent que les catégories ne sont pas comparables sur la base de la seule moyenne : la dispersion interne est souvent aussi informative que la valeur centrale. Un étudiant peut trouver au sein d'une même catégorie aussi bien un choix léger qu'un choix très calorique, ce qui lui laisse une marge de choix importante selon ses besoins.
+Le **Petit-déjeuner** se situe en cinquième position (environ 250 kcal), contre toute attente, juste devant les **Entrées** (environ 220 kcal). Les **Desserts ferment la marche** avec la moyenne la plus basse (environ 165 kcal), ce qui s'explique par la présence massive de compotes et fruits dans l'offre, beaucoup plus légers que les pâtisseries. Le boxplot révèle pourtant pour les Desserts l'une des dispersions les plus larges, traduisant l'écart entre une simple compote (environ 50 kcal) et une pâtisserie riche dépassant 450 kcal.
 
+Globalement, ces résultats montrent que les catégories ne sont pas comparables sur la base de la seule moyenne : la dispersion interne est souvent aussi informative que la valeur centrale. Le cas des Boissons et des Desserts est particulièrement frappant ; leurs moyennes ne reflètent pas la nature de l'offre, mais le mélange entre items très légers et très caloriques au sein d'une même catégorie. Un étudiant peut donc trouver au sein d'une même catégorie aussi bien un choix léger qu'un choix très calorique, ce qui lui laisse une marge de choix importante selon ses besoins.
 
----
+------------------------------------------------------------------------
 
 ## Question 25 : Comment le Nutri-Score se répartit-il selon le style culinaire ?
 
@@ -1281,22 +1272,20 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 
 #### **Interprétation**
 
-- "Soupes" et "Fraîcheur" :  Comme prévu, ces deux styles écrasent le classement avec un profil supérieur ou égaux à C. La catégorie `Soupes` affiche quasiment une égalité de A et de C, ce qui s'explique par une composition riche en eau, en légumes et pauvre en graisses. Le style Fraîcheur est principalement constitué de salades, crudités, etc ce qui explique la majorité de A et B.
+-   "Soupes" et "Fraîcheur" : Comme prévu, ces deux styles écrasent le classement avec un profil supérieur ou égaux à C. La catégorie `Soupes` affiche quasiment une égalité de A et de C, ce qui s'explique par une composition riche en eau, en légumes et pauvre en graisses. Le style Fraîcheur est principalement constitué de salades, crudités, etc ce qui explique la majorité de A et B.
 
-- "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
+-   "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
 
-- "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
-
-
+-   "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
 
 ## Q23 — Quelle est la distribution calorique des plats proposés dans les restaurants CROUS ?
 
-**Hypothèse**
-Les plats servis en restauration universitaire devraient couvrir un repas complet, donc tendre vers 600–900 kcal. On s'attend à une distribution unimodale centrée sur cette plage.
+**Hypothèse** Les plats servis en restauration universitaire devraient couvrir un repas complet, donc tendre vers 600–900 kcal. On s'attend à une distribution unimodale centrée sur cette plage.
 
-**Méthode choisie**  : Histogramme + densité KDE + lignes médiane/moyenne
+**Méthode choisie** : Histogramme + densité KDE + lignes médiane/moyenne
 
 **Pourquoi** : L'histogramme révèle la forme brute de la distribution (modes, asymétrie, queues). La densité KDE lisse le bruit de discrétisation. Les deux lignes de position centrale permettent de détecter l'asymétrie sans calcul supplémentaire. C'est la méthode canonique pour une variable continue sans groupement naturel.
+
 ```{r include=FALSE}
 library(tidyverse)
 library(ggplot2)
@@ -1327,7 +1316,6 @@ join_restos <- function(df) {
                                  paste0("ID ", restaurant_id)))
 }
 ```
-
 
 ```{r echo=FALSE}
 # Q23 — Distribution des calories
@@ -1365,17 +1353,12 @@ ggplot(menus_cal, aes(x = calories_estimees)) +
   theme(plot.title       = element_text(size = 13, face = "bold"),
         panel.grid.minor = element_blank())
 ```
+
 **Résultats — lecture précise du graphique**
 
-**Médiane** = 250 kcal, Moyenne = 265 kcal → léger écart indiquant une asymétrie droite modérée
-La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
+**Médiane** = 250 kcal, Moyenne = 265 kcal → léger écart indiquant une asymétrie droite modérée La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
 
-**Bosse 1** ~50–100 kcal : petit groupe de plats très légers (boissons, condiments ?)
-**Bosse 2** ~150–200 kcal : second groupe intermédiaire (desserts, fruits ?)
-Pic principal ~250–300 kcal : mode dominant, ~20 000 plats — écrasant
-**Bosse 3** ~450–500 kcal : groupe secondaire notable (~2 500 plats)
-Queue droite ~600–700+ kcal : plats caloriques, effectifs très faibles
-
+**Bosse 1** \~50–100 kcal : petit groupe de plats très légers (boissons, condiments ?) **Bosse 2** \~150–200 kcal : second groupe intermédiaire (desserts, fruits ?) Pic principal \~250–300 kcal : mode dominant, \~20 000 plats — écrasant **Bosse 3** \~450–500 kcal : groupe secondaire notable (\~2 500 plats) Queue droite \~600–700+ kcal : plats caloriques, effectifs très faibles
 
 Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plats
 
@@ -1383,15 +1366,13 @@ Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plat
 
 *L'hypothèse est infirmée — et de loin*.
 
-La valeur centrale (~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité — ce qui tire mécaniquement la moyenne vers le bas.
+La valeur centrale (\~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité — ce qui tire mécaniquement la moyenne vers le bas.
 
-La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente — ni un dessert (~100 kcal), ni un plat principal (~500 kcal).
+La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente — ni un dessert (\~100 kcal), ni un plat principal (\~500 kcal).
 
 Verdict : le graphique répond à la question posée, mais la question elle-même était mal formulée. Demander la distribution "des plats" sans distinguer les catégories revient à calculer la taille moyenne d'un humain en mélangeant nourrissons et adultes.
 
-➜ Nouveau cycle
-Nouvelle question : La distribution calorique diffère-t-elle significativement selon la catégorie de plat ? (soit la Q.24)
-
+➜ Nouveau cycle Nouvelle question : La distribution calorique diffère-t-elle significativement selon la catégorie de plat ? (soit la Q.24)
 
 ## Q10 — Les restaurants CROUS renouvellent-ils activement et régulièrement leur carte ?
 
@@ -1399,9 +1380,8 @@ Nouvelle question : La distribution calorique diffère-t-elle significativement 
 
 Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes.
 
-**Méthode choisie** : Courbes cumulées par restaurant 
-**Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible.
-**PS**:On recupere les top 8 pour plus de lisibilité
+**Méthode choisie** : Courbes cumulées par restaurant **Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible. **PS**:On recupere les top 8 pour plus de lisibilité
+
 ```{r echo=FALSE}
 # Q10 — Renouvellement cumulé des plats 
 
@@ -1470,7 +1450,6 @@ ggplot(nouveautes_top,
   )
 ```
 
-
 **Interprétation critique**
 
 Le graphe s'arrête au 6 avril — et ce n'est pas un bug. C'est le résultat le plus important de cette analyse.
@@ -1483,8 +1462,6 @@ Le graphe s'arrête au 6 avril — et ce n'est pas un bug. C'est le résultat le
 
 ➜ **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte — ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
 
-
-
 ## Q14 — Les restaurants CROUS ont-ils des profils d'écoresponsabilité contrastés ?
 
 **Hypothèse**
@@ -1492,6 +1469,7 @@ Le graphe s'arrête au 6 avril — et ce n'est pas un bug. C'est le résultat le
 Les restaurants présentent des comportements environnementaux hétérogènes : certains proposent une offre massivement bas-carbone, d'autres non. On s'attend à une distribution dispersée avec des écarts significatifs entre établissements.
 
 **Méthode choisie** : Classification par tertiles + barplots empilés, jutifié par le fait que les tertiles permettent une comparaison relative entre restaurants sans présupposer un seuil normatif externe.
+
 ```{r echo=FALSE}
 # Q14 — Structure relative de l’offre selon l’impact carbone des plats
 # Classification comparative par tertiles
@@ -1681,17 +1659,13 @@ print(p_inter)
 print(p_faible)
 ```
 
-**Résultats — lecture des graphiques**
-Distribution globale (Image 1) :
+**Résultats — lecture des graphiques** Distribution globale (Image 1) :
 
-94,8% des plats sont à impact "Bas", 4,9% "Moyen", 0,3% "Très Haut"
-Seuils tertiles : Faible < 93,7% · Intermédiaire 93,7–100% · Forte = 100%
-Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
+94,8% des plats sont à impact "Bas", 4,9% "Moyen", 0,3% "Très Haut" Seuils tertiles : Faible \< 93,7% · Intermédiaire 93,7–100% · Forte = 100% Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
 
--->  Ce n'est plus une répartition en tiers égaux — la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de pct_bas est très concentrée vers 100%.
+--\> Ce n'est plus une répartition en tiers égaux — la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de pct_bas est très concentrée vers 100%.
 
-**Interprétation critique**
-**L'hypothèse est infirmée.**
+**Interprétation critique** **L'hypothèse est infirmée.**
 
 Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points — sur une variable qui varie entre 88,8% et 100%, soit une plage de variation extrêmement comprimée.
 
