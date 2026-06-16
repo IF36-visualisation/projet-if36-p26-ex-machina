@@ -71,7 +71,7 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes :
 - la complexité de leur structure,
 - la forte sensibilité aux variations d’écriture des noms de plats.
 
-- **Nombre d’observations :** 80 307 
+- **Nombre d’observations :** 27 376 
 - **Nombre de variables :** 10
 
 ### Colonnes
