@@ -5,8 +5,8 @@ library(plotly)
 library(scales)
 
 # Chargement des données 
-restaurants <- read_csv("liste_restaurants.csv")
-menus       <- read_csv("menus_complets_enrichis.csv") %>%
+restaurants <- read_csv("../data/liste_restaurants.csv")
+menus       <- read_csv("../data/menus_complets_enrichis.csv") %>%
   mutate(date = as.Date(date, format = "%d/%m/%Y"))
 
 # Jointure pour avoir la région dans les menus
