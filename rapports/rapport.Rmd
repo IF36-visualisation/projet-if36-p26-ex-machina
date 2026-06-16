@@ -196,13 +196,13 @@ ggplot(menus_par_jour_hebdo, aes(x = jour_semaine, y = nb_menus, fill = highligh
   )
 ```
 
-### Commentaire
+#### **Interprétation des résultats**
 
 Le graphique montre que l'activité est relativement homogène en semaine tout au long du mois, avec une chute nette sur les jours tombant un week-end (valeurs faibles pour certains 4, 11, 18, 25…). Cependant, on constate une chute sur la fin de semaine du 06 avril et les semaines du 13 et du 20 avril. Celles-ci correspondent aux semaines de vacances scolaires de Pâques ce qui pourrait expliquer la baisse d'activité.
 
 Mais la visualisation présente également un deuxième "problème": le nombre de plats ne remonte pas après les vacances et reste constant voire diminue sur les semaines suivantes. Nos données ont été extraites de l'API au mois de mars et nous pensons qu'à cette période, les données n'avaient pas encore été enregistrées / mises à jour dans l'API pour le mois de mai. En faisant un count du nombre de plat, cette hypothèse est encore plus probable : On avait plus de 11 000 plats en fin mars puis on est descendu à environ 5 000 en avril pour finir à 1 000 sur les semaines de Mai.
 
-### Critique
+#### **Critique**
 
 -   Les données couvrant seulement mars–mai 2026, les conclusions ne sont pas généralisables à l'année entière.
 -   Notre jeu de données n'est pas assez fourni sur le mois de mai ce qui explique une baisse puis une stabilisation du nombre de plats à cette période.
@@ -367,13 +367,13 @@ print(p_vertical)
 
 Les restaurants CROUS proposent différents types de repas (matin, midi, soir). On se demande si la structure des catégories de plats (Entrées, Plats, Desserts...) est la même pour chaque repas, ou si elle varie. On s'attend à ce que le midi soit le repas le plus complet, avec toutes les catégories représentées, et le matin le plus limité.
 
-**Méthodologie**
+#### **Méthodologie**
 
 Pour répondre à cette question, nous avons utilisé un **stacked bar chart normalisé** (barres empilées à 100 %) qui permet de comparer la structure des catégories entre les trois types de repas indépendamment du volume. Les données proviennent du fichier *menus_complets_enrichis.csv*. Les variables utilisées sont `repas` (variable nominale : matin, midi, soir) et `categorie` (variable nominale, regroupée en grandes familles via le dictionnaire de regroupement du projet).
 
 Les catégories brutes du dataset étant très fragmentées, elles ont été regroupées en sept familles principales (Entrées, Plats, Desserts, Boissons, Snacking, Formules/Menus, Petit-déjeuner) et une catégorie résiduelle "Autre" pour les libellés inclassables.
 
-**Visualisation et analyse**
+#### **Visualisation et analyse**
 
 Le graphique ci-dessous montre, pour chaque type de repas, la proportion occupée par chaque catégorie de plat. Les barres sont empilées à 100 %, ce qui permet de comparer directement la structure des repas entre eux sans être influencé par les différences de volume.
 
@@ -427,7 +427,7 @@ ggplot(structure_repas,
   theme_minimal(base_size = 11)
 ```
 
-**Interprétation des résultats**
+#### **Interprétation des résultats**
 
 Le graphique révèle des structures très différentes selon le type de repas, ce qui confirme notre hypothèse de départ.
 
@@ -447,13 +447,13 @@ La catégorie "Autre" reste très présente dans les trois repas (et même domin
 
 Les restaurants CROUS proposent-ils un nombre similaire de plats dans chaque catégorie, ou certains établissements sont-ils structurellement déséquilibrés ? On s'attend à une forte hétérogénéité : selon leur format (cafétéria, snack, brasserie), certains restaurants pourraient surreprésenter une catégorie (par exemple beaucoup de Snacking et peu de Plats chauds) tandis que d'autres proposeraient une offre plus équilibrée entre toutes les catégories.
 
-**Méthodologie**
+#### **Méthodologie**
 
 Pour répondre à cette question, nous avons utilisé un **boxplot horizontal** qui permet de visualiser, pour chaque catégorie, la distribution du nombre de plats proposés par restaurant. Les données proviennent du fichier *menus_complets_enrichis.csv*. Les variables utilisées sont `restaurant_id` (variable nominale), `categorie_groupe` (variable nominale issue du regroupement) et le nombre de plats par croisement restaurant/catégorie (variable quantitative discrète).
 
 La catégorie "Autre" a été exclue du graphique car elle regroupe des libellés inclassables qui fausseraient l'interprétation. Car dans "Autre", tous ce qui n'a pas pu être classé, donc il ne peut pas être utilisé pour la comparaison avec les autres catégories.
 
-**Visualisation et analyse**
+#### **Visualisation et analyse**
 
 Le boxplot ci-dessous montre, pour chaque catégorie, comment le nombre de plats se répartit entre les restaurants. La barre verticale au milieu de chaque boîte représente la médiane (la valeur typique), la boîte colorée couvre les 50 % des restaurants les plus centraux, et les points isolés représentent les restaurants atypiques qui proposent un nombre anormalement élevé de plats dans cette catégorie.
 
@@ -505,7 +505,7 @@ ggplot(nb_plats_cat,
   theme_minimal(base_size = 11)
 ```
 
-**Interprétation des résultats**
+#### **Interprétation des résultats**
 
 Le graphique confirme une forte hétérogénéité entre les catégories et entre les restaurants.
 
@@ -529,7 +529,7 @@ Les données utilisées sont : `ispmr` dans `liste_restaurants.csv`, `nutriscore
 
 #### **Méthodologie et nettoyage**
 
-Les menus sont joints à la table des restaurants grâce à l’identifiant du restaurant. Les Nutri-Scores sont ordonnés de A à E, puis comparés en proportions afin d’éviter que les restaurants PMR, potentiellement plus nombreux ou plus actifs, ne dominent mécaniquement le graphique. Un score numérique indicatif est aussi calculé pour le sous-titre : A vaut 5 points, B 4 points, C 3 points, D 2 points et E 1 point.
+Les menus sont joints à la table des restaurants grâce à l’identifiant du restaurant. Les Nutri-Scores sont ordonnés de A à E, puis comparés en proportions afin d’éviter que les restaurants PMR, potentiellement plus nombreux ou plus actifs, ne dominent mathématiquement le graphique. Un score numérique indicatif est aussi calculé pour le sous-titre : A vaut 5 points, B 4 points, C 3 points, D 2 points et E 1 point.
 
 #### **Visualisation et analyse**
 
@@ -598,16 +598,14 @@ ggplot(pmr_nutri, aes(x = accessibilite, fill = nutriscore)) +
   )
 ```
 
-### Commentaire
+#### **Interprétation des résultats**
 
-Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) présentent une répartition quasi identique des Nutri-Scores, avec un score moyen de 3,26/5 pour chacun. Les proportions de plats notables (A-B), intermédiaires (C) et moins favorables (D-E) sont donc comparables, ce qui suggère qu’aucune différence nutritionnelle marquée n’est associée à l’accessibilité PMR dans l’offre observée.
 
-### Critique
-
--   L’accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété comme causal.
+-   L’accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété une cause.
 -   Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d’où l’utilisation de proportions plutôt que de volumes bruts.
--   Le score moyen (A=5, E=1) affiché dans le sous-titre permet une comparaison globale entre les deux groupes.
--   Les Nutri-Scores proviennent d’un enrichissement du jeu de données ; les limites de qualité évoquées dans le rapport s’appliquent aussi ici.
+
+
+Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) présentent une répartition quasi identique des Nutri-Scores, avec un score moyen de 3,26/5 pour chacun. Les proportions de plats notables (A-B), intermédiaires (C) et moins favorables (D-E) sont donc pratiquement égales, ce qui suggère qu’aucune différence nutritionnelle marquée n’est associée à l’accessibilité PMR dans l’offre observée.
 
 ------------------------------------------------------------------------
 
