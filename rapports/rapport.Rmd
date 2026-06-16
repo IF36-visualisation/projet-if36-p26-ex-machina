@@ -1,5 +1,5 @@
 ---
-title: "Rapport d’analyse exploratoire: Croustillant Menu"
+title: "Rapport d'analyse exploratoire: Croustillant Menu"
 author: "Jules TIMADJI, Ange Ariane KAMGUE MAGNE, Housséni YABRE, Rayan LEGRAND"
 date: "2026-06-16"
 output:
@@ -24,11 +24,11 @@ library(scales)
 
 # Introduction
 
-Ce projet s’inscrit dans le domaine de l’analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l’exploitation des données fournies par l’API **Croustillant Menu** (<https://api.croustillant.menu/>) qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
+Ce projet s'inscrit dans le domaine de l'analyse de données appliquée à la restauration universitaire CROUS. Il repose sur l'exploitation des données fournies par l'API **Croustillant Menu** (<https://api.croustillant.menu/>) qui permet de récupérer les menus des restaurants ainsi que les détails des plats proposés.
 
 Le projet a pour objectif de réaliser une **analyse exploratoire** des menus et des restaurants afin de :
 
--   Identifier les tendances dans l’offre culinaire selon les restaurants et les périodes (ex. février 2026)\
+-   Identifier les tendances dans l'offre culinaire selon les restaurants et les périodes (ex. février 2026)\
 -   Analyser la diversité des plats et des catégories (Entrées, Plats, Desserts)\
 -   Comparer les menus entre restaurants et observer des régularités ou anomalies\
 -   Détecter des insights exploitables pour des analyses plus avancées (ex. popularité des plats, types de repas les plus fréquents)
@@ -39,17 +39,17 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 
 ### 1. **`liste_restaurants.csv`** : liste des restaurants distincts
 
--   **Nombre d’observations :** 942 (correspond au nombre de restaurants présents dans le fichier CSV)\
+-   **Nombre d'observations :** 942 (correspond au nombre de restaurants présents dans le fichier CSV)\
 -   **Nombre de variables :** 20
 
 | Champ | Type | Description |
-|-------------------|-------------------|----------------------------------|
+|----|----|----|
 | `code` | entier | Identifiant unique du restaurant |
 | `nom` | texte | Nom du restaurant |
 | `adresse` | texte | Adresse complète |
 | `latitude` | numérique | Latitude GPS |
 | `longitude` | numérique | Longitude GPS |
-| `horaires` | texte | Horaires d’ouverture (ex. 11:00-22:00) |
+| `horaires` | texte | Horaires d'ouverture (ex. 11:00-22:00) |
 | `jours_ouvert` | texte | Jours de la semaine où le restaurant est ouvert |
 | `image_url` | texte | Lien vers une image représentative du restaurant |
 | `email` | texte | Adresse email du restaurant |
@@ -57,7 +57,7 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 | `ispmr` | booléen | Accessibilité PMR (personnes à mobilité réduite) |
 | `zone` | texte | Zone géographique ou quartier |
 | `paiement` | texte | Modes de paiement acceptés |
-| `acces` | texte | Informations sur l’accès (parking, transports…) |
+| `acces` | texte | Informations sur l'accès (parking, transports...) |
 | `ouvert` | booléen | Indique si le restaurant est actuellement ouvert |
 | `actif` | booléen | Indique si le restaurant est actif dans la base |
 | `region.code` | entier | Code de la région |
@@ -71,26 +71,26 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 
 ### Description
 
-Cette table contient l’ensemble des menus proposés dans les restaurants universitaires.\
+Cette table contient l'ensemble des menus proposés dans les restaurants universitaires.\
 Chaque ligne correspond à un plat spécifique servi dans un restaurant donné, à une date, pour un type de repas et une catégorie précis.
 
-Les données ont été enrichies manuellement à partir d’informations issues du site **OpenFoodFacts** (<https://world-fr.openfoodfacts.org/>), puis combinées avec les données récupérées via l’API **CROUStillant Menu**.
+Les données ont été enrichies manuellement à partir d'informations issues du site **OpenFoodFacts** (<https://world-fr.openfoodfacts.org/>), puis combinées avec les données récupérées via l'API **CROUStillant Menu**.
 
-Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes : - le volume très important des données OpenFoodFacts (\~9 Go), - la complexité de leur structure, - la forte sensibilité aux variations d’écriture des noms de plats.
+Ce choix d'enrichissement manuel a été motivé par plusieurs contraintes : - le volume très important des données OpenFoodFacts (\~9 Go), - la complexité de leur structure, - la forte sensibilité aux variations d'écriture des noms de plats.
 
--   **Nombre d’observations :** 80 307
+-   **Nombre d'observations :** 80 307
 -   **Nombre de variables :** 10
 
 ### Colonnes
 
 | Champ | Type | Description |
-|-------------------------|-------------------|-----------------------------|
+|----|----|----|
 | `restaurant_id` | entier | Identifiant du restaurant |
 | `date` | date | Date du menu |
 | `repas` | texte | Type de repas |
 | `categorie` | texte | Catégorie du plat |
 | `plat` | texte | Nom du plat |
-| `nutriscore` | texte | Score nutritionnel (A–E) |
+| `nutriscore` | texte | Score nutritionnel (A-E) |
 | `regime` | texte | Type alimentaire (carné, végétarien, etc) |
 | `impact_carbone` | texte | Empreinte carbone (bas, moyen, élevé) |
 | `style_culinaire` | texte | Style du plat (soupe, cuisine traditionnelle, etc) |
@@ -98,14 +98,14 @@ Ce choix d’enrichissement manuel a été motivé par plusieurs contraintes : -
 
 **Organisation et sous-groupes :**
 
--   Les données sont hiérarchisées : **restaurants → menus → types de repas → catégories → plats**\
+-   Les données sont hiérarchisées : **restaurants -\> menus -\> types de repas -\> catégories -\> plats**\
 -   Chaque restaurant peut avoir plusieurs menus par jour et plusieurs plats par catégorie
 
 **Format :** CSV, séparateur `,`
 
 **Contexte et choix des données :**
 
--   Ces données permettent d’étudier les menus sur différentes périodes et restaurants.\
+-   Ces données permettent d'étudier les menus sur différentes périodes et restaurants.\
 -   Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.
 
 <br>
@@ -198,13 +198,13 @@ ggplot(menus_par_jour_hebdo, aes(x = jour_semaine, y = nb_menus, fill = highligh
 
 #### **Interprétation des résultats**
 
-Le graphique montre que l'activité est relativement homogène en semaine tout au long du mois, avec une chute nette sur les jours tombant un week-end (valeurs faibles pour certains 4, 11, 18, 25…). Cependant, on constate une chute sur la fin de semaine du 06 avril et les semaines du 13 et du 20 avril. Celles-ci correspondent aux semaines de vacances scolaires de Pâques ce qui pourrait expliquer la baisse d'activité.
+Le graphique montre que l'activité est relativement homogène en semaine tout au long du mois, avec une chute nette sur les jours tombant un week-end (valeurs faibles pour certains 4, 11, 18, 25...). Cependant, on constate une chute sur la fin de semaine du 06 avril et les semaines du 13 et du 20 avril. Celles-ci correspondent aux semaines de vacances scolaires de Pâques ce qui pourrait expliquer la baisse d'activité.
 
 Mais la visualisation présente également un deuxième "problème": le nombre de plats ne remonte pas après les vacances et reste constant voire diminue sur les semaines suivantes. Nos données ont été extraites de l'API au mois de mars et nous pensons qu'à cette période, les données n'avaient pas encore été enregistrées / mises à jour dans l'API pour le mois de mai. En faisant un count du nombre de plat, cette hypothèse est encore plus probable : On avait plus de 11 000 plats en fin mars puis on est descendu à environ 5 000 en avril pour finir à 1 000 sur les semaines de Mai.
 
 #### **Critique**
 
--   Les données couvrant seulement mars–mai 2026, les conclusions ne sont pas généralisables à l'année entière.
+-   Les données couvrant seulement mars-mai 2026, les conclusions ne sont pas généralisables à l'année entière.
 -   Notre jeu de données n'est pas assez fourni sur le mois de mai ce qui explique une baisse puis une stabilisation du nombre de plats à cette période.
 
 ------------------------------------------------------------------------
@@ -363,7 +363,7 @@ print(p_vertical)
 
 ------------------------------------------------------------------------
 
-### Question 6 : Comment les catégories varient-elles selon les repas ?
+## Question 6 : Comment les catégories varient-elles selon les repas ?
 
 Les restaurants CROUS proposent différents types de repas (matin, midi, soir). On se demande si la structure des catégories de plats (Entrées, Plats, Desserts...) est la même pour chaque repas, ou si elle varie. On s'attend à ce que le midi soit le repas le plus complet, avec toutes les catégories représentées, et le matin le plus limité.
 
@@ -443,7 +443,7 @@ La catégorie "Autre" reste très présente dans les trois repas (et même domin
 
 ------------------------------------------------------------------------
 
-### Question 7 : Les restaurants proposent-ils des menus équilibrés en catégories ?
+## Question 7 : Les restaurants proposent-ils des menus équilibrés en catégories ?
 
 Les restaurants CROUS proposent-ils un nombre similaire de plats dans chaque catégorie, ou certains établissements sont-ils structurellement déséquilibrés ? On s'attend à une forte hétérogénéité : selon leur format (cafétéria, snack, brasserie), certains restaurants pourraient surreprésenter une catégorie (par exemple beaucoup de Snacking et peu de Plats chauds) tandis que d'autres proposeraient une offre plus équilibrée entre toutes les catégories.
 
@@ -523,13 +523,13 @@ En résumé, les menus CROUS ne sont **pas équilibrés** entre les catégories 
 
 ## Question 9 : Les restaurants accessibles PMR offrent-ils des menus plus sains ?
 
-Cette question vise à vérifier si l’accessibilité PMR d’un restaurant est associée à une offre nutritionnelle différente. L’idée n’est pas de supposer un lien causal, mais de comparer les distributions de Nutri-Score entre restaurants accessibles et non accessibles aux personnes à mobilité réduite.
+Cette question vise à vérifier si l'accessibilité PMR d'un restaurant est associée à une offre nutritionnelle différente. L'idée n'est pas de supposer un lien causal, mais de comparer les distributions de Nutri-Score entre restaurants accessibles et non accessibles aux personnes à mobilité réduite.
 
 Les données utilisées sont : `ispmr` dans `liste_restaurants.csv`, `nutriscore` et `restaurant_id` dans `menus_complets_enrichis.csv`.
 
 #### **Méthodologie et nettoyage**
 
-Les menus sont joints à la table des restaurants grâce à l’identifiant du restaurant. Les Nutri-Scores sont ordonnés de A à E, puis comparés en proportions afin d’éviter que les restaurants PMR, potentiellement plus nombreux ou plus actifs, ne dominent mathématiquement le graphique. Un score numérique indicatif est aussi calculé pour le sous-titre : A vaut 5 points, B 4 points, C 3 points, D 2 points et E 1 point.
+Les menus sont joints à la table des restaurants grâce à l'identifiant du restaurant. Les Nutri-Scores sont ordonnés de A à E, puis comparés en proportions afin d'éviter que les restaurants PMR, potentiellement plus nombreux ou plus actifs, ne dominent mathématiquement le graphique. Un score numérique indicatif est aussi calculé pour le sous-titre : A vaut 5 points, B 4 points, C 3 points, D 2 points et E 1 point.
 
 #### **Visualisation et analyse**
 
@@ -600,16 +600,133 @@ ggplot(pmr_nutri, aes(x = accessibilite, fill = nutriscore)) +
 
 #### **Interprétation des résultats**
 
+-   L'accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété une cause.
+-   Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d'où l'utilisation de proportions plutôt que de volumes bruts.
 
--   L’accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété une cause.
--   Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d’où l’utilisation de proportions plutôt que de volumes bruts.
-
-
-Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) présentent une répartition quasi identique des Nutri-Scores, avec un score moyen de 3,26/5 pour chacun. Les proportions de plats notables (A-B), intermédiaires (C) et moins favorables (D-E) sont donc pratiquement égales, ce qui suggère qu’aucune différence nutritionnelle marquée n’est associée à l’accessibilité PMR dans l’offre observée.
+Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) présentent une répartition quasi identique des Nutri-Scores, avec un score moyen de 3,26/5 pour chacun. Les proportions de plats notables (A-B), intermédiaires (C) et moins favorables (D-E) sont donc pratiquement égales, ce qui suggère qu'aucune différence nutritionnelle marquée n'est associée à l'accessibilité PMR dans l'offre observée.
 
 ------------------------------------------------------------------------
 
-### Question 11 : Quelle est la distribution des Nutri-Scores ?
+## Question 10: Les restaurants CROUS renouvellent-ils activement et régulièrement leur carte ?
+
+**Hypothèse**
+
+Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes.
+
+**Méthode choisie** : Courbes cumulées par restaurant **Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible. **PS**:On recupere les top 8 pour plus de lisibilité
+
+```{r include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(scales)
+
+# -- Menus
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) |>
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Vérification rapide
+message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " -> ", max(menus$date, na.rm=TRUE))
+message("Lignes : ", nrow(menus))
+
+# -- Restaurants (jointure
+restos <- read_csv("../data/liste_restaurants.csv",
+                   show_col_types = FALSE) |>
+  select(code, nom, region.libelle) |>
+  mutate(
+    nom_court = if_else(nchar(nom) > 32,
+                         paste0(substr(nom, 1, 30), "..."), nom)
+  )
+
+# Fonction utilitaire : join rapide sur menus
+join_restos <- function(df) {
+  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
+    mutate(nom_court = coalesce(nom_court,
+                                 paste0("ID ", restaurant_id)))
+}
+```
+
+```{r echo=FALSE}
+# Q10 - Renouvellement cumulé des plats
+
+nouveautes <- menus |>
+  filter(!is.na(date)) |>
+  group_by(restaurant_id, plat) |>
+  summarise(premiere_date = min(date), .groups = "drop") |>
+  mutate(semaine = floor_date(premiere_date,
+                               unit = "week", week_start = 1))
+
+top_ids <- nouveautes |>
+  count(restaurant_id, sort = TRUE) |>
+  slice_head(n = 8) |>
+  pull(restaurant_id)
+
+nouveautes_top <- nouveautes |>
+  filter(restaurant_id %in% top_ids) |>
+  count(restaurant_id, semaine) |>
+  group_by(restaurant_id) |>
+  arrange(semaine) |>
+  mutate(cumul = cumsum(n)) |>
+  ungroup() |>
+  join_restos() |>
+  mutate(nom_court = as.factor(nom_court))
+
+# -- Calcul des breaks depuis les données réelles
+date_min <- floor_date(min(nouveautes_top$semaine), "week", week_start = 1)
+date_max <- ceiling_date(max(nouveautes_top$semaine), "week", week_start = 1)
+
+# Breaks hebdomadaires forcés sur toute la plage
+breaks_x <- seq.Date(date_min, date_max, by = "1 week")
+
+# Si trop de semaines (>16), espacer d'une semaine sur deux
+if (length(breaks_x) > 16) {
+  breaks_x <- breaks_x[seq(1, length(breaks_x), by = 2)]
+}
+
+ggplot(nouveautes_top,
+       aes(x = semaine, y = cumul,
+           colour = nom_court, group = nom_court)) +
+  geom_line(linewidth = 0.95, alpha = 0.9) +
+  geom_point(size = 2, alpha = 0.8) +
+  scale_colour_brewer(palette = "Dark2", name = NULL) +
+  scale_x_date(
+    breaks = breaks_x,                   # <- breaks forcés depuis les données
+    labels = function(d) format(d, "%d %b"),
+    expand = expansion(mult = c(0.02, 0.02))
+  ) +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 6),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title    = "Renouvellement cumulé des plats - top 8 restaurants",
+    subtitle = "Nombre cumulé de plats apparus pour la première fois, par semaine",
+    x = NULL, y = "Plats nouveaux (cumulés)",
+    caption  = "Un 'nouveau plat' = première apparition dans un restaurant donné"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(size = 13, face = "bold"),
+    axis.text.x      = element_text(angle = 45, hjust = 1, size = 8.5),
+    legend.position  = "right",
+    legend.text      = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )
+```
+
+**Interprétation critique**
+
+Le graphe s'arrête au 6 avril - et ce n'est pas un bug. C'est le résultat le plus important de cette analyse.
+
+**Ce que le graphe dit réellement** : l'intégralité du catalogue de chaque restaurant a été introduite en **3 semaines** (fin mars -\> début avril). Après le 6 avril, aucun nouveau plat n'apparaît dans aucun des 8 restaurants - les données couvrent pourtant jusqu'au 23 mai, soit encore **7 semaines supplémentaires** de données non représentées ici car elles ne contiennent aucune nouveauté.
+
+**Traduction concrète** : à partir de la semaine du 6 avril, les restaurants CROUS tournent en boucle sur un catalogue fixe. Les plats observés après cette date sont tous des répétitions de plats déjà servis. Il n'y a pas de renouvellement - il y a de la **rotation**.
+
+**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total. Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
+
+-\> **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte - ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
+
+## Question 11 : Quelle est la distribution des Nutri-Scores ?
 
 Dans cette partie, nous cherchons à évaluer la qualité nutritionnelle globale de l'offre de restauration proposée par le CROUS à travers la répartition des Nutri-Scores des plats.
 
@@ -639,7 +756,7 @@ Le second graphique présente la proportion de chaque Nutri-Score au sein des di
 
 Le graphique montre une **très forte domination du Nutri-Score C**, qui concentre près de 20 000 plats à lui seul, soit la grande majorité de l'offre. Cela indique que l'offre du CROUS est globalement composée d'aliments présentant une qualité nutritionnelle moyenne. Le Nutri-Score **A** arrive en deuxième position (environ 4 000 plats), témoignant d'une présence non négligeable d'options équilibrées. Les Nutri-Scores **B et D** sont à peu près au même niveau (autour de 1 500 plats chacun), et le **E** reste minoritaire (environ 500 plats), ce qui montre que les plats les moins favorables sur le plan nutritionnel occupent une place limitée dans l'offre globale.
 
-L'analyse par catégorie nuance fortement cette vision globale. Les **Boissons** se distinguent par une part importante de Nutri-Scores A (environ 30 %), ce qui en fait l'une des catégories les mieux notées, bien qu'elles contiennent aussi une part visible de D. Les **Entrées** et les **Desserts** présentent un profil étonnamment favorable, avec environ 40 % de A — leur composition variée (compotes, salades, fruits) tire la moyenne vers le haut malgré quelques plats en D ou E. À l'inverse, le **Snacking**, le **Petit-déjeuner** et les **Formules/Menus** sont massivement classés C, avec très peu de variation, ce qui suggère une attribution standardisée plutôt qu'un scoring fin. Les **Plats** sont également dominés par le C, avec néanmoins une part non négligeable de D.
+L'analyse par catégorie nuance fortement cette vision globale. Les **Boissons** se distinguent par une part importante de Nutri-Scores A (environ 30 %), ce qui en fait l'une des catégories les mieux notées, bien qu'elles contiennent aussi une part visible de D. Les **Entrées** et les **Desserts** présentent un profil étonnamment favorable, avec environ 40 % de A - leur composition variée (compotes, salades, fruits) tire la moyenne vers le haut malgré quelques plats en D ou E. À l'inverse, le **Snacking**, le **Petit-déjeuner** et les **Formules/Menus** sont massivement classés C, avec très peu de variation, ce qui suggère une attribution standardisée plutôt qu'un scoring fin. Les **Plats** sont également dominés par le C, avec néanmoins une part non négligeable de D.
 
 Ces résultats suggèrent que les étudiants disposent d'un choix relativement varié leur permettant d'opter pour des repas plus ou moins équilibrés selon leurs préférences, mais la forte concentration sur le Nutri-Score C dans plusieurs catégories interroge sur la précision de l'attribution des scores plutôt que sur la qualité réelle de l'offre.
 
@@ -729,6 +846,248 @@ Le graphique montre simplement que les deux critères avancent souvent ensemble,
 
 <br>
 
+## Question 14: Les restaurants CROUS ont-ils des profils d'écoresponsabilité contrastés ?
+
+**Hypothèse**
+
+Les restaurants présentent des comportements environnementaux hétérogènes : certains proposent une offre massivement bas-carbone, d'autres non. On s'attend à une distribution dispersée avec des écarts significatifs entre établissements.
+
+**Méthode choisie** : Classification par tertiles + barplots empilés, jutifié par le fait que les tertiles permettent une comparaison relative entre restaurants sans présupposer un seuil normatif externe.
+
+```{r echo=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(scales)
+
+# -- Menus
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) |>
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Vérification rapide
+message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " -> ", max(menus$date, na.rm=TRUE))
+message("Lignes : ", nrow(menus))
+
+# -- Restaurants (jointure
+restos <- read_csv("../data/liste_restaurants.csv",
+                   show_col_types = FALSE) |>
+  select(code, nom, region.libelle) |>
+  mutate(
+    nom_court = if_else(nchar(nom) > 32,
+                         paste0(substr(nom, 1, 30), "..."), nom)
+  )
+
+# Fonction utilitaire : join rapide sur menus
+join_restos <- function(df) {
+  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
+    mutate(nom_court = coalesce(nom_court,
+                                 paste0("ID ", restaurant_id)))
+}
+```
+
+```{r echo=FALSE}
+# Q14 - Structure relative de l'offre selon l'impact carbone des plats
+# Classification comparative par tertiles
+# Nécessite le bloc INIT exécuté avant
+
+# -- Étape 0 : diagnostic de la distribution réelle
+menus |>
+  filter(!is.na(impact_carbone)) |>
+  count(impact_carbone) |>
+  mutate(pct = round(n / sum(n) * 100, 1)) |>
+  print()
+
+# -- Étape 1 : calcul de la structure d'offre par restaurant
+eco_base <- menus |>
+  filter(!is.na(impact_carbone)) |>
+  group_by(restaurant_id) |>
+  summarise(
+    total       = n(),
+    n_bas       = sum(impact_carbone == "Bas"),
+    n_moyen     = sum(impact_carbone == "Moyen"),
+    n_eleve     = sum(impact_carbone == "Élevé"),
+    pct_bas     = n_bas   / total * 100,
+    pct_moyen   = n_moyen / total * 100,
+    pct_eleve   = n_eleve / total * 100,
+    .groups     = "drop"
+  ) |>
+  filter(total >= 50)
+
+# -- Étape 2 : seuils dynamiques (tertiles empiriques)
+seuil_bas  <- quantile(eco_base$pct_bas, 0.33)
+seuil_haut <- quantile(eco_base$pct_bas, 0.67)
+
+message(sprintf(
+  "Seuils empiriques (tertiles) : Faible < %.1f%% - Intermédiaire %.1f-%.1f%% - Forte >= %.1f%%",
+  seuil_bas, seuil_bas, seuil_haut, seuil_haut
+))
+
+# -- Étape 3 : classification descriptive (non normative)
+eco_score <- eco_base |>
+  mutate(
+    profil = case_when(
+      pct_bas >= seuil_haut ~ "Forte part de plats à impact bas",
+      pct_bas >= seuil_bas  ~ "Part intermédiaire de plats à impact bas",
+      TRUE                  ~ "Faible part de plats à impact bas"
+    ),
+    profil = factor(
+      profil,
+      levels = c(
+        "Forte part de plats à impact bas",
+        "Part intermédiaire de plats à impact bas",
+        "Faible part de plats à impact bas"
+      )
+    )
+  ) |>
+  join_restos()
+
+# Vérification
+message("Répartition des profils descriptifs :")
+eco_score |> count(profil) |> print()
+
+# -- Graphe 1 : vue macro
+resume_profil <- eco_score |>
+  count(profil) |>
+  mutate(
+    pct   = n / sum(n) * 100,
+    label = paste0(n, " restaurants\n(", round(pct, 1), "%)")
+  )
+
+p_macro <- ggplot(resume_profil,
+                  aes(x = profil, y = n, fill = profil)) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(aes(label = label),
+            vjust = -0.35, size = 3.4,
+            lineheight = 0.9, colour = "#222") +
+  scale_fill_manual(values = c(
+    "Forte part de plats à impact bas"        = "#1D9E75",
+    "Part intermédiaire de plats à impact bas"= "#EF9F27",
+    "Faible part de plats à impact bas"       = "#E24B4A"
+  )) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.25))) +
+  labs(
+    title    = "Orientation carbone relative de l'offre des restaurants",
+    subtitle = sprintf(
+      "Classification comparative par tertiles - seuils empiriques : %.1f%% et %.1f%%",
+      seuil_bas, seuil_haut
+    ),
+    x = NULL,
+    y = "Nombre de restaurants",
+    caption =
+      "Analyse descriptive de la structure d'offre\nSeuils définis à partir de la distribution observée\nRestaurants avec >= 50 plats documentés"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title         = element_text(size = 13, face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank()
+  )
+
+print(p_macro)
+
+# -- Fonction commune pour les graphes détaillés
+make_profil_plot <- function(profil_cible, couleur_titre, n_top = 20) {
+
+  df <- eco_score |>
+    filter(profil == profil_cible) |>
+    slice_max(pct_bas, n = n_top, with_ties = FALSE) |>
+    arrange(pct_bas) |>
+    mutate(nom_court = factor(nom_court, levels = nom_court))
+
+  if (nrow(df) == 0) return(NULL)
+
+  n_affiche <- nrow(df)
+
+  df_long <- df |>
+    pivot_longer(c(pct_bas, pct_moyen, pct_eleve),
+                 names_to  = "impact",
+                 values_to = "pct") |>
+    mutate(
+      impact = factor(
+        impact,
+        levels = c("pct_eleve", "pct_moyen", "pct_bas"),
+        labels = c("Élevé", "Moyen", "Bas")
+      )
+    )
+
+  ggplot(df_long, aes(x = nom_court, y = pct, fill = impact)) +
+    geom_col(width = 0.72) +
+    geom_text(
+      data = df,
+      aes(x = nom_court, y = pct_bas / 2,
+          label = paste0(round(pct_bas, 1), "%")),
+      colour = "white", size = 2.8, fontface = "bold",
+      inherit.aes = FALSE
+    ) +
+    geom_text(
+      data = df,
+      aes(x = nom_court, y = 103,
+          label = paste0(round(pct_bas, 1), "% bas")),
+      size = 2.5, hjust = 0, colour = "#444",
+      inherit.aes = FALSE
+    ) +
+    scale_fill_manual(
+      values = c("Bas" = "#1D9E75",
+                 "Moyen" = "#EF9F27",
+                 "Élevé" = "#E24B4A"),
+      name = "Impact carbone"
+    ) +
+    scale_y_continuous(
+      breaks = seq(0, 100, 25),
+      labels = function(x) paste0(x, "%"),
+      limits = c(0, 140)
+    ) +
+    coord_flip() +
+    labs(
+      title = paste0(
+        profil_cible, " - top ", n_affiche, " restaurants"
+      ),
+      subtitle = "Structure relative de l'offre (classification comparative)",
+      x = NULL,
+      y = "Part des plats (%)",
+      caption =
+        "% blanc = part de plats à impact bas - valeur à droite = score descriptif"
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title      = element_text(size = 13, face = "bold",
+                                     colour = couleur_titre),
+      legend.position = "bottom",
+      panel.grid.major.y = element_blank(),
+      axis.text.y     = element_text(size = 9)
+    )
+}
+
+# -- Génération des graphes détaillés
+p_fort   <- make_profil_plot(
+  "Forte part de plats à impact bas", "#0F6E56"
+)
+p_inter  <- make_profil_plot(
+  "Part intermédiaire de plats à impact bas", "#B37310"
+)
+p_faible <- make_profil_plot(
+  "Faible part de plats à impact bas", "#A32D2D"
+)
+
+print(p_fort)
+print(p_inter)
+print(p_faible)
+```
+
+**Résultats - lecture des graphiques** Distribution globale (Image 1) :
+
+94,8% des plats sont à impact "Bas", 4,9% "Moyen", 0,3% "Très Haut" Seuils tertiles : Faible \< 93,7% - Intermédiaire 93,7-100% - Forte = 100% Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
+
+--\> Ce n'est plus une répartition en tiers égaux - la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de pct_bas est très concentrée vers 100%.
+
+**Interprétation critique** **L'hypothèse est infirmée.**
+
+Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points - sur une variable qui varie entre 88,8% et 100%, soit une plage de variation extrêmement comprimée.
+
+La classification en tertiles amplifie visuellement des différences qui sont, en valeur absolue, négligeables. Un restaurant à 88,8% de plats bas-carbone ne peut raisonnablement pas être qualifié de "faible" en écoresponsabilité.
+
+Anomalie révélatrice : Le seuil supérieur est à 100% - cela signifie qu'un tiers des restaurants ne servent aucun plat à impact moyen ou élevé. Ce n'est pas de l'écoresponsabilité différenciée, c'est une contrainte d'approvisionnement ou de catégorisation qui force les menus vers le "Bas".
+
 ## Question 15 : Existe-t-il une fracture nutritionnelle entre les régions ou les villes ?
 
 Le Nutri-Score permet d'évaluer la qualité nutritionnelle globale des menus. En calculant la moyenne de ces scores par région, on cherche à savoir si la localisation des restaurants influence la composition des repas. On pourrait s'attendre à une certaine uniformité sur tout le territoire, ou au contraire à des disparités régionales (par exemple, des régions plus axées sur des plats traditionnels riches ou des zones plus orientées vers une offre équilibrée).
@@ -765,10 +1124,10 @@ Par exemple, si la Bourgogne-Franche-Comté est très orange, c'est peut-être t
 
 L'offre culinaire des restaurants universitaires est-elle homogène sur tout le territoire, ou certaines régions proposent-elles des menus nettement plus variés ? Cette question est importante pour évaluer les inégalités d'accès à une alimentation diversifiée selon le lieu d'études.
 
-Mesurer la « diversité » n'est pas trivial : un simple comptage de plats distincts favorise mécaniquement les grandes régions qui comptent plus de restaurants. Nous mobilisons donc **deux indicateurs complémentaires**, qui éclairent chacun un aspect différent de la diversité :
+Mesurer la " diversité " n'est pas trivial : un simple comptage de plats distincts favorise mécaniquement les grandes régions qui comptent plus de restaurants. Nous mobilisons donc **deux indicateurs complémentaires**, qui éclairent chacun un aspect différent de la diversité :
 
-1.  **Plats distincts par restaurant** — diversité normalisée par la taille de la région.
-2.  **Entropie de Shannon** — mesure l'équilibre de la distribution des plats au sein de chaque restaurant : une entropie haute signifie que les plats sont variés *et* équilibrés (aucun ne domine massivement).
+1.  **Plats distincts par restaurant** - diversité normalisée par la taille de la région.
+2.  **Entropie de Shannon** - mesure l'équilibre de la distribution des plats au sein de chaque restaurant : une entropie haute signifie que les plats sont variés *et* équilibrés (aucun ne domine massivement).
 
 Les régions avec un seul restaurant (Créteil, Rennes) sont exclues de l'analyse car elles ne permettent pas de généralisation régionale.
 
@@ -778,11 +1137,11 @@ library(ggplot2)
 library(readr)
 library(forcats)
 
-# ── Chargement ──────────────────────────────────────────────────────────────
+# -- Chargement --------------------------------------------------------------
 restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
 menus       <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE)
 
-# ── Jointure et filtrage ────────────────────────────────────────────────────
+# -- Jointure et filtrage ----------------------------------------------------
 df <- menus %>%
   left_join(
     restaurants %>% select(code, region = "region.libelle"),
@@ -794,14 +1153,14 @@ df <- menus %>%
 regions_valides <- df %>%
   group_by(region) %>%
   summarise(n_rest = n_distinct(restaurant_id), .groups = "drop") %>%
-  filter(n_rest >= 2) %>%          # ≥ 2 restaurants pour être conservée
+  filter(n_rest >= 2) %>%          # >= 2 restaurants pour être conservée
   pull(region)
 
 df <- df %>% filter(region %in% regions_valides)
 
 ```
 
-### Graphique 1 — Nombre de plats distincts par restaurant (diversité normalisée)
+### Graphique 1 - Nombre de plats distincts par restaurant (diversité normalisée)
 
 Le premier biais à corriger est la taille : Lille avec 22 restaurants aura mécaniquement plus de plats distincts que Corse avec 5. Nous divisons donc le nombre de plats uniques par le nombre de restaurants de la région, pour obtenir un indicateur **indépendant de la taille**.
 
@@ -835,7 +1194,7 @@ ggplot(diversite_norm, aes(x = plats_par_resto, y = region, fill = plats_par_res
   scale_x_continuous(expand = expansion(mult = c(0, 0.15))) +
   labs(
     title    = "Diversité normalisée : plats distincts par restaurant et par région",
-    subtitle = "Corrige le biais de taille — les grandes régions ne sont plus avantagées",
+    subtitle = "Corrige le biais de taille - les grandes régions ne sont plus avantagées",
     x        = "Nombre moyen de plats distincts par restaurant",
     y        = NULL
   ) +
@@ -848,7 +1207,7 @@ ggplot(diversite_norm, aes(x = plats_par_resto, y = region, fill = plats_par_res
 
 #### Commentaire
 
-Une fois normalisée par le nombre de restaurants, le classement change considérablement par rapport à un simple comptage brut. **Lille** reste en tête (≈ 20 plats distincts par restaurant), suivie de **Strasbourg** et **Toulouse**. À l'inverse, **Nice** et **Montpellier** se retrouvent en bas du classement avec moins de 4 plats distincts par restaurant en moyenne, révélant une offre très répétitive. La ligne pointillée indique la moyenne nationale, permettant d'identifier d'un coup d'œil les régions en-dessous du seuil moyen.
+Une fois normalisée par le nombre de restaurants, le classement change considérablement par rapport à un simple comptage brut. **Lille** reste en tête (\~ 20 plats distincts par restaurant), suivie de **Strasbourg** et **Toulouse**. À l'inverse, **Nice** et **Montpellier** se retrouvent en bas du classement avec moins de 4 plats distincts par restaurant en moyenne, révélant une offre très répétitive. La ligne pointillée indique la moyenne nationale, permettant d'identifier d'un coup d'œil les régions en-dessous du seuil moyen.
 
 #### Critique
 
@@ -857,7 +1216,7 @@ Une fois normalisée par le nombre de restaurants, le classement change considé
 
 ------------------------------------------------------------------------
 
-### Graphique 2 — Entropie de Shannon : équilibre de l'offre au sein de chaque restaurant
+### Graphique 2 - Entropie de Shannon : équilibre de l'offre au sein de chaque restaurant
 
 L'entropie de Shannon mesure à quel point les plats sont **équilibrés** dans un menu : une entropie maximale signifie que chaque plat est proposé aussi souvent que les autres, sans qu'un plat unique monopolise l'offre. Elle vaut 0 si un seul plat est servi en permanence, et augmente avec la variété et l'équilibre.
 
@@ -939,8 +1298,8 @@ L'entropie de Shannon donne un classement partiellement différent du précéden
 
 ### Synthèse
 
-| Indicateur | Classement « plus diversifié » | Classement « moins diversifié » |
-|------------------------|------------------------|------------------------|
+| Indicateur | Classement " plus diversifié " | Classement " moins diversifié " |
+|----|----|----|
 | Plats distincts / restaurant | Lille, Strasbourg, Toulouse | Nice, Montpellier, Paris |
 | Entropie de Shannon | Corse, Strasbourg, Lille | Nice, Antilles-Guyane, Montpellier |
 
@@ -950,7 +1309,7 @@ Cette double lecture est plus prudente qu'un simple classement unique : le premi
 
 **Limites générales de l'analyse :**
 
--   Les données couvrent une période courte (mars–mai 2026) et ne reflètent pas nécessairement l'offre annuelle habituelle.
+-   Les données couvrent une période courte (mars-mai 2026) et ne reflètent pas nécessairement l'offre annuelle habituelle.
 -   Le nombre de restaurants par région est très variable (de 5 à 33), ce qui fragilise les comparaisons pour les petites régions comme la Corse ou Antilles-Guyane.
 -   La variable `plat` contient de nombreuses variantes orthographiques d'un même plat, ce qui peut gonfler artificiellement le comptage de plats distincts.
 
@@ -962,13 +1321,13 @@ Cette double lecture est plus prudente qu'un simple classement unique : le premi
 
 ## Question 18 : Existe-t-il une fracture géographique de l'accessibilité PMR ?
 
-Cette question cherche à savoir si l’accessibilité aux personnes à mobilité réduite est répartie de manière homogène entre les régions, ou si certains territoires présentent un retard marqué. Une fracture géographique serait visible si certaines régions affichent une part beaucoup plus faible de restaurants accessibles PMR que la moyenne calculée à partir des données des restaurants CROUS (environ 75 %), représentée par une ligne rouge en pointillés.
+Cette question cherche à savoir si l'accessibilité aux personnes à mobilité réduite est répartie de manière homogène entre les régions, ou si certains territoires présentent un retard marqué. Une fracture géographique serait visible si certaines régions affichent une part beaucoup plus faible de restaurants accessibles PMR que la moyenne calculée à partir des données des restaurants CROUS (environ 75 %), représentée par une ligne rouge en pointillés.
 
 Les données utilisées sont : `region.libelle` (région), `ispmr` (accessibilité PMR) et `code` (identifiant restaurant) dans `liste_restaurants.csv`.
 
 #### **Méthodologie et nettoyage**
 
-Nous calculons, pour chaque région, la proportion de restaurants déclarés accessibles PMR. Les régions ayant moins de deux restaurants renseignés sont exclues afin d’éviter des pourcentages extrêmes peu interprétables. Le graphique compare ensuite chaque région à la moyenne calculée sur l’ensemble des restaurants CROUS du jeu de données, représentée par une ligne rouge en pointillés.
+Nous calculons, pour chaque région, la proportion de restaurants déclarés accessibles PMR. Les régions ayant moins de deux restaurants renseignés sont exclues afin d'éviter des pourcentages extrêmes peu interprétables. Le graphique compare ensuite chaque région à la moyenne calculée sur l'ensemble des restaurants CROUS du jeu de données, représentée par une ligne rouge en pointillés.
 
 #### **Visualisation et analyse**
 
@@ -1040,9 +1399,9 @@ ggplot(accessibilite_pmr, aes(x = pct_pmr, y = region, fill = pct_pmr)) +
 
 ### Commentaire
 
-Le graphique permet d’identifier rapidement les régions situées au-dessus ou au-dessous de la moyenne d’accessibilité PMR. Les régions comme Limoges, Poitiers ou Rennes (proches de 100 %) semblent bien couvertes, tandis que celles comme Orléans-Tours, Corse ou Paris (nettement sous la ligne rouge) peuvent indiquer une fracture géographique.
+Le graphique permet d'identifier rapidement les régions situées au-dessus ou au-dessous de la moyenne d'accessibilité PMR. Les régions comme Limoges, Poitiers ou Rennes (proches de 100 %) semblent bien couvertes, tandis que celles comme Orléans-Tours, Corse ou Paris (nettement sous la ligne rouge) peuvent indiquer une fracture géographique.
 
-L'étiquette `n_pmr / n_restaurants` est essentielle pour interpréter correctement les écarts : une région avec peu de restaurants (ex. : Corse, 1/5) peut afficher un pourcentage très élevé ou très faible en raison d’un petit nombre d’établissements.
+L'étiquette `n_pmr / n_restaurants` est essentielle pour interpréter correctement les écarts : une région avec peu de restaurants (ex. : Corse, 1/5) peut afficher un pourcentage très élevé ou très faible en raison d'un petit nombre d'établissements.
 
 ### Critique
 
@@ -1056,14 +1415,14 @@ L'étiquette `n_pmr / n_restaurants` est essentielle pour interpréter correctem
 
 L'enrichissement des données nutritionnelles repose en partie sur une attribution manuelle ou automatisée des Nutri-Scores. Il est légitime de se demander si certains restaurants présentent des **profils nutritionnels suspects**, trahissant une attribution peu différenciée (par exemple, une assignation systématique du score C à tous les plats).
 
-Les données utilisées sont : `restaurant_id` (identifiant nominal), `nutriscore` (catégorielle ordinale A–E), et `plat` (nominale pour le volume).
+Les données utilisées sont : `restaurant_id` (identifiant nominal), `nutriscore` (catégorielle ordinale A-E), et `plat` (nominale pour le volume).
 
 #### **Méthodologie et nettoyage**
 
 Pour chaque restaurant, nous calculons :
 
 -   Le **nombre total de plats** dans les données.
--   La **proportion de plats avec le Nutri-Score C**, qui est le score modal dans le dataset (≈72 % des plats). Un restaurant présentant 100 % de C sur un volume significatif de plats est un signal d'alerte fort.
+-   La **proportion de plats avec le Nutri-Score C**, qui est le score modal dans le dataset (\~72 % des plats). Un restaurant présentant 100 % de C sur un volume significatif de plats est un signal d'alerte fort.
 -   Le **nombre de Nutri-Scores distincts utilisés** (diversité du scoring) : un restaurant fiable devrait présenter au moins 2 ou 3 valeurs différentes.
 
 Nous filtrons sur les restaurants ayant **au moins 10 plats**, pour éviter que les petits volumes fassent apparaître artificiellement des proportions extrêmes.
@@ -1111,16 +1470,16 @@ ggplot(fiabilite,
   ) +
   scale_color_manual(
     values = c("FALSE" = "#7ab8d4", "TRUE" = "firebrick"),
-    labels = c("FALSE" = "Données cohérentes", "TRUE" = "Suspect (≥90 % de C, 1 seul score)")
+    labels = c("FALSE" = "Données cohérentes", "TRUE" = "Suspect (>=90 % de C, 1 seul score)")
   ) +
   scale_size_continuous(range = c(2, 10), breaks = c(10, 50, 100, 500)) +
   scale_y_continuous(labels = function(x) paste0(x, " %")) +
   labs(
     title    = "Fiabilité des données nutritionnelles par restaurant",
     subtitle = paste0(
-      "Restaurants avec ≥ 10 plats — ",
+      "Restaurants avec >= 10 plats - ",
       sum(fiabilite$suspect), " sur ", nrow(fiabilite),
-      " présentent un profil suspect (≥ 90 % de Nutri-Score C, 1 valeur unique)"
+      " présentent un profil suspect (>= 90 % de Nutri-Score C, 1 valeur unique)"
     ),
     x        = "Nombre de Nutri-Scores distincts utilisés",
     y        = "Proportion de plats avec Nutri-Score C",
@@ -1167,7 +1526,103 @@ La ligne pointillée rouge à 90 % délimite la zone d'alerte. Les points color�
 
 ------------------------------------------------------------------------
 
-### Question 24 : Les calories varient-elles selon les catégories de plats ?
+## Question 23: Quelle est la distribution calorique des plats proposés dans les restaurants CROUS ?
+
+**Hypothèse** Les plats servis en restauration universitaire devraient couvrir un repas complet, donc tendre vers 600-900 kcal. On s'attend à une distribution unimodale centrée sur cette plage.
+
+**Méthode choisie** : Histogramme + densité KDE + lignes médiane/moyenne
+
+**Pourquoi** : L'histogramme révèle la forme brute de la distribution (modes, asymétrie, queues). La densité KDE lisse le bruit de discrétisation. Les deux lignes de position centrale permettent de détecter l'asymétrie sans calcul supplémentaire. C'est la méthode canonique pour une variable continue sans groupement naturel.
+
+```{r echo=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(scales)
+
+# -- Menus
+menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) |>
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Vérification rapide
+message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " -> ", max(menus$date, na.rm=TRUE))
+message("Lignes : ", nrow(menus))
+
+# -- Restaurants (jointure
+restos <- read_csv("../data/liste_restaurants.csv",
+                   show_col_types = FALSE) |>
+  select(code, nom, region.libelle) |>
+  mutate(
+    nom_court = if_else(nchar(nom) > 32,
+                         paste0(substr(nom, 1, 30), "..."), nom)
+  )
+
+# Fonction utilitaire : join rapide sur menus
+join_restos <- function(df) {
+  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
+    mutate(nom_court = coalesce(nom_court,
+                                 paste0("ID ", restaurant_id)))
+}
+```
+
+```{r echo=FALSE}
+# Q23 - Distribution des calories
+menus_cal <- menus |>
+  filter(!is.na(calories_estimees), calories_estimees > 0)
+
+med_cal  <- median(menus_cal$calories_estimees)
+moy_cal  <- mean(menus_cal$calories_estimees)
+bw       <- 50   # binwidth histogramme
+
+ggplot(menus_cal, aes(x = calories_estimees)) +
+  geom_histogram(binwidth = bw, fill = "#AFA9EC",
+                  colour = "white", linewidth = 0.25, alpha = 0.85) +
+  geom_density(aes(y = after_stat(count) * bw),
+               colour = "#534AB7", linewidth = 0.9) +
+  geom_vline(xintercept = med_cal, linetype = "dashed",
+             colour = "#3C3489", linewidth = 0.8) +
+  geom_vline(xintercept = moy_cal, linetype = "dotted",
+             colour = "#D85A30", linewidth = 0.8) +
+  annotate("text", x = med_cal + 25, y = Inf, vjust = 1.6, hjust = 0,
+           label = paste0("Médiane : ", round(med_cal), " kcal"),
+           colour = "#3C3489", size = 3.2, fontface = "bold") +
+  annotate("text", x = moy_cal + 25, y = Inf, vjust = 3.2, hjust = 0,
+           label = paste0("Moyenne : ", round(moy_cal), " kcal"),
+           colour = "#D85A30", size = 3.2, fontface = "bold") +
+  scale_x_continuous(breaks = seq(0, 2000, 200),
+                     labels = label_number(suffix = " kcal"),
+                     limits = c(0, NA)) +
+  scale_y_continuous(labels = label_comma()) +
+  labs(title    = "Distribution des calories estimées par plat",
+       subtitle = "Tous restaurants et toutes catégories confondus",
+       x = "Calories estimées (kcal)", y = "Nombre de plats",
+       caption  = "Tirets = médiane - Pointillés = moyenne") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title       = element_text(size = 13, face = "bold"),
+        panel.grid.minor = element_blank())
+```
+
+**Résultats - lecture précise du graphique**
+
+**Médiane** = 250 kcal, Moyenne = 265 kcal -\> léger écart indiquant une asymétrie droite modérée La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
+
+**Bosse 1** \~50-100 kcal : petit groupe de plats très légers (boissons, condiments ?) **Bosse 2** \~150-200 kcal : second groupe intermédiaire (desserts, fruits ?) Pic principal \~250-300 kcal : mode dominant, \~20 000 plats - écrasant **Bosse 3** \~450-500 kcal : groupe secondaire notable (\~2 500 plats) Queue droite \~600-700+ kcal : plats caloriques, effectifs très faibles
+
+Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plats
+
+**Interprétation critique**
+
+*L'hypothèse est infirmée - et de loin*.
+
+La valeur centrale (\~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité - ce qui tire mécaniquement la moyenne vers le bas.
+
+La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente - ni un dessert (\~100 kcal), ni un plat principal (\~500 kcal).
+
+Verdict : le graphique répond à la question posée, mais la question elle-même était mal formulée. Demander la distribution "des plats" sans distinguer les catégories revient à calculer la taille moyenne d'un humain en mélangeant nourrissons et adultes.
+
+-\> Nouveau cycle Nouvelle question : La distribution calorique diffère-t-elle significativement selon la catégorie de plat ? (soit la Q.24)
+
+## Question 24 : Les calories varient-elles selon les catégories de plats ?
 
 Dans cette partie, nous cherchons à analyser l'apport énergétique des plats proposés par le CROUS en fonction de leur catégorie de plat.
 
@@ -1273,398 +1728,3 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 -   "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
 
 -   "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
-
-## Q23 — Quelle est la distribution calorique des plats proposés dans les restaurants CROUS ?
-
-**Hypothèse** Les plats servis en restauration universitaire devraient couvrir un repas complet, donc tendre vers 600–900 kcal. On s'attend à une distribution unimodale centrée sur cette plage.
-
-**Méthode choisie** : Histogramme + densité KDE + lignes médiane/moyenne
-
-**Pourquoi** : L'histogramme révèle la forme brute de la distribution (modes, asymétrie, queues). La densité KDE lisse le bruit de discrétisation. Les deux lignes de position centrale permettent de détecter l'asymétrie sans calcul supplémentaire. C'est la méthode canonique pour une variable continue sans groupement naturel.
-
-```{r include=FALSE}
-library(tidyverse)
-library(ggplot2)
-library(lubridate)
-library(scales)
-
-# ── Menus
-menus <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE) |>
-  mutate(date = as.Date(date, format = "%d/%m/%Y"))
-
-# Vérification rapide
-message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " → ", max(menus$date, na.rm=TRUE))
-message("Lignes : ", nrow(menus))
-
-# ── Restaurants (jointure
-restos <- read_csv("../data/liste_restaurants.csv",
-                   show_col_types = FALSE) |>
-  select(code, nom, region.libelle) |>
-  mutate(
-    nom_court = if_else(nchar(nom) > 32,
-                         paste0(substr(nom, 1, 30), "…"), nom)
-  )
-
-# Fonction utilitaire : join rapide sur menus
-join_restos <- function(df) {
-  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
-    mutate(nom_court = coalesce(nom_court,
-                                 paste0("ID ", restaurant_id)))
-}
-```
-
-```{r echo=FALSE}
-# Q23 — Distribution des calories
-menus_cal <- menus |>
-  filter(!is.na(calories_estimees), calories_estimees > 0)
-
-med_cal  <- median(menus_cal$calories_estimees)
-moy_cal  <- mean(menus_cal$calories_estimees)
-bw       <- 50   # binwidth histogramme
-
-ggplot(menus_cal, aes(x = calories_estimees)) +
-  geom_histogram(binwidth = bw, fill = "#AFA9EC",
-                  colour = "white", linewidth = 0.25, alpha = 0.85) +
-  geom_density(aes(y = after_stat(count) * bw),
-               colour = "#534AB7", linewidth = 0.9) +
-  geom_vline(xintercept = med_cal, linetype = "dashed",
-             colour = "#3C3489", linewidth = 0.8) +
-  geom_vline(xintercept = moy_cal, linetype = "dotted",
-             colour = "#D85A30", linewidth = 0.8) +
-  annotate("text", x = med_cal + 25, y = Inf, vjust = 1.6, hjust = 0,
-           label = paste0("Médiane : ", round(med_cal), " kcal"),
-           colour = "#3C3489", size = 3.2, fontface = "bold") +
-  annotate("text", x = moy_cal + 25, y = Inf, vjust = 3.2, hjust = 0,
-           label = paste0("Moyenne : ", round(moy_cal), " kcal"),
-           colour = "#D85A30", size = 3.2, fontface = "bold") +
-  scale_x_continuous(breaks = seq(0, 2000, 200),
-                     labels = label_number(suffix = " kcal"),
-                     limits = c(0, NA)) +
-  scale_y_continuous(labels = label_comma()) +
-  labs(title    = "Distribution des calories estimées par plat",
-       subtitle = "Tous restaurants et toutes catégories confondus",
-       x = "Calories estimées (kcal)", y = "Nombre de plats",
-       caption  = "Tirets = médiane · Pointillés = moyenne") +
-  theme_minimal(base_size = 11) +
-  theme(plot.title       = element_text(size = 13, face = "bold"),
-        panel.grid.minor = element_blank())
-```
-
-**Résultats — lecture précise du graphique**
-
-**Médiane** = 250 kcal, Moyenne = 265 kcal → léger écart indiquant une asymétrie droite modérée La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
-
-**Bosse 1** \~50–100 kcal : petit groupe de plats très légers (boissons, condiments ?) **Bosse 2** \~150–200 kcal : second groupe intermédiaire (desserts, fruits ?) Pic principal \~250–300 kcal : mode dominant, \~20 000 plats — écrasant **Bosse 3** \~450–500 kcal : groupe secondaire notable (\~2 500 plats) Queue droite \~600–700+ kcal : plats caloriques, effectifs très faibles
-
-Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plats
-
-**Interprétation critique**
-
-*L'hypothèse est infirmée — et de loin*.
-
-La valeur centrale (\~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité — ce qui tire mécaniquement la moyenne vers le bas.
-
-La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente — ni un dessert (\~100 kcal), ni un plat principal (\~500 kcal).
-
-Verdict : le graphique répond à la question posée, mais la question elle-même était mal formulée. Demander la distribution "des plats" sans distinguer les catégories revient à calculer la taille moyenne d'un humain en mélangeant nourrissons et adultes.
-
-➜ Nouveau cycle Nouvelle question : La distribution calorique diffère-t-elle significativement selon la catégorie de plat ? (soit la Q.24)
-
-## Q10 — Les restaurants CROUS renouvellent-ils activement et régulièrement leur carte ?
-
-**Hypothèse**
-
-Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes.
-
-**Méthode choisie** : Courbes cumulées par restaurant **Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible. **PS**:On recupere les top 8 pour plus de lisibilité
-
-```{r echo=FALSE}
-# Q10 — Renouvellement cumulé des plats 
-
-nouveautes <- menus |>
-  filter(!is.na(date)) |>
-  group_by(restaurant_id, plat) |>
-  summarise(premiere_date = min(date), .groups = "drop") |>
-  mutate(semaine = floor_date(premiere_date,
-                               unit = "week", week_start = 1))
-
-top_ids <- nouveautes |>
-  count(restaurant_id, sort = TRUE) |>
-  slice_head(n = 8) |>
-  pull(restaurant_id)
-
-nouveautes_top <- nouveautes |>
-  filter(restaurant_id %in% top_ids) |>
-  count(restaurant_id, semaine) |>
-  group_by(restaurant_id) |>
-  arrange(semaine) |>
-  mutate(cumul = cumsum(n)) |>
-  ungroup() |>
-  join_restos() |>
-  mutate(nom_court = as.factor(nom_court))
-
-# ── Calcul des breaks depuis les données réelles
-date_min <- floor_date(min(nouveautes_top$semaine), "week", week_start = 1)
-date_max <- ceiling_date(max(nouveautes_top$semaine), "week", week_start = 1)
-
-# Breaks hebdomadaires forcés sur toute la plage
-breaks_x <- seq.Date(date_min, date_max, by = "1 week")
-
-# Si trop de semaines (>16), espacer d'une semaine sur deux
-if (length(breaks_x) > 16) {
-  breaks_x <- breaks_x[seq(1, length(breaks_x), by = 2)]
-}
-
-ggplot(nouveautes_top,
-       aes(x = semaine, y = cumul,
-           colour = nom_court, group = nom_court)) +
-  geom_line(linewidth = 0.95, alpha = 0.9) +
-  geom_point(size = 2, alpha = 0.8) +
-  scale_colour_brewer(palette = "Dark2", name = NULL) +
-  scale_x_date(
-    breaks = breaks_x,                   # ← breaks forcés depuis les données
-    labels = function(d) format(d, "%d %b"),
-    expand = expansion(mult = c(0.02, 0.02))
-  ) +
-  scale_y_continuous(
-    breaks = scales::pretty_breaks(n = 6),
-    expand = expansion(mult = c(0, 0.05))
-  ) +
-  labs(
-    title    = "Renouvellement cumulé des plats — top 8 restaurants",
-    subtitle = "Nombre cumulé de plats apparus pour la première fois, par semaine",
-    x = NULL, y = "Plats nouveaux (cumulés)",
-    caption  = "Un 'nouveau plat' = première apparition dans un restaurant donné"
-  ) +
-  theme_minimal(base_size = 11) +
-  theme(
-    plot.title       = element_text(size = 13, face = "bold"),
-    axis.text.x      = element_text(angle = 45, hjust = 1, size = 8.5),
-    legend.position  = "right",
-    legend.text      = element_text(size = 8),
-    panel.grid.minor = element_blank()
-  )
-```
-
-**Interprétation critique**
-
-Le graphe s'arrête au 6 avril — et ce n'est pas un bug. C'est le résultat le plus important de cette analyse.
-
-**Ce que le graphe dit réellement** : l'intégralité du catalogue de chaque restaurant a été introduite en **3 semaines** (fin mars → début avril). Après le 6 avril, aucun nouveau plat n'apparaît dans aucun des 8 restaurants — les données couvrent pourtant jusqu'au 23 mai, soit encore **7 semaines supplémentaires** de données non représentées ici car elles ne contiennent aucune nouveauté.
-
-**Traduction concrète** : à partir de la semaine du 6 avril, les restaurants CROUS tournent en boucle sur un catalogue fixe. Les plats observés après cette date sont tous des répétitions de plats déjà servis. Il n'y a pas de renouvellement — il y a de la **rotation**.
-
-**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total. Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
-
-➜ **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte — ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
-
-## Q14 — Les restaurants CROUS ont-ils des profils d'écoresponsabilité contrastés ?
-
-**Hypothèse**
-
-Les restaurants présentent des comportements environnementaux hétérogènes : certains proposent une offre massivement bas-carbone, d'autres non. On s'attend à une distribution dispersée avec des écarts significatifs entre établissements.
-
-**Méthode choisie** : Classification par tertiles + barplots empilés, jutifié par le fait que les tertiles permettent une comparaison relative entre restaurants sans présupposer un seuil normatif externe.
-
-```{r echo=FALSE}
-# Q14 — Structure relative de l’offre selon l’impact carbone des plats
-# Classification comparative par tertiles
-# Nécessite le bloc INIT exécuté avant
-
-# ── Étape 0 : diagnostic de la distribution réelle
-menus |>
-  filter(!is.na(impact_carbone)) |>
-  count(impact_carbone) |>
-  mutate(pct = round(n / sum(n) * 100, 1)) |>
-  print()
-
-# ── Étape 1 : calcul de la structure d’offre par restaurant
-eco_base <- menus |>
-  filter(!is.na(impact_carbone)) |>
-  group_by(restaurant_id) |>
-  summarise(
-    total       = n(),
-    n_bas       = sum(impact_carbone == "Bas"),
-    n_moyen     = sum(impact_carbone == "Moyen"),
-    n_eleve     = sum(impact_carbone == "Élevé"),
-    pct_bas     = n_bas   / total * 100,
-    pct_moyen   = n_moyen / total * 100,
-    pct_eleve   = n_eleve / total * 100,
-    .groups     = "drop"
-  ) |>
-  filter(total >= 50)
-
-# ── Étape 2 : seuils dynamiques (tertiles empiriques)
-seuil_bas  <- quantile(eco_base$pct_bas, 0.33)
-seuil_haut <- quantile(eco_base$pct_bas, 0.67)
-
-message(sprintf(
-  "Seuils empiriques (tertiles) : Faible < %.1f%% · Intermédiaire %.1f–%.1f%% · Forte ≥ %.1f%%",
-  seuil_bas, seuil_bas, seuil_haut, seuil_haut
-))
-
-# ── Étape 3 : classification descriptive (non normative)
-eco_score <- eco_base |>
-  mutate(
-    profil = case_when(
-      pct_bas >= seuil_haut ~ "Forte part de plats à impact bas",
-      pct_bas >= seuil_bas  ~ "Part intermédiaire de plats à impact bas",
-      TRUE                  ~ "Faible part de plats à impact bas"
-    ),
-    profil = factor(
-      profil,
-      levels = c(
-        "Forte part de plats à impact bas",
-        "Part intermédiaire de plats à impact bas",
-        "Faible part de plats à impact bas"
-      )
-    )
-  ) |>
-  join_restos()
-
-# Vérification
-message("Répartition des profils descriptifs :")
-eco_score |> count(profil) |> print()
-
-# ── Graphe 1 : vue macro
-resume_profil <- eco_score |>
-  count(profil) |>
-  mutate(
-    pct   = n / sum(n) * 100,
-    label = paste0(n, " restaurants\n(", round(pct, 1), "%)")
-  )
-
-p_macro <- ggplot(resume_profil,
-                  aes(x = profil, y = n, fill = profil)) +
-  geom_col(width = 0.55, show.legend = FALSE) +
-  geom_text(aes(label = label),
-            vjust = -0.35, size = 3.4,
-            lineheight = 0.9, colour = "#222") +
-  scale_fill_manual(values = c(
-    "Forte part de plats à impact bas"        = "#1D9E75",
-    "Part intermédiaire de plats à impact bas"= "#EF9F27",
-    "Faible part de plats à impact bas"       = "#E24B4A"
-  )) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.25))) +
-  labs(
-    title    = "Orientation carbone relative de l’offre des restaurants",
-    subtitle = sprintf(
-      "Classification comparative par tertiles — seuils empiriques : %.1f%% et %.1f%%",
-      seuil_bas, seuil_haut
-    ),
-    x = NULL,
-    y = "Nombre de restaurants",
-    caption =
-      "Analyse descriptive de la structure d’offre\nSeuils définis à partir de la distribution observée\nRestaurants avec ≥ 50 plats documentés"
-  ) +
-  theme_minimal(base_size = 11) +
-  theme(
-    plot.title         = element_text(size = 13, face = "bold"),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor   = element_blank()
-  )
-
-print(p_macro)
-
-# ── Fonction commune pour les graphes détaillés
-make_profil_plot <- function(profil_cible, couleur_titre, n_top = 20) {
-
-  df <- eco_score |>
-    filter(profil == profil_cible) |>
-    slice_max(pct_bas, n = n_top, with_ties = FALSE) |>
-    arrange(pct_bas) |>
-    mutate(nom_court = factor(nom_court, levels = nom_court))
-
-  if (nrow(df) == 0) return(NULL)
-
-  n_affiche <- nrow(df)
-
-  df_long <- df |>
-    pivot_longer(c(pct_bas, pct_moyen, pct_eleve),
-                 names_to  = "impact",
-                 values_to = "pct") |>
-    mutate(
-      impact = factor(
-        impact,
-        levels = c("pct_eleve", "pct_moyen", "pct_bas"),
-        labels = c("Élevé", "Moyen", "Bas")
-      )
-    )
-
-  ggplot(df_long, aes(x = nom_court, y = pct, fill = impact)) +
-    geom_col(width = 0.72) +
-    geom_text(
-      data = df,
-      aes(x = nom_court, y = pct_bas / 2,
-          label = paste0(round(pct_bas, 1), "%")),
-      colour = "white", size = 2.8, fontface = "bold",
-      inherit.aes = FALSE
-    ) +
-    geom_text(
-      data = df,
-      aes(x = nom_court, y = 103,
-          label = paste0(round(pct_bas, 1), "% bas")),
-      size = 2.5, hjust = 0, colour = "#444",
-      inherit.aes = FALSE
-    ) +
-    scale_fill_manual(
-      values = c("Bas" = "#1D9E75",
-                 "Moyen" = "#EF9F27",
-                 "Élevé" = "#E24B4A"),
-      name = "Impact carbone"
-    ) +
-    scale_y_continuous(
-      breaks = seq(0, 100, 25),
-      labels = function(x) paste0(x, "%"),
-      limits = c(0, 140)
-    ) +
-    coord_flip() +
-    labs(
-      title = paste0(
-        profil_cible, " — top ", n_affiche, " restaurants"
-      ),
-      subtitle = "Structure relative de l’offre (classification comparative)",
-      x = NULL,
-      y = "Part des plats (%)",
-      caption =
-        "% blanc = part de plats à impact bas · valeur à droite = score descriptif"
-    ) +
-    theme_minimal(base_size = 11) +
-    theme(
-      plot.title      = element_text(size = 13, face = "bold",
-                                     colour = couleur_titre),
-      legend.position = "bottom",
-      panel.grid.major.y = element_blank(),
-      axis.text.y     = element_text(size = 9)
-    )
-}
-
-# ── Génération des graphes détaillés
-p_fort   <- make_profil_plot(
-  "Forte part de plats à impact bas", "#0F6E56"
-)
-p_inter  <- make_profil_plot(
-  "Part intermédiaire de plats à impact bas", "#B37310"
-)
-p_faible <- make_profil_plot(
-  "Faible part de plats à impact bas", "#A32D2D"
-)
-
-print(p_fort)
-print(p_inter)
-print(p_faible)
-```
-
-**Résultats — lecture des graphiques** Distribution globale (Image 1) :
-
-94,8% des plats sont à impact "Bas", 4,9% "Moyen", 0,3% "Très Haut" Seuils tertiles : Faible \< 93,7% · Intermédiaire 93,7–100% · Forte = 100% Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
-
---\> Ce n'est plus une répartition en tiers égaux — la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de pct_bas est très concentrée vers 100%.
-
-**Interprétation critique** **L'hypothèse est infirmée.**
-
-Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points — sur une variable qui varie entre 88,8% et 100%, soit une plage de variation extrêmement comprimée.
-
-La classification en tertiles amplifie visuellement des différences qui sont, en valeur absolue, négligeables. Un restaurant à 88,8% de plats bas-carbone ne peut raisonnablement pas être qualifié de "faible" en écoresponsabilité.
-
-Anomalie révélatrice : Le seuil supérieur est à 100% — cela signifie qu'un tiers des restaurants ne servent aucun plat à impact moyen ou élevé. Ce n'est pas de l'écoresponsabilité différenciée, c'est une contrainte d'approvisionnement ou de catégorisation qui force les menus vers le "Bas".
