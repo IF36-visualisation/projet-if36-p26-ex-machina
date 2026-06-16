@@ -4,7 +4,7 @@ library(tidyverse)
 library(plotly)
 library(scales)
 
-# Chargement des données 
+# Chargement des données
 restaurants <- read_csv("../data/liste_restaurants.csv")
 menus       <- read_csv("../data/menus_complets_enrichis.csv") %>%
   mutate(date = as.Date(date, format = "%d/%m/%Y"))
@@ -113,8 +113,8 @@ ui <- dashboardPage(
       tabItem(tabName = "calories",
               h2("Distribution des calories par catégorie"),
               fluidRow(
-                box(title = "Boxplot par catégorie",              status = "danger",
-                    solidHeader = TRUE,  width = 7, plotOutput("box_calories")),
+                box(title = "Boxplot par catégorie (interactif)", status = "danger",
+                    solidHeader = TRUE,  width = 7, plotlyOutput("box_calories")),
                 box(title = "Calories moyennes par catégorie",    status = "warning",
                     solidHeader = FALSE, width = 5, plotOutput("bar_cal_cat"))
               )
@@ -194,18 +194,33 @@ server <- function(input, output, session) {
       labs(x = NULL, y = "Proportion")
   })
   
-  # Boxplot calories — ggplot
-  output$box_calories <- renderPlot({
-    filtered_cal() %>%
-      filter(categorie_groupe != "Autre") %>%
-      ggplot(aes(x    = reorder(categorie_groupe, calories_estimees, median),
-                 y    = calories_estimees,
-                 fill = categorie_groupe)) +
-      geom_boxplot(outlier.size = 0.8, alpha = 0.7, show.legend = FALSE) +
-      scale_fill_brewer(palette = "Set2") +
-      coord_flip() +
-      theme_minimal(base_size = 11) +
-      labs(x = NULL, y = "Calories (kcal)")
+  # Boxplot calories — plotly natif (ggplotly plante avec geom_boxplot)
+  output$box_calories <- renderPlotly({
+    df <- filtered_cal() %>%
+      filter(categorie_groupe != "Autre")
+    
+    # Trier les catégories par médiane croissante
+    ordre <- df %>%
+      group_by(categorie_groupe) %>%
+      summarise(med = median(calories_estimees, na.rm = TRUE), .groups = "drop") %>%
+      arrange(med) %>%
+      pull(categorie_groupe)
+    
+    df <- df %>%
+      mutate(categorie_groupe = factor(categorie_groupe, levels = ordre))
+    
+    plot_ly(df,
+            y = ~categorie_groupe,
+            x = ~calories_estimees,
+            type = "box",
+            color = ~categorie_groupe,
+            colors = "Set2",
+            hoverinfo = "x") %>%
+      layout(
+        xaxis = list(title = "Calories (kcal)"),
+        yaxis = list(title = ""),
+        showlegend = FALSE
+      )
   })
   
   # Bar chart calories moyennes — ggplot
