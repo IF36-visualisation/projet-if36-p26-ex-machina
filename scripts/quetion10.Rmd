@@ -1,0 +1,121 @@
+## Q10 - Les restaurants CROUS renouvellent-ils activement et régulièrement leur carte ?
+
+**Hypothèse**
+
+Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes.
+
+**Méthode choisie** : Courbes cumulées par restaurant 
+**Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible.
+**PS**:On recupere les top 8 pour plus de lisibilité
+
+```{r include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(scales)
+
+# ── Menus
+menus <- read_csv("menus_complets_enrichis.csv", show_col_types = FALSE) |>
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Vérification rapide
+message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " → ", max(menus$date, na.rm=TRUE))
+message("Lignes : ", nrow(menus))
+
+# ── Restaurants (jointure
+restos <- read_csv("liste_restaurants.csv",
+                   show_col_types = FALSE) |>
+  select(code, nom, region.libelle) |>
+  mutate(
+    nom_court = if_else(nchar(nom) > 32,
+                         paste0(substr(nom, 1, 30), "…"), nom)
+  )
+
+# Fonction utilitaire : join rapide sur menus
+join_restos <- function(df) {
+  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
+    mutate(nom_court = coalesce(nom_court,
+                                 paste0("ID ", restaurant_id)))
+}
+```
+
+```{r echo=FALSE}
+# Q10 — Renouvellement cumulé des plats 
+
+nouveautes <- menus |>
+  filter(!is.na(date)) |>
+  group_by(restaurant_id, plat) |>
+  summarise(premiere_date = min(date), .groups = "drop") |>
+  mutate(semaine = floor_date(premiere_date,
+                               unit = "week", week_start = 1))
+
+top_ids <- nouveautes |>
+  count(restaurant_id, sort = TRUE) |>
+  slice_head(n = 8) |>
+  pull(restaurant_id)
+
+nouveautes_top <- nouveautes |>
+  filter(restaurant_id %in% top_ids) |>
+  count(restaurant_id, semaine) |>
+  group_by(restaurant_id) |>
+  arrange(semaine) |>
+  mutate(cumul = cumsum(n)) |>
+  ungroup() |>
+  join_restos() |>
+  mutate(nom_court = as.factor(nom_court))
+
+# ── Calcul des breaks depuis les données réelles
+date_min <- floor_date(min(nouveautes_top$semaine), "week", week_start = 1)
+date_max <- ceiling_date(max(nouveautes_top$semaine), "week", week_start = 1)
+
+# Breaks hebdomadaires forcés sur toute la plage
+breaks_x <- seq.Date(date_min, date_max, by = "1 week")
+
+# Si trop de semaines (>16), espacer d'une semaine sur deux
+if (length(breaks_x) > 16) {
+  breaks_x <- breaks_x[seq(1, length(breaks_x), by = 2)]
+}
+
+ggplot(nouveautes_top,
+       aes(x = semaine, y = cumul,
+           colour = nom_court, group = nom_court)) +
+  geom_line(linewidth = 0.95, alpha = 0.9) +
+  geom_point(size = 2, alpha = 0.8) +
+  scale_colour_brewer(palette = "Dark2", name = NULL) +
+  scale_x_date(
+    breaks = breaks_x,                   # ← breaks forcés depuis les données
+    labels = function(d) format(d, "%d %b"),
+    expand = expansion(mult = c(0.02, 0.02))
+  ) +
+  scale_y_continuous(
+    breaks = scales::pretty_breaks(n = 6),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    title    = "Renouvellement cumulé des plats — top 8 restaurants",
+    subtitle = "Nombre cumulé de plats apparus pour la première fois, par semaine",
+    x = NULL, y = "Plats nouveaux (cumulés)",
+    caption  = "Un 'nouveau plat' = première apparition dans un restaurant donné"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title       = element_text(size = 13, face = "bold"),
+    axis.text.x      = element_text(angle = 45, hjust = 1, size = 8.5),
+    legend.position  = "right",
+    legend.text      = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )
+```
+
+
+**Interprétation critique**
+
+Le graphe s'arrête au 6 avril  et ce n'est pas un bug. C'est le résultat le plus important de cette analyse.
+
+**Ce que le graphe dit réellement** : l'intégralité du catalogue de chaque restaurant a été introduite en **3 semaines** (fin mars → début avril). Après le 6 avril, aucun nouveau plat n'apparaît dans aucun des 8 restaurants — les données couvrent pourtant jusqu'au 23 mai, soit encore **7 semaines supplémentaires** de données non représentées ici car elles ne contiennent aucune nouveauté.
+
+**Traduction concrète** : à partir de la semaine du 6 avril, les restaurants CROUS tournent en boucle sur un catalogue fixe. Les plats observés après cette date sont tous des répétitions de plats déjà servis. Il n'y a pas de renouvellement , il y a de la **rotation**.
+
+**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total. Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
+
+➜ **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte ,  ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
