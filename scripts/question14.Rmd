@@ -1,0 +1,246 @@
+## Q14 - Les restaurants CROUS ont-ils des profils d'écoresponsabilité contrastés ?
+
+**Hypothèse**
+
+Les restaurants présentent des comportements environnementaux hétérogènes : certains proposent une offre massivement bas-carbone, d'autres non. On s'attend à une distribution dispersée avec des écarts significatifs entre établissements.
+
+**Méthode choisie** : Classification par tertiles + barplots empilés, jutifié par le fait que les tertiles permettent une comparaison relative entre restaurants sans présupposer un seuil normatif externe.
+
+```{r include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(scales)
+
+# ── Menus
+menus <- read_csv("menus_complets_enrichis.csv", show_col_types = FALSE) |>
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Vérification rapide
+message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " → ", max(menus$date, na.rm=TRUE))
+message("Lignes : ", nrow(menus))
+
+# ── Restaurants (jointure
+restos <- read_csv("liste_restaurants.csv",
+                   show_col_types = FALSE) |>
+  select(code, nom, region.libelle) |>
+  mutate(
+    nom_court = if_else(nchar(nom) > 32,
+                         paste0(substr(nom, 1, 30), "…"), nom)
+  )
+
+# Fonction utilitaire : join rapide sur menus
+join_restos <- function(df) {
+  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
+    mutate(nom_court = coalesce(nom_court,
+                                 paste0("ID ", restaurant_id)))
+}
+```
+
+```{r echo=FALSE}
+# Q14 — Structure relative de l’offre selon l’impact carbone des plats
+# Classification comparative par tertiles
+# Nécessite le bloc INIT exécuté avant
+
+# ── Étape 0 : diagnostic de la distribution réelle
+menus |>
+  filter(!is.na(impact_carbone)) |>
+  count(impact_carbone) |>
+  mutate(pct = round(n / sum(n) * 100, 1)) |>
+  print()
+
+# ── Étape 1 : calcul de la structure d’offre par restaurant
+eco_base <- menus |>
+  filter(!is.na(impact_carbone)) |>
+  group_by(restaurant_id) |>
+  summarise(
+    total       = n(),
+    n_bas       = sum(impact_carbone == "Bas"),
+    n_moyen     = sum(impact_carbone == "Moyen"),
+    n_eleve     = sum(impact_carbone == "Élevé"),
+    pct_bas     = n_bas   / total * 100,
+    pct_moyen   = n_moyen / total * 100,
+    pct_eleve   = n_eleve / total * 100,
+    .groups     = "drop"
+  ) |>
+  filter(total >= 50)
+
+# ── Étape 2 : seuils dynamiques (tertiles empiriques)
+seuil_bas  <- quantile(eco_base$pct_bas, 0.33)
+seuil_haut <- quantile(eco_base$pct_bas, 0.67)
+
+message(sprintf(
+  "Seuils empiriques (tertiles) : Faible < %.1f%% · Intermédiaire %.1f–%.1f%% · Forte ≥ %.1f%%",
+  seuil_bas, seuil_bas, seuil_haut, seuil_haut
+))
+
+# ── Étape 3 : classification descriptive (non normative)
+eco_score <- eco_base |>
+  mutate(
+    profil = case_when(
+      pct_bas >= seuil_haut ~ "Forte part de plats à impact bas",
+      pct_bas >= seuil_bas  ~ "Part intermédiaire de plats à impact bas",
+      TRUE                  ~ "Faible part de plats à impact bas"
+    ),
+    profil = factor(
+      profil,
+      levels = c(
+        "Forte part de plats à impact bas",
+        "Part intermédiaire de plats à impact bas",
+        "Faible part de plats à impact bas"
+      )
+    )
+  ) |>
+  join_restos()
+
+# Vérification
+message("Répartition des profils descriptifs :")
+eco_score |> count(profil) |> print()
+
+# ── Graphe 1 : vue macro
+resume_profil <- eco_score |>
+  count(profil) |>
+  mutate(
+    pct   = n / sum(n) * 100,
+    label = paste0(n, " restaurants\n(", round(pct, 1), "%)")
+  )
+
+p_macro <- ggplot(resume_profil,
+                  aes(x = profil, y = n, fill = profil)) +
+  geom_col(width = 0.55, show.legend = FALSE) +
+  geom_text(aes(label = label),
+            vjust = -0.35, size = 3.4,
+            lineheight = 0.9, colour = "#222") +
+  scale_fill_manual(values = c(
+    "Forte part de plats à impact bas"        = "#1D9E75",
+    "Part intermédiaire de plats à impact bas"= "#EF9F27",
+    "Faible part de plats à impact bas"       = "#E24B4A"
+  )) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.25))) +
+  labs(
+    title    = "Orientation carbone relative de l’offre des restaurants",
+    subtitle = sprintf(
+      "Classification comparative par tertiles — seuils empiriques : %.1f%% et %.1f%%",
+      seuil_bas, seuil_haut
+    ),
+    x = NULL,
+    y = "Nombre de restaurants",
+    caption =
+      "Analyse descriptive de la structure d’offre\nSeuils définis à partir de la distribution observée\nRestaurants avec ≥ 50 plats documentés"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title         = element_text(size = 13, face = "bold"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank()
+  )
+
+print(p_macro)
+
+# ── Fonction commune pour les graphes détaillés
+make_profil_plot <- function(profil_cible, couleur_titre, n_top = 20) {
+
+  df <- eco_score |>
+    filter(profil == profil_cible) |>
+    slice_max(pct_bas, n = n_top, with_ties = FALSE) |>
+    arrange(pct_bas) |>
+    mutate(nom_court = factor(nom_court, levels = nom_court))
+
+  if (nrow(df) == 0) return(NULL)
+
+  n_affiche <- nrow(df)
+
+  df_long <- df |>
+    pivot_longer(c(pct_bas, pct_moyen, pct_eleve),
+                 names_to  = "impact",
+                 values_to = "pct") |>
+    mutate(
+      impact = factor(
+        impact,
+        levels = c("pct_eleve", "pct_moyen", "pct_bas"),
+        labels = c("Élevé", "Moyen", "Bas")
+      )
+    )
+
+  ggplot(df_long, aes(x = nom_court, y = pct, fill = impact)) +
+    geom_col(width = 0.72) +
+    geom_text(
+      data = df,
+      aes(x = nom_court, y = pct_bas / 2,
+          label = paste0(round(pct_bas, 1), "%")),
+      colour = "white", size = 2.8, fontface = "bold",
+      inherit.aes = FALSE
+    ) +
+    geom_text(
+      data = df,
+      aes(x = nom_court, y = 103,
+          label = paste0(round(pct_bas, 1), "% bas")),
+      size = 2.5, hjust = 0, colour = "#444",
+      inherit.aes = FALSE
+    ) +
+    scale_fill_manual(
+      values = c("Bas" = "#1D9E75",
+                 "Moyen" = "#EF9F27",
+                 "Élevé" = "#E24B4A"),
+      name = "Impact carbone"
+    ) +
+    scale_y_continuous(
+      breaks = seq(0, 100, 25),
+      labels = function(x) paste0(x, "%"),
+      limits = c(0, 140)
+    ) +
+    coord_flip() +
+    labs(
+      title = paste0(
+        profil_cible, " — top ", n_affiche, " restaurants"
+      ),
+      subtitle = "Structure relative de l’offre (classification comparative)",
+      x = NULL,
+      y = "Part des plats (%)",
+      caption =
+        "% blanc = part de plats à impact bas · valeur à droite = score descriptif"
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      plot.title      = element_text(size = 13, face = "bold",
+                                     colour = couleur_titre),
+      legend.position = "bottom",
+      panel.grid.major.y = element_blank(),
+      axis.text.y     = element_text(size = 9)
+    )
+}
+
+# ── Génération des graphes détaillés
+p_fort   <- make_profil_plot(
+  "Forte part de plats à impact bas", "#0F6E56"
+)
+p_inter  <- make_profil_plot(
+  "Part intermédiaire de plats à impact bas", "#B37310"
+)
+p_faible <- make_profil_plot(
+  "Faible part de plats à impact bas", "#A32D2D"
+)
+
+print(p_fort)
+print(p_inter)
+print(p_faible)
+```
+
+**Résultats — lecture des graphiques**
+Distribution globale (Image 1) :
+
+94,8% des plats sont à impact "Bas", 4,9% "Moyen", 0,3% "Très Haut"
+Seuils tertiles : Faible < 93,7% · Intermédiaire 93,7–100% · Forte = 100%
+Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
+
+-->  Ce n'est plus une répartition en tiers égaux — la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de pct_bas est très concentrée vers 100%.
+
+**Interprétation critique**
+**L'hypothèse est infirmée.**
+
+Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points — sur une variable qui varie entre 88,8% et 100%, soit une plage de variation extrêmement comprimée.
+
+La classification en tertiles amplifie visuellement des différences qui sont, en valeur absolue, négligeables. Un restaurant à 88,8% de plats bas-carbone ne peut raisonnablement pas être qualifié de "faible" en écoresponsabilité.
+
+Anomalie révélatrice : Le seuil supérieur est à 100%, cela signifie qu'un tiers des restaurants ne servent aucun plat à impact moyen ou élevé. Ce n'est pas de l'écoresponsabilité différenciée, c'est une contrainte d'approvisionnement ou de catégorisation qui force les menus vers le "Bas".
+
