@@ -1,0 +1,103 @@
+
+## Q23 - Quelle est la distribution calorique des plats proposés dans les restaurants CROUS ?
+
+**Hypothèse**
+Les plats servis en restauration universitaire devraient couvrir un repas complet, donc tendre vers 600–900 kcal. On s'attend à une distribution unimodale centrée sur cette plage.
+
+**Méthode choisie**  : Histogramme + densité KDE + lignes médiane/moyenne
+
+**Pourquoi** : L'histogramme révèle la forme brute de la distribution (modes, asymétrie, queues). La densité KDE lisse le bruit de discrétisation. Les deux lignes de position centrale permettent de détecter l'asymétrie sans calcul supplémentaire. C'est la méthode canonique pour une variable continue sans groupement naturel.
+```{r include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(scales)
+
+#  Menus
+menus <- read_csv("menus_complets_enrichis.csv", show_col_types = FALSE) |>
+  mutate(date = as.Date(date, format = "%d/%m/%Y"))
+
+# Vérification rapide
+message("Plage dates menus : ", min(menus$date, na.rm=TRUE), " → ", max(menus$date, na.rm=TRUE))
+message("Lignes : ", nrow(menus))
+
+#  Restaurants (jointure
+restos <- read_csv("liste_restaurants.csv",
+                   show_col_types = FALSE) |>
+  select(code, nom, region.libelle) |>
+  mutate(
+    nom_court = if_else(nchar(nom) > 32,
+                         paste0(substr(nom, 1, 30), "…"), nom)
+  )
+
+# Fonction utilitaire : join rapide sur menus
+join_restos <- function(df) {
+  df |> left_join(restos, by = c("restaurant_id" = "code")) |>
+    mutate(nom_court = coalesce(nom_court,
+                                 paste0("ID ", restaurant_id)))
+}
+```
+
+
+```{r echo=FALSE}
+menus_cal <- menus |>
+  filter(!is.na(calories_estimees), calories_estimees > 0)
+
+med_cal  <- median(menus_cal$calories_estimees)
+moy_cal  <- mean(menus_cal$calories_estimees)
+bw       <- 50   # binwidth histogramme
+
+ggplot(menus_cal, aes(x = calories_estimees)) +
+  geom_histogram(binwidth = bw, fill = "#AFA9EC",
+                  colour = "white", linewidth = 0.25, alpha = 0.85) +
+  geom_density(aes(y = after_stat(count) * bw),
+               colour = "#534AB7", linewidth = 0.9) +
+  geom_vline(xintercept = med_cal, linetype = "dashed",
+             colour = "#3C3489", linewidth = 0.8) +
+  geom_vline(xintercept = moy_cal, linetype = "dotted",
+             colour = "#D85A30", linewidth = 0.8) +
+  annotate("text", x = med_cal + 25, y = Inf, vjust = 1.6, hjust = 0,
+           label = paste0("Médiane : ", round(med_cal), " kcal"),
+           colour = "#3C3489", size = 3.2, fontface = "bold") +
+  annotate("text", x = moy_cal + 25, y = Inf, vjust = 3.2, hjust = 0,
+           label = paste0("Moyenne : ", round(moy_cal), " kcal"),
+           colour = "#D85A30", size = 3.2, fontface = "bold") +
+  scale_x_continuous(breaks = seq(0, 2000, 200),
+                     labels = label_number(suffix = " kcal"),
+                     limits = c(0, NA)) +
+  scale_y_continuous(labels = label_comma()) +
+  labs(title    = "Distribution des calories estimées par plat",
+       subtitle = "Tous restaurants et toutes catégories confondus",
+       x = "Calories estimées (kcal)", y = "Nombre de plats",
+       caption  = "Tirets = médiane · Pointillés = moyenne") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title       = element_text(size = 13, face = "bold"),
+        panel.grid.minor = element_blank())
+```
+**Résultats - lecture précise du graphique**
+
+**Médiane** = 250 kcal, Moyenne = 265 kcal → léger écart indiquant une asymétrie droite modérée
+La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
+
+**Bosse 1** ~50–100 kcal : petit groupe de plats très légers (boissons, condiments ?)
+**Bosse 2** ~150–200 kcal : second groupe intermédiaire (desserts, fruits ?)
+Pic principal ~250–300 kcal : mode dominant, ~20 000 plats — écrasant
+**Bosse 3** ~450–500 kcal : groupe secondaire notable (~2 500 plats)
+Queue droite ~600–700+ kcal : plats caloriques, effectifs très faibles
+
+
+Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plats
+
+**Interprétation critique**
+
+*L'hypothèse est infirmée — et de loin*.
+
+La valeur centrale (~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité — ce qui tire mécaniquement la moyenne vers le bas.
+
+La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente — ni un dessert (~100 kcal), ni un plat principal (~500 kcal).
+
+Verdict : le graphique répond à la question posée, mais la question elle-même était mal formulée. Demander la distribution "des plats" sans distinguer les catégories revient à calculer la taille moyenne d'un humain en mélangeant nourrissons et adultes.
+
+➜ Nouveau cycle
+Nouvelle question : La distribution calorique diffère-t-elle significativement selon la catégorie de plat ? (soit la Q.24)
+
