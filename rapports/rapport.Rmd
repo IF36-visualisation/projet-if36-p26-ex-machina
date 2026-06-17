@@ -1168,7 +1168,6 @@ regions_valides <- df %>%
   pull(region)
 
 df <- df %>% filter(region %in% regions_valides)
-
 ```
 
 ### Graphique 1 - Nombre de plats distincts par restaurant (diversité normalisée)
