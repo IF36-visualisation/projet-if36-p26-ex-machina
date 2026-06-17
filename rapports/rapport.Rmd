@@ -1535,3 +1535,8 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 -   "Plats sucrés" et "Street food" : Les profils les plus riches. La Street food (burgers, paninis, frites) présente la plus grosse proportion de notes D et E combinées, liée à l'apport en graisses saturées et en sel. Les Plats sucrés (desserts, douceurs), quant à eux, montrent une forte concentration de notes C et D due à la forte présence de sucre et de glucides simples.
 
 -   "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
+
+
+## Conclusion
+Cette analyse exploratoire a permis de dresser un portrait de l'offre culinaire CROUS. Sur le plan nutritionnel, l'offre est dominée par le Nutri-Score C, avec des îlots de qualité du côté des Entrées et des Boissons, et des points faibles sur le Snacking et les Viennoiseries. Sur le plan structurel, les menus ne suivent pas le schéma classique Entrée/Plat/Dessert : l'offre est tirée par le Snacking et les Boissons, avec une forte hétérogénéité entre restaurants selon leur format.
+Plusieurs limites sont à noter : les estimations caloriques manquent de granularité pour certaines catégories, la forte proportion de Nutri-Score C soulève des doutes sur la fiabilité de certaines attributions, et les données couvrent une période restreinte. Ces résultats ouvrent néanmoins des pistes pour des analyses plus poussées, notamment le croisement entre type de restaurant et composition des menus, ou l'étude des disparités régionales.
