@@ -43,7 +43,7 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 -   **Nombre de variables :** 20
 
 | Champ | Type | Description |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | `code` | entier | Identifiant unique du restaurant |
 | `nom` | texte | Nom du restaurant |
 | `adresse` | texte | Adresse complète |
@@ -84,7 +84,7 @@ Ce choix d'enrichissement manuel a été motivé par plusieurs contraintes : - l
 ### Colonnes
 
 | Champ | Type | Description |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | `restaurant_id` | entier | Identifiant du restaurant |
 | `date` | date | Date du menu |
 | `repas` | texte | Type de repas |
@@ -600,7 +600,7 @@ ggplot(pmr_nutri, aes(x = accessibilite, fill = nutriscore)) +
 
 #### **Interprétation des résultats**
 
--   L'accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété comme une cause.
+-   L'accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété une cause.
 -   Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d'où l'utilisation de proportions plutôt que de volumes bruts.
 
 Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) présentent une répartition quasi identique des Nutri-Scores, avec un score moyen de 3,26/5 pour chacun. Les proportions de plats notables (A-B), intermédiaires (C) et moins favorables (D-E) sont donc pratiquement égales, ce qui suggère qu'aucune différence nutritionnelle marquée n'est associée à l'accessibilité PMR dans l'offre observée.
@@ -611,10 +611,9 @@ Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) 
 
 **Hypothèse**
 
-Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes. Cela veut dire qu'on s'attend à voir des courbes d'évolution lineaires et continues donc des droites. 
+Un renouvellement sain implique une progression continue et régulière. On s'attend à une croissance linéaire du cumul de nouveaux plats, avec des variations inter-restaurants reflétant des politiques différentes. Cela veut dire qu'on s'attend à voir des courbes d'évolution lineaires et continues donc des droites.
 
-**Méthode choisie** : Courbes cumulées par restaurant 
-**Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible. On recupère le top 8 pour plus de lisibilité (il y a trop de restaurants : presque 1 000).
+**Méthode choisie** : Courbes cumulées par restaurant **Pourquoi** : Le cumul transforme un signal bruité semaine par semaine en une tendance lisible. On recupère le top 8 pour plus de lisibilité (il y a trop de restaurants : presque 1 000).
 
 ```{r include=FALSE}
 library(tidyverse)
@@ -723,8 +722,7 @@ Le graphe s'arrête au 6 avril - et ce n'est pas un bug. C'est le résultat le p
 
 **Traduction concrète** : à partir de la semaine du 6 avril, les restaurants CROUS tournent en boucle sur un catalogue fixe. Les plats observés après cette date sont tous des répétitions de plats déjà servis. Il n'y a pas de renouvellement - il y a de la **rotation**.
 
-**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total(Dans notre code on arrête l'affichage lorsqu'il n'y a plus de renouvelement. Mais si on avait continué, on aurait eu un plateau / droite horizontale).
-Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
+**Ce qui invalide l'hypothèse** : l'hypothèse supposait un renouvellement continu et régulier. La réalité est inverse : il y a une phase d'amorçage rapide (3 semaines), puis un plateau total(Dans notre code on arrête l'affichage lorsqu'il n'y a plus de renouvelement. Mais si on avait continué, on aurait eu un plateau / droite horizontale). Les variations inter-restaurants sur les pentes initiales reflètent non pas des politiques différentes de renouvellement, mais simplement des tailles de catalogue différentes constituées en une seule fois.
 
 **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte - ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
 
@@ -758,8 +756,7 @@ Le second graphique présente la proportion de chaque Nutri-Score au sein des di
 
 Le graphique montre une **très forte domination du Nutri-Score C**, qui concentre près de 20 000 plats à lui seul, soit la grande majorité de l'offre. Cela indique que l'offre du CROUS est globalement composée d'aliments présentant une qualité nutritionnelle moyenne. Le Nutri-Score **A** arrive en deuxième position (environ 4 000 plats), témoignant d'une présence non négligeable d'options équilibrées. Les Nutri-Scores **B et D** sont à peu près au même niveau (autour de 1 500 plats chacun), et le **E** reste minoritaire (environ 500 plats), ce qui montre que les plats les moins favorables sur le plan nutritionnel occupent une place limitée dans l'offre globale.
 
-Les **Boissons** se distinguent par une part importante de Nutri-Scores A (environ 30 %) peut-être à cause des bouteilles d'eau minérale et gazeuse vendues, ce qui en fait l'une des catégories les mieux notées, bien qu'elles contiennent aussi une part visible de D (peut-être pour les boissons sucrées). 
-Les **Entrées** et les **Desserts** présentent un profil étonnamment favorable, avec environ 40 % de A - leur composition variée (compotes, salades, fruits) tire la moyenne vers le haut malgré quelques plats en D ou E. À l'inverse, le **Snacking**, le **Petit-déjeuner** et les **Formules/Menus** sont massivement classés C, avec très peu de variation, ce qui suggère une attribution standardisée plutôt qu'un scoring fin et précis de l'offre. Les **Plats** sont également dominés par le C, avec néanmoins une part non négligeable de D peut-être à cause de certains plats traditionnels composés de matières très riches (viande, beurre, huiles, etc).
+Les **Boissons** se distinguent par une part importante de Nutri-Scores A (environ 30 %) peut-être à cause des bouteilles d'eau minérale et gazeuse vendues, ce qui en fait l'une des catégories les mieux notées, bien qu'elles contiennent aussi une part visible de D (peut-être pour les boissons sucrées). Les **Entrées** et les **Desserts** présentent un profil étonnamment favorable, avec environ 40 % de A - leur composition variée (compotes, salades, fruits) tire la moyenne vers le haut malgré quelques plats en D ou E. À l'inverse, le **Snacking**, le **Petit-déjeuner** et les **Formules/Menus** sont massivement classés C, avec très peu de variation, ce qui suggère une attribution standardisée plutôt qu'un scoring fin et précis de l'offre. Les **Plats** sont également dominés par le C, avec néanmoins une part non négligeable de D peut-être à cause de certains plats traditionnels composés de matières très riches (viande, beurre, huiles, etc).
 
 Ces résultats suggèrent que les étudiants disposent d'un choix relativement varié leur permettant d'opter pour des repas plus ou moins équilibrés selon leurs préférences, mais la forte concentration sur le Nutri-Score C dans plusieurs catégories interroge sur la précision de l'attribution des scores (qui a été fait manuellement sur notre dataset menus_enrichis) plutôt que sur la qualité réelle de l'offre.
 
@@ -841,7 +838,6 @@ Ce n'est pas le nombre de calories en soi qui déclenche une mauvaise note. Le N
 
 Le graphique montre simplement que les deux critères avancent souvent ensemble, car les plats riches en sucre ou en mauvaises graisses sont, par nature, des plats très caloriques.
 
-
 <br>
 
 <hr>
@@ -886,7 +882,6 @@ join_restos <- function(df) {
                                  paste0("ID ", restaurant_id)))
 }
 ```
-
 
 ```{r echo=FALSE}
 # Q14 - Structure relative de l'offre selon l'impact carbone des plats
@@ -1073,16 +1068,13 @@ print(p_faible)
 
 Répartition asymétrique : 82 restaurants (50%) en "Forte", 28 (17%) en "Intermédiaire", 54 (33%) en "Faible"
 
-Seuils tertiles : 
+Seuils tertiles :
 
-- Faible \< 93,7% 
-- Intermédiaire 93,7-100% 
-- Forte = 100% 
+-   Faible \< 93,7%
+-   Intermédiaire 93,7-100%
+-   Forte = 100%
 
-
-
- Ce n'est plus une répartition en tiers égaux - la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de % carbone total bas est très concentrée vers 100%.
-
+Ce n'est plus une répartition en tiers égaux - la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de % carbone total bas est très concentrée vers 100%.
 
 #### **Interprétation critique** **L'hypothèse est infirmée.**
 
@@ -1099,10 +1091,10 @@ Le Nutri-Score permet d'évaluer la qualité nutritionnelle globale des menus. E
 Nous avons choisi de réalisé ce graphique sur Power BI et nous avons obtenu ce résultat :
 
 ![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_1.png)
-![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_2x.png)
+
+![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_2.png)
 
 Même si on a des teintes vertes, le nutriscore moyen tourne autour de 3 pour quasiment toutes les régions : Notre échelle n'est pas sur le nutriscore mais va de la moyenne la moins pire (qui a la couleur verte) à la pire moyenne (qui prend une couleur rouge)
-
 
 #### **Interprétation**
 
@@ -1120,208 +1112,7 @@ Le fait qu'une région soit colorée en orange ou en rouge ne signifie pas que l
 
 Par exemple, si la Bourgogne-Franche-Comté est très orange, c'est peut-être tout simplement parce que les restaurants de cette zone proposent une majorité de plats traditionnels riches en sauces ou en graisses saturées (ce qui fait grimper la moyenne), et non pas parce que les habitants de cette région mangent moins bien par nature.
 
-**Anomalies visuelles constatées** 
-- Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions.
-- Certaines régions n'ont pas de valeur de nutriscore (comme Versailles) : Cela signifie tout simplement qu'il n'y a pas de plats associé à ces régions dans notre fichier.
-
-
-<br>
-
-<hr>
-
-<br>
-
-## Question 16 : La diversité des plats varie-t-elle selon la région ?
-
-L'offre culinaire des restaurants universitaires est-elle homogène sur tout le territoire, ou certaines régions proposent-elles des menus nettement plus variés ? Cette question est importante pour évaluer les inégalités d'accès à une alimentation diversifiée selon le lieu d'études.
-
-Mesurer la " diversité " n'est pas trivial : un simple comptage de plats distincts favorise mécaniquement les grandes régions qui comptent plus de restaurants. Nous mobilisons donc **deux indicateurs complémentaires**, qui éclairent chacun un aspect différent de la diversité :
-
-1.  **Plats distincts par restaurant** - diversité normalisée par la taille de la région.
-2.  **Entropie de Shannon** - mesure l'équilibre de la distribution des plats au sein de chaque restaurant : une entropie haute signifie que les plats sont variés *et* équilibrés (aucun ne domine massivement).
-
-Les régions avec un seul restaurant (Créteil, Rennes) sont exclues de l'analyse car elles ne permettent pas de généralisation régionale.
-
-```{r q16-setup, echo=FALSE, message=FALSE, warning=FALSE}
-library(dplyr)
-library(ggplot2)
-library(readr)
-library(forcats)
-
-# -- Chargement --------------------------------------------------------------
-restaurants <- read_csv("../data/liste_restaurants.csv", show_col_types = FALSE)
-menus       <- read_csv("../data/menus_complets_enrichis.csv", show_col_types = FALSE)
-
-# -- Jointure et filtrage ----------------------------------------------------
-df <- menus %>%
-  left_join(
-    restaurants %>% select(code, region = "region.libelle"),
-    by = c("restaurant_id" = "code")
-  ) %>%
-  filter(!is.na(region))
-
-# Exclure les régions avec un seul restaurant (non représentatives)
-regions_valides <- df %>%
-  group_by(region) %>%
-  summarise(n_rest = n_distinct(restaurant_id), .groups = "drop") %>%
-  filter(n_rest >= 2) %>%          # >= 2 restaurants pour être conservée
-  pull(region)
-
-df <- df %>% filter(region %in% regions_valides)
-```
-
-### Graphique 1 - Nombre de plats distincts par restaurant (diversité normalisée)
-
-Le premier biais à corriger est la taille : Lille avec 22 restaurants aura mécaniquement plus de plats distincts que Corse avec 5. Nous divisons donc le nombre de plats uniques par le nombre de restaurants de la région, pour obtenir un indicateur **indépendant de la taille**.
-
-```{r q16-graph1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=13, fig.height=7, out.width="100%"}
-# Métrique : plats distincts par restaurant
-diversite_norm <- df %>%
-  group_by(region) %>%
-  summarise(
-    n_plats_distincts = n_distinct(plat),
-    n_restaurants     = n_distinct(restaurant_id),
-    plats_par_resto   = n_plats_distincts / n_restaurants,
-    .groups = "drop"
-  ) %>%
-  mutate(region = fct_reorder(region, plats_par_resto))
-
-ggplot(diversite_norm, aes(x = plats_par_resto, y = region, fill = plats_par_resto)) +
-  geom_col(show.legend = FALSE, width = 0.75) +
-  geom_text(
-    aes(label = sprintf("%.1f", plats_par_resto)),
-    hjust = -0.15, size = 3.2, color = "grey30"
-  ) +
-  geom_vline(
-    xintercept = mean(diversite_norm$plats_par_resto),
-    linetype = "dashed", color = "firebrick", linewidth = 0.8
-  ) +
-  annotate(
-    "text", x = mean(diversite_norm$plats_par_resto) + 0.3,
-    y = 1.5, label = "Moyenne", color = "firebrick", size = 3.2, hjust = 0
-  ) +
-  scale_fill_gradient(low = "#b7dde8", high = "#1a6fa8") +
-  scale_x_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(
-    title    = "Diversité normalisée : plats distincts par restaurant et par région",
-    subtitle = "Corrige le biais de taille - les grandes régions ne sont plus avantagées",
-    x        = "Nombre moyen de plats distincts par restaurant",
-    y        = NULL
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title         = element_text(face = "bold", size = 14),
-    panel.grid.major.y = element_blank()
-  )
-```
-
-#### Commentaire
-
-Une fois normalisée par le nombre de restaurants, le classement change considérablement par rapport à un simple comptage brut. **Lille** reste en tête (\~ 20 plats distincts par restaurant), suivie de **Strasbourg** et **Toulouse**. À l'inverse, **Nice** et **Montpellier** se retrouvent en bas du classement avec moins de 4 plats distincts par restaurant en moyenne, révélant une offre très répétitive. La ligne pointillée indique la moyenne nationale, permettant d'identifier d'un coup d'œil les régions en-dessous du seuil moyen.
-
-#### Critique
-
--   Cette métrique additionne les plats *sur l'ensemble des restaurants* de la région avant de diviser : si tous les restaurants d'une région proposent exactement les mêmes plats, le score sera élevé mais la diversité réelle sera nulle.
--   Elle ne distingue pas la diversité *intra*-restaurant (au sein d'un même restaurant) de la diversité *inter*-restaurants (entre établissements d'une même région).
-
-------------------------------------------------------------------------
-
-### Graphique 2 - Entropie de Shannon : équilibre de l'offre au sein de chaque restaurant
-
-L'entropie de Shannon mesure à quel point les plats sont **équilibrés** dans un menu : une entropie maximale signifie que chaque plat est proposé aussi souvent que les autres, sans qu'un plat unique monopolise l'offre. Elle vaut 0 si un seul plat est servi en permanence, et augmente avec la variété et l'équilibre.
-
-Nous calculons l'entropie de Shannon pour chaque restaurant, puis nous moyennons par région. Cela donne une vision de la diversité *interne* à chaque établissement.
-
-```{r q16-graph2, echo=FALSE, message=FALSE, warning=FALSE, fig.width=13, fig.height=7, out.width="100%"}
-# Entropie de Shannon par restaurant
-shannon_entropy <- function(x) {
-  counts <- table(x)
-  probs  <- counts / sum(counts)
-  probs  <- probs[probs > 0]
-  -sum(probs * log2(probs))
-}
-
-shannon_par_resto <- df %>%
-  group_by(region, restaurant_id) %>%
-  summarise(shannon = shannon_entropy(plat), .groups = "drop")
-
-shannon_par_region <- shannon_par_resto %>%
-  group_by(region) %>%
-  summarise(
-    shannon_moyen = mean(shannon),
-    shannon_sd    = sd(shannon),
-    n_rest        = n(),
-    .groups = "drop"
-  ) %>%
-  mutate(
-    region  = fct_reorder(region, shannon_moyen),
-    # Intervalle indicatif à 95 %. L'approximation normale évite les segments
-    # illisibles lorsque certaines régions ont très peu de restaurants.
-    shannon_se = shannon_sd / sqrt(n_rest),
-    ic_low     = pmax(0, shannon_moyen - 1.96 * shannon_se),
-    ic_high    = shannon_moyen + 1.96 * shannon_se
-  )
-
-ggplot(shannon_par_region,
-       aes(x = shannon_moyen, y = region)) +
-  geom_segment(
-    aes(x = ic_low, xend = ic_high, yend = region),
-    color = "#b7cfe2", linewidth = 1.1, alpha = 0.8
-  ) +
-  geom_point(aes(color = shannon_moyen), size = 4, show.legend = FALSE) +
-  geom_vline(
-    xintercept = mean(shannon_par_region$shannon_moyen),
-    linetype = "dashed", color = "firebrick", linewidth = 0.8
-  ) +
-  annotate(
-    "text", x = mean(shannon_par_region$shannon_moyen) + 0.05,
-    y = 1.5, label = "Moyenne", color = "firebrick", size = 3.2, hjust = 0
-  ) +
-  scale_color_gradient(low = "#b7dde8", high = "#1a6fa8") +
-  scale_x_continuous(
-    limits = c(0, max(shannon_par_region$ic_high, na.rm = TRUE) * 1.08),
-    expand = expansion(mult = c(0, 0.02))
-  ) +
-  labs(
-    title    = "Entropie de Shannon moyenne par région",
-    subtitle = "Mesure l'équilibre de la distribution des plats au sein de chaque restaurant\nLes segments représentent un intervalle indicatif à 95 %",
-    x        = "Entropie de Shannon moyenne (bits)",
-    y        = NULL
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title         = element_text(face = "bold", size = 14),
-    panel.grid.major.y = element_blank()
-  )
-```
-
-#### Commentaire
-
-L'entropie de Shannon donne un classement partiellement différent du précédent. **Corse**, **Strasbourg** et **Lille** arrivent en tête, ce qui signifie que leurs restaurants proposent des menus à la fois variés *et* équilibrés, sans plats dominants répétés à l'excès. À l'inverse, **Nice**, **Antilles-Guyane** et **Montpellier** présentent les niveaux les plus faibles : leurs restaurants semblent tourner autour d'un répertoire de plats plus restreint ou plus répétitif. Le cas de **Toulouse** est intéressant : la région est bien placée sur le nombre de plats distincts par restaurant, mais nettement plus basse en entropie, ce qui suggère une diversité apparente moins équilibrée dans les restaurants.
-
-#### Critique
-
--   L'entropie est sensible au nombre d'observations : un restaurant avec peu de plats enregistrés aura une entropie artificiellement faible.
--   Elle ne distingue pas la nature des plats (un restaurant peut avoir une entropie haute en proposant 10 fois la même salade verte déclinée différemment).
-
-------------------------------------------------------------------------
-
-### Synthèse
-
-| Indicateur | Classement " plus diversifié " | Classement " moins diversifié " |
-|----|----|----|
-| Plats distincts / restaurant | Lille, Strasbourg, Toulouse | Nice, Montpellier, Paris |
-| Entropie de Shannon | Corse, Strasbourg, Lille | Nice, Antilles-Guyane, Montpellier |
-
-Les deux indicateurs convergent sur plusieurs points : **Strasbourg** et **Lille** figurent parmi les régions les plus diversifiées, à la fois en volume de plats distincts et en équilibre de l'offre. À l'inverse, **Nice** et **Montpellier** apparaissent comme des régions peu diversifiées selon les deux lectures. D'autres régions changent de position selon l'indicateur : **Toulouse** est forte en nombre de plats distincts par restaurant, mais moins convaincante en entropie, tandis que **Corse** se distingue surtout par un bon équilibre interne des menus.
-
-Cette double lecture est plus prudente qu'un simple classement unique : le premier graphique mesure la largeur du répertoire culinaire, tandis que le second vérifie si ce répertoire est réellement réparti de manière équilibrée dans les restaurants.
-
-**Limites générales de l'analyse :**
-
--   Les données couvrent une période courte (mars-mai 2026) et ne reflètent pas nécessairement l'offre annuelle habituelle.
--   Le nombre de restaurants par région est très variable (de 5 à 33), ce qui fragilise les comparaisons pour les petites régions comme la Corse ou Antilles-Guyane.
--   La variable `plat` contient de nombreuses variantes orthographiques d'un même plat, ce qui peut gonfler artificiellement le comptage de plats distincts.
+**Anomalies visuelles constatées** - Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions. - Certaines régions n'ont pas de valeur de nutriscore (comme Versailles) : Cela signifie tout simplement qu'il n'y a pas de plats associé à ces régions dans notre fichier.
 
 <br>
 
@@ -1331,7 +1122,7 @@ Cette double lecture est plus prudente qu'un simple classement unique : le premi
 
 ## Question 18 : Existe-t-il une fracture géographique de l'accessibilité PMR ?
 
-Cette question cherche à savoir si l'accessibilité aux personnes à mobilité réduite est répartie de manière homogène entre les régions, ou si certains territoires présentent un retard marqué. Une fracture géographique serait visible si certaines régions affichent une part beaucoup plus faible de restaurants accessibles PMR que la moyenne calculée à partir des données des restaurants CROUS (environ 75 %), représentée par une ligne rouge en pointillés.
+Cette question cherche à savoir si l'accessibilité aux personnes à mobilité réduite est répartie de manière homogène entre les régions, ou si certains territoires présentent un retard marqué. Une fracture géographique serait visible si certaines régions affichent une part beaucoup plus faible de restaurants accessibles PMR que la moyenne calculée à partir des données des restaurants CROUS, représentée par une ligne rouge en pointillés.
 
 Les données utilisées sont : `region.libelle` (région), `ispmr` (accessibilité PMR) et `code` (identifiant restaurant) dans `liste_restaurants.csv`.
 
@@ -1407,13 +1198,13 @@ ggplot(accessibilite_pmr, aes(x = pct_pmr, y = region, fill = pct_pmr)) +
   )
 ```
 
-### Commentaire
+#### **Interprétation**
 
 Le graphique permet d'identifier rapidement les régions situées au-dessus ou au-dessous de la moyenne d'accessibilité PMR. Les régions comme Limoges, Poitiers ou Rennes (proches de 100 %) semblent bien couvertes, tandis que celles comme Orléans-Tours, Corse ou Paris (nettement sous la ligne rouge) peuvent indiquer une fracture géographique.
 
 L'étiquette `n_pmr / n_restaurants` est essentielle pour interpréter correctement les écarts : une région avec peu de restaurants (ex. : Corse, 1/5) peut afficher un pourcentage très élevé ou très faible en raison d'un petit nombre d'établissements.
 
-### Critique
+**Critique**
 
 -   La variable `ispmr` indique une accessibilité déclarée dans la base, pas une vérification terrain.
 -   Les régions ne contiennent pas toutes le même nombre de restaurants, ce qui rend les petites régions plus sensibles aux variations.
@@ -1522,13 +1313,13 @@ fiabilite %>%
   )
 ```
 
-### Commentaire
+#### **Interprétation**
 
 Sur les `r nrow(fiabilite)` restaurants disposant d'au moins 10 plats, **`r sum(fiabilite$suspect)` présentent un profil suspect** : 100 % de leurs plats se voient attribuer le Nutri-Score C, sans aucune variation. Ce phénomène est particulièrement visible parmi les restaurants avec beaucoup d'entrées (112 plats), suggérant une attribution automatique ou par défaut plutôt qu'un scoring individualisé.
 
 La ligne pointillée rouge à 90 % délimite la zone d'alerte. Les points colorés en rouge (suspects) se concentrent dans le coin supérieur gauche : un seul score distinct et une proportion de C proche de 100 %.
 
-### Critique
+**Critique**
 
 -   L'absence de valeurs manquantes dans le dataset (`nutriscore` renseigné pour 100 % des lignes) est elle-même un signal inhabituel pour un enrichissement manuel, et renforce le doute sur la fiabilité de certaines attributions.
 -   Un restaurant ne proposant que des plats réellement classés C n'est pas nécessairement une erreur ; mais la probabilité d'une telle uniformité sur des dizaines de plats différents est très faible.
@@ -1614,11 +1405,11 @@ ggplot(menus_cal, aes(x = calories_estimees)) +
 
 **Médiane** = 250 kcal, Moyenne = 265 kcal -\> léger écart indiquant une asymétrie droite modérée La distribution est multimodale, avec 4 modes distincts identifiables sur la courbe KDE :
 
-**Bosse 1** : \~50-100 kcal : petit groupe de plats très légers (boissons, condiments ?) 
+**Bosse 1** : \~50-100 kcal : petit groupe de plats très légers (boissons, condiments ?)
 
-**Bosse 2** : \~150-200 kcal : second groupe intermédiaire (desserts, fruits ?) 
+**Bosse 2** : \~150-200 kcal : second groupe intermédiaire (desserts, fruits ?)
 
-**Bosse 3** : Pic principal \~250-300 kcal : mode dominant, \~20 000 plats - écrasant 
+**Bosse 3** : Pic principal \~250-300 kcal : mode dominant, \~20 000 plats - écrasant
 
 **Bosse 4** : \~450-500 kcal : groupe secondaire notable (\~2 500 plats)
 
@@ -1630,7 +1421,7 @@ Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plat
 
 *L'hypothèse est infirmée - et de loin*.
 
-La valeur centrale (\~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité  ce qui tire la moyenne vers le bas.
+La valeur centrale (\~250 kcal) est 2 à 3 fois inférieure à ce qu'on attendrait d'un repas complet. Mais cette conclusion brute est trompeuse : elle est la conséquence directe d'un mélange de catégories hétérogènes dans un seul histogramme. Entrées, plats principaux, desserts, accompagnements et boissons sont comptabilisés à égalité ce qui tire la moyenne vers le bas.
 
 La multimodalité est le signal le plus informatif du graphique : elle trahit la présence de sous-populations distinctes (vraisemblablement les catégories de plats) que l'analyse globale noie dans un seul indicateur. La médiane à 250 kcal ne décrit aucun plat réel de façon pertinente - ni un dessert (\~100 kcal), ni un plat principal (\~500 kcal).
 
@@ -1656,13 +1447,11 @@ Le boxplot ci-dessous permet de lire simultanément la médiane, l'étendue inte
 
 ![Boxplot des calories par catégorie de plat](../images/question24a.png)
 
-
 **Note de lecture :** on remarque que quatre catégories (Snacking, Plats, Petit-déjeuner, Formules/Menus) semblent visuellement identiques sur le boxplot, avec des boîtes réduites à un simple trait vertical. Cela ne signifie pas qu'elles ont exactement les mêmes valeurs : leurs médianes diffèrent de quelques kcal, ce qui suffit à les classer différemment, mais l'écart est trop faible pour être visible à l'œil nu. Ce phénomène s'explique par le mode d'estimation des calories : les valeurs ayant été enrichies manuellement à partir d'OpenFoodFacts, beaucoup de plats d'une même catégorie ont reçu la même estimation calorique par défaut, ce qui écrase la dispersion. Seuls les **Entrées** et les **Desserts** montrent de vraies boîtes visibles, signe que leurs calories ont été estimées de façon plus variée. C'est pourquoi le diagramme en barres des moyennes ci-dessous est un complément indispensable pour différencier les catégories entre elles.
 
 Le diagramme en barres ci-dessous présente la moyenne arithmétique des calories par catégorie, triée par ordre décroissant, offrant une lecture plus synthétique.
 
 ![Calories moyennes par catégorie de plat](../images/question24b.png)
-
 
 **Interprétation des résultats**
 
@@ -1672,8 +1461,7 @@ Les **Boissons** affichent une moyenne étonnamment haute en deuxième position 
 
 Le **Snacking présente une moyenne intermédiaire** (environ 265 kcal). Même si le boxplot ne le montre pas clairement à cause de la faible granularité des estimations, le diagramme en barres confirme que cette catégorie se situe bien dans la moyenne. Les outliers du boxplot, eux, révèlent que certains produits de snacking (burgers, paninis) dépassent largement les 450 kcal.
 
-Le **Petit-déjeuner** se situe en cinquième position (environ 250 kcal), contre toute attente, juste devant les **Entrées** (environ 220 kcal). 
-Les **Desserts ferment la marche** avec la moyenne la plus basse (environ 165 kcal), ce qui s'explique par la présence massive de compotes et fruits dans l'offre, beaucoup plus légers que les pâtisseries. Le boxplot révèle pourtant pour les Desserts l'une des dispersions les plus larges, traduisant l'écart entre une simple compote (environ 50 kcal) et une pâtisserie riche dépassant 450 kcal.
+Le **Petit-déjeuner** se situe en cinquième position (environ 250 kcal), contre toute attente, juste devant les **Entrées** (environ 220 kcal). Les **Desserts ferment la marche** avec la moyenne la plus basse (environ 165 kcal), ce qui s'explique par la présence massive de compotes et fruits dans l'offre, beaucoup plus légers que les pâtisseries. Le boxplot révèle pourtant pour les Desserts l'une des dispersions les plus larges, traduisant l'écart entre une simple compote (environ 50 kcal) et une pâtisserie riche dépassant 450 kcal.
 
 Globalement, ces résultats montrent que les catégories ne sont pas comparables sur la base de la seule moyenne : la dispersion interne est souvent aussi informative que la valeur centrale. Le cas des Boissons et des Desserts est particulièrement frappant ; leurs moyennes ne reflètent pas la nature de l'offre, mais le mélange entre items très légers et très caloriques au sein d'une même catégorie. Un étudiant peut donc trouver au sein d'une même catégorie aussi bien un choix léger qu'un choix très calorique, ce qui lui laisse une marge de choix importante selon ses besoins.
 
