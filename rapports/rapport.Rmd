@@ -600,7 +600,7 @@ ggplot(pmr_nutri, aes(x = accessibilite, fill = nutriscore)) +
 
 #### **Interprétation des résultats**
 
--   L'accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété une cause.
+-   L'accessibilité PMR décrit une caractéristique du lieu, pas une politique nutritionnelle : un écart éventuel ne doit pas être interprété comme une cause.
 -   Les restaurants accessibles PMR peuvent être plus nombreux ou plus actifs, d'où l'utilisation de proportions plutôt que de volumes bruts.
 
 Le graphique montre que les deux groupes (Accessible PMR et Non accessible PMR) présentent une répartition quasi identique des Nutri-Scores, avec un score moyen de 3,26/5 pour chacun. Les proportions de plats notables (A-B), intermédiaires (C) et moins favorables (D-E) sont donc pratiquement égales, ce qui suggère qu'aucune différence nutritionnelle marquée n'est associée à l'accessibilité PMR dans l'offre observée.
