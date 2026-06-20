@@ -1538,5 +1538,11 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 
 
 ## Conclusion
-Cette analyse exploratoire a permis de dresser un portrait de l'offre culinaire CROUS. Sur le plan nutritionnel, l'offre est dominée par le Nutri-Score C, avec des îlots de qualité du côté des Entrées et des Boissons, et des points faibles sur le Snacking et les Viennoiseries. Sur le plan structurel, les menus ne suivent pas le schéma classique Entrée/Plat/Dessert : l'offre est tirée par le Snacking et les Boissons, avec une forte hétérogénéité entre restaurants selon leur format.
-Plusieurs limites sont à noter : les estimations caloriques manquent de granularité pour certaines catégories, la forte proportion de Nutri-Score C soulève des doutes sur la fiabilité de certaines attributions, et les données couvrent une période restreinte. Ces résultats ouvrent néanmoins des pistes pour des analyses plus poussées, notamment le croisement entre type de restaurant et composition des menus, ou l'étude des disparités régionales.
+
+Au terme de notre analyse, les visualisations que nous avons réalisées nous ont permis de dresser un portrait de l'offre culinaire du CROUS. 
+
+Sur le plan nutritionnel, l'offre est dominée par le Nutri-Score C, avec une meilleure qualité du côté des Entrées et des Boissons, et des points faibles sur le Snacking et les Viennoiseries. 
+
+Sur le plan structurel, les menus ne suivent pas le schéma classique Entrée/Plat/Dessert : l'offre est dominée par le Snacking et les Boissons, avec une forte hétérogénéité entre restaurants selon leur format.
+
+Plusieurs limites sont à noter : la forte proportion de Nutri-Score C soulève des doutes sur la fiabilité de notre système d'attribution, et les données couvrent une période restreinte. Ainsi, les interprétations que nous avons rédigées ne doivent pas être reproduites au pied et à la lettre sur l'année. Nos observations s'applique sur une période bien précise mais on peut s'en servir pour faire des suppositions sur le reste de l'année. 
