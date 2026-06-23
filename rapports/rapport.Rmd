@@ -69,7 +69,6 @@ Le jeu de données comporte plusieurs fichiers CSV situés dans le dossier `data
 
 ### 2. **`menus_complets_enrichis.csv`** : liste des menus pour chaque restaurant
 
-### Description
 
 Cette table contient l'ensemble des menus proposés dans les restaurants universitaires.\
 Chaque ligne correspond à un plat spécifique servi dans un restaurant donné, à une date, pour un type de repas et une catégorie précis.
@@ -81,7 +80,6 @@ Ce choix d'enrichissement manuel a été motivé par plusieurs contraintes : - l
 -   **Nombre d'observations :** 80 307
 -   **Nombre de variables :** 10
 
-### Colonnes
 
 | Champ | Type | Description |
 |------------------------|------------------------|------------------------|
@@ -108,19 +106,11 @@ Ce choix d'enrichissement manuel a été motivé par plusieurs contraintes : - l
 -   Ces données permettent d'étudier les menus sur différentes périodes et restaurants.\
 -   Elles sont pertinentes pour analyser la diversité culinaire, la récurrence de certains plats, ou les préférences selon le type de repas et les catégories de plats.
 
-<br>
 
-<hr>
-
-<br>
 
 # Analyse des questions
 
-<br>
 
-<hr>
-
-<br>
 
 ## Question 1 : Quel jour de la semaine concentre le plus de menus ?
 
@@ -360,6 +350,20 @@ print(p_vertical)
 -   Le cœur de l'offre : Une grande partie des plats cuisinés (viandes blanches, pâtes) oscille autour du pivot C.
 
 -   Les options "plaisir" : Les burgers, pizzas et surtout les viennoiseries descendent vers les scores 2 (D) et 1 (E), ce qui confirme notre hypothèse initiale sur la qualité nutritionnelle de l'offre snacking.
+
+
+**Critique**
+
+
+À la lecture du graphique, on relève encore quelques imperfections , comme la présence simultanée de plats redondants (par exemple, des variantes orthographiques comme *"Charcuterie"* et *"Charcuteries"*). 
+
+Ces légères coquilles s'expliquent par les limites de notre traitement:
+
+- **L'hétérogénéité des données:** Le jeu de données initial issu de l'API possède une quantité phénoménale de variantes pour désigner un même produit (singulier/pluriel, accents, fautes de frappe d'origine, majuscules, espaces doubles).
+
+- **Le compromis du pré-traitement :** Bien que notre algorithme de nettoyage  applique des filtres stricts et une standardisation (passage en minuscules, suppression des accents), il reste impossible de couvrir 100 % des cas sans reconstruire un dictionnaire mot par mot.
+
+À moins de réaliser un tri et un renommage manuel, ligne par ligne, sur les milliers d'observations, ce type d'erreur est inévitable. Ces résidus témoignent donc de la complexité des données brutes récoltées sur l'API.
 
 ------------------------------------------------------------------------
 
@@ -726,6 +730,9 @@ Le graphe s'arrête au 6 avril - et ce n'est pas un bug. C'est le résultat le p
 
 **Conclusion nette** : Selon notre jeu de données, les restaurants CROUS ne renouvellent pas activement leur carte - ils déploient un catalogue semestriel fixe en début de période et le répètent jusqu'à la fin.
 
+------------------------------------------------------------------------
+
+
 ## Question 11 : Quelle est la distribution des Nutri-Scores ?
 
 Dans cette partie, nous cherchons à évaluer la qualité nutritionnelle globale de l'offre de restauration proposée par le CROUS à travers la répartition des Nutri-Scores des plats.
@@ -818,7 +825,7 @@ ggplot(df,
 
 ```
 
-#### **Interprétation**
+#### **Interprétation des résultats**
 
 Le graphique montre une tendance : plus un plat est riche en calories, plus sa note Nutri-Score a tendance à descendre vers le orange (D) ou le rouge (E).
 
@@ -1076,13 +1083,16 @@ Seuils tertiles :
 
 Ce n'est plus une répartition en tiers égaux - la méthode tertile a produit ici une distribution déséquilibrée, signe que la distribution de % carbone total bas est très concentrée vers 100%.
 
-#### **Interprétation critique** **L'hypothèse est infirmée.**
+#### **Interprétation des résultats**
 
 Les graphiques révèlent en réalité une quasi-homogénéité totale entre tous les restaurants CROUS. L'écart absolu entre le restaurant le plus "polluant" (88,8% bas) et le plus "écoresponsable" (100% bas) est de 11,2 points, soit une plage de variation extrêmement comprimée.
 
 La classification en tertiles amplifie visuellement des différences qui sont, en valeur absolue, négligeables. Un restaurant à 88,8% de plats bas-carbone ne peut raisonnablement pas être qualifié de "faible" en écoresponsabilité.
 
 En conclusion, la majorité de nos restaurants ont un faible impact carbone. Le "moins" eco-responsable étant à 88% environ. Cependant, la représntation avec les tertiles nous aa permis de voir d'analyser en profondeur nos données et de voir que l'écart en terme d'éco-responsabilité n'est pas très grand.
+
+------------------------------------------------------------------------
+
 
 ## Question 15 : Existe-t-il une fracture nutritionnelle entre les régions ou les villes ?
 
@@ -1094,9 +1104,11 @@ Nous avons choisi de réalisé ce graphique sur Power BI et nous avons obtenu ce
 
 ![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_2.png)
 
+
+
 Même si on a des teintes vertes, le nutriscore moyen tourne autour de 3 pour quasiment toutes les régions : Notre échelle n'est pas sur le nutriscore mais va de la moyenne la moins pire (qui a la couleur verte) à la pire moyenne (qui prend une couleur rouge)
 
-#### **Interprétation**
+#### **Interprétation des résultats**
 
 Sur la carte, on observe plusieurs phénomènes :
 
@@ -1114,11 +1126,9 @@ Par exemple, si la Bourgogne-Franche-Comté est très orange, c'est peut-être t
 
 **Anomalies visuelles constatées** - Le graphique révèle un comportement anormal : seules trois régions (Normandie, Bourgogne-Franche-Comté, Corse) sont correctement dessinées en grand. Partout ailleurs, Power BI affiche de simples points et de petites parcelles colorées. Cela vient tout simplement du dataset `liste_restaurant.csv` : Le champ `region.libelle`possède à la fois des noms de villes et des noms de régions. - Certaines régions n'ont pas de valeur de nutriscore (comme Versailles) : Cela signifie tout simplement qu'il n'y a pas de plats associé à ces régions dans notre fichier.
 
-<br>
 
-<hr>
+------------------------------------------------------------------------
 
-<br>
 
 ## Question 18 : Existe-t-il une fracture géographique de l'accessibilité PMR ?
 
@@ -1198,7 +1208,7 @@ ggplot(accessibilite_pmr, aes(x = pct_pmr, y = region, fill = pct_pmr)) +
   )
 ```
 
-#### **Interprétation**
+#### **Interprétation des résultats**
 
 Le graphique permet d'identifier rapidement les régions situées au-dessus ou au-dessous de la moyenne d'accessibilité PMR. Les régions comme Limoges, Poitiers ou Rennes (proches de 100 %) semblent bien couvertes, tandis que celles comme Orléans-Tours, Corse ou Paris (nettement sous la ligne rouge) peuvent indiquer une fracture géographique.
 
@@ -1313,7 +1323,7 @@ fiabilite %>%
   )
 ```
 
-#### **Interprétation**
+#### **Interprétation des résultats**
 
 Sur les `r nrow(fiabilite)` restaurants disposant d'au moins 10 plats, **`r sum(fiabilite$suspect)` présentent un profil suspect** : 100 % de leurs plats se voient attribuer le Nutri-Score C, sans aucune variation. Ce phénomène est particulièrement visible parmi les restaurants avec beaucoup d'entrées (112 plats), suggérant une attribution automatique ou par défaut plutôt qu'un scoring individualisé.
 
@@ -1417,7 +1427,8 @@ Queue droite \~600-700+ kcal : plats caloriques, effectifs très faibles(contre 
 
 Le pic principal à 250 kcal concentre à lui seul la majorité absolue des plats
 
-**Interprétation critique**
+
+#### **Interprétation des résultats**
 
 *L'hypothèse est infirmée - et de loin*.
 
@@ -1441,11 +1452,12 @@ Pour répondre à cette question, nous avons utilisé un **boxplot** permettant 
 
 Ces deux graphiques sont générés dans l'application Shiny (onglet "Calories") et ont des filtres sur la région, le type de repas et la catégorie.
 
-**Visualisation et analyse**
+#### **Visualisation et analyse**
 
 Le boxplot ci-dessous permet de lire simultanément la médiane, l'étendue interquartile (longueur du boxplot) et les valeurs extrêmes de chaque catégorie. Les catégories sont ordonnées par médiane croissante de bas en haut. Les catégories sont triées de la moins calorique en bas à la plus calorique en haut.
 
 ![Boxplot des calories par catégorie de plat](../images/question24a.png)
+
 
 **Note de lecture :** on remarque que quatre catégories (Snacking, Plats, Petit-déjeuner, Formules/Menus) semblent visuellement identiques sur le boxplot, avec des boîtes réduites à un simple trait vertical. Cela ne signifie pas qu'elles ont exactement les mêmes valeurs : leurs médianes diffèrent de quelques kcal, ce qui suffit à les classer différemment, mais l'écart est trop faible pour être visible à l'œil nu. Ce phénomène s'explique par le mode d'estimation des calories : les valeurs ayant été enrichies manuellement à partir d'OpenFoodFacts, beaucoup de plats d'une même catégorie ont reçu la même estimation calorique par défaut, ce qui écrase la dispersion. Seuls les **Entrées** et les **Desserts** montrent de vraies boîtes visibles, signe que leurs calories ont été estimées de façon plus variée. C'est pourquoi le diagramme en barres des moyennes ci-dessous est un complément indispensable pour différencier les catégories entre elles.
 
@@ -1453,7 +1465,8 @@ Le diagramme en barres ci-dessous présente la moyenne arithmétique des calorie
 
 ![Calories moyennes par catégorie de plat](../images/question24b.png)
 
-**Interprétation des résultats**
+
+#### **Interprétation des résultats**
 
 Les **Plats arrivent en tête** avec la moyenne la plus élevée (environ 330 kcal). Ce résultat est attendu : cette catégorie regroupe les plats chauds complets (viandes, grillades, accompagnements féculents) qui constituent le cœur énergétique d'un repas.
 
@@ -1528,7 +1541,7 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
   )
 ```
 
-#### **Interprétation**
+#### **Interprétation des résultats **
 
 -   "Soupes" et "Fraîcheur" : Comme prévu, ces deux styles écrasent le classement avec un profil supérieur ou égaux à C. La catégorie `Soupes` affiche quasiment une égalité de A et de C, ce qui s'explique par une composition riche en eau, en légumes et pauvre en graisses. Le style Fraîcheur est principalement constitué de salades, crudités, etc; ce qui explique la majorité de A et B.
 
@@ -1536,8 +1549,10 @@ ggplot(df_clean, aes(x = style_culinaire, fill = nutriscore)) +
 
 -   "Produits traditionnels" : L'offre du juste milieu. Cette catégorie fait office de pont entre les deux extrêmes. C'est typique des plats de résistance classiques (viandes, poissons, féculents) qui varient selon l'accompagnement et la richesse de la sauce choisie.
 
+------------------------------------------------------------------------
 
-## Conclusion
+
+# Conclusion
 
 Au terme de notre analyse, les visualisations que nous avons réalisées nous ont permis de dresser un portrait de l'offre culinaire du CROUS. 
 
