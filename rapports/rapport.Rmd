@@ -75,9 +75,13 @@ Chaque ligne correspond à un plat spécifique servi dans un restaurant donné, 
 
 Les données ont été enrichies manuellement à partir d'informations issues du site **OpenFoodFacts** (<https://world-fr.openfoodfacts.org/>), puis combinées avec les données récupérées via l'API **CROUStillant Menu**.
 
-Ce choix d'enrichissement manuel a été motivé par plusieurs contraintes : - le volume très important des données OpenFoodFacts (\~9 Go), - la complexité de leur structure, - la forte sensibilité aux variations d'écriture des noms de plats.
+Ce choix d'enrichissement manuel a été motivé par plusieurs contraintes : 
 
--   **Nombre d'observations :** 80 307
+-  le volume très important des données OpenFoodFacts (\~9 Go), 
+-  la complexité de leur structure, 
+-  la  sensibilité aux variations d'écriture (la casse) des noms de plats.
+
+-   **Nombre d'observations :** 27 376
 -   **Nombre de variables :** 10
 
 
@@ -1102,7 +1106,7 @@ Nous avons choisi de réalisé ce graphique sur Power BI et nous avons obtenu ce
 
 ![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_1.png)
 
-![Répartition des Nutri-Scores par catégorie de plat](../images/powerBI_question_13_2.png)
+![](../images/powerBI_question_13_2.png)
 
 
 
