@@ -1565,3 +1565,27 @@ Sur le plan nutritionnel, l'offre est dominée par le Nutri-Score C, avec une me
 Sur le plan structurel, les menus ne suivent pas le schéma classique Entrée/Plat/Dessert : l'offre est dominée par le Snacking et les Boissons, avec une forte hétérogénéité entre restaurants selon leur format.
 
 Plusieurs limites sont à noter : la forte proportion de Nutri-Score C soulève des doutes sur la fiabilité de notre système d'attribution, et les données couvrent une période restreinte. Ainsi, les interprétations que nous avons rédigées ne doivent pas être reproduites au pied et à la lettre sur l'année. Nos observations s'applique sur une période bien précise mais on peut s'en servir pour faire des suppositions sur le reste de l'année. 
+
+
+## Compétence des membres
+
+
+* **Jules TIMADJI :** J'ai développé des compétences dans la conception de visualisations avec des techniques comme Shiny.  Il aurait été intéressant d'utiliser les données de géolocalisation (longitude et latitude) cartographier  les restaurants, mais nous avons manqué de temps pour cela.
+
+* **Ange Ariane KAMGUE MAGNE :** Ce projet m'a permis de maîtriser le traitement de chaînes de caractères complexes et le nettoyage de données textuelles hétérogènes sous R.J'aurais aimé pousser l'analyse en couplant nos résultats avec les données issues de plateformes comme openfoodFacts, pour avoir une réelle représentation. Cela n'a pas été possible à cause de la complexité de la plateforme.
+
+* **Housséni YABRE :** J'ai aimé utiliser des techniques telles que la séparation en tertile, qui permettent d'analyser encore plus en détail. Je pense qu'avec plus de temps et de technologies, on aurait pu implémenter un modèle de machine learning prédictif pour anticiper les ruptures de stocks de plats ou prédire de prochains renouvelements.
+
+* **Rayan LEGRAND :** Ce projet m'a appris à collaborer  sous GitHub et à formuler des interprétations basées sur des visualisations et des données réelles.
+
+
+
+# Annexe : Répartition du travail au sein du groupe
+
+
+| Membre du groupe | Sections et tâches principales prises en charge |
+|------------------|--------------------------------------------------|
+| **Ange Ariane KAMGUE MAGNE** | Extraction initiale des données depuis l'API, enrichissement manuel avec OpenFoodFacts et traitement des expressions pour les plats. Questions 5, 15 (Power BI) et 25 et correction du rapport et du readme|
+| **Jules TIMADJI** | Rédaction de la présantation orale, Shiny APP (11 et 24), questions 6 et 7 et correction du rapport et du readme |
+| **Housséni YABRE** | Correction du rapport et du readme, Questions 10, 14 et 23 |
+| **Rayan LEGRAND** | Correction du readme, questions 1, 9, 18 et 22|
